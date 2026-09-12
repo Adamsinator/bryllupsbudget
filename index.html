@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:16">
+<meta name="build" content="2026-09-12 18:22">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -596,13 +596,12 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
   <section class="card full">
     <div class="card-head">
       <div><h2>Udgiftsposter</h2><p class="hint">Ret direkte i felterne. ✓ markerer en post som betalt.</p></div>
-      <div class="filters" id="bFilters"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="unpaid">Ikke betalt</button><button class="fchip" data-f="A">Mie</button><button class="fchip" data-f="B">Adam</button></div>
+      <div class="filters" id="bFilters"><button class="primary" data-add-item="" style="margin-right:6px">+ Tilføj post</button><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="unpaid">Ikke betalt</button><button class="fchip" data-f="A">Mie</button><button class="fchip" data-f="B">Adam</button></div>
     </div>
     <div class="tblwrap"><table class="tbl" id="btbl">
       <thead><tr><th style="width:14px"></th><th class="sort" data-s="name">Post</th><th>Hvem ordner</th><th class="r sort on" data-s="planned">Pris</th><th class="r sort" data-s="paid">Betalt</th><th class="r" style="width:48px">Andel</th><th>Note</th><th style="width:30px"></th></tr></thead>
       <tbody id="brows"></tbody>
-      <tfoot><tr class="addrow"><td colspan="8"><button class="addbtn" data-add-item=""><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tilføj post</button></td></tr>
-      <tr><td></td><td id="tCount">I alt</td><td></td><td class="r tab" id="tPlanned"></td><td class="r tab" id="tPaid"></td><td class="r pct">100 %</td><td></td><td></td></tr></tfoot>
+      <tfoot>      <tr><td></td><td id="tCount">I alt</td><td></td><td class="r tab" id="tPlanned"></td><td class="r tab" id="tPaid"></td><td class="r pct">100 %</td><td></td><td></td></tr></tfoot>
     </table></div>
     <div class="suggest" id="suggest"></div>
   </section>
@@ -1054,7 +1053,8 @@ function renderBars(){
 function budgetItems(){
   let list=state.items.filter(i=> ui.bFilter==='unpaid'?i.paid<plannedOf(i): ui.bFilter==='A'||ui.bFilter==='B'?(i.owner===ui.bFilter||i.owner==='AB'):true);
   const cmp={name:(a,b)=>a.name.localeCompare(b.name,'da'),planned:(a,b)=>plannedOf(a)-plannedOf(b),paid:(a,b)=>a.paid-b.paid}[ui.bSort];
-  return list.sort((a,b)=>cmp(a,b)*ui.bDir);
+  const isNew=i=>plannedOf(i)===0&&!i.paid ? 1:0;
+  return list.sort((a,b)=>(isNew(b)-isNew(a))||cmp(a,b)*ui.bDir);
 }
 function renderBudgetTable(t){
   const list=budgetItems();
@@ -1360,7 +1360,7 @@ $('brows').addEventListener('click',e=>{
 });
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-add-item]'); if(!b) return; const name=b.dataset.addItem;
   if(ui.bFilter!=='all'){ ui.bFilter='all'; document.querySelectorAll('#bFilters .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); }
-  const it={id:uid(),name,planned:0,perGuest:null,paid:0,owner:'',supplier:'',note:''}; state.items.push(it); commit();
+  const it={id:uid(),name,planned:0,perGuest:null,paid:0,owner:'',supplier:'',note:'',u:Date.now()}; state.items.unshift(it); commit();
   const tr=$('brows').querySelector(`tr[data-id="${it.id}"]`); const inp=tr.querySelector(name?'input.money':'[data-f="name"]'); inp.focus(); if(inp.classList.contains('money')) inp.select(); tr.scrollIntoView({block:'nearest'}); });
 bindFilters($('bFilters'),'bFilter',render);
 bindSort($('btbl').querySelector('thead'),'bSort','bDir',{planned:-1,paid:-1,name:1},render);
