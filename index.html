@@ -376,6 +376,9 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .venueline .arrow{color:var(--accent);margin:0 6px}
 .venues{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:18px}
 .venue{display:block;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:16px 18px;min-width:0}
+.venue .ph,.ecard .ph{margin:-16px -18px 12px;height:170px;overflow:hidden;border-radius:var(--r) var(--r) 0 0}
+.ecard .ph{margin:-14px -16px 10px;height:150px}
+.venue .ph img,.ecard .ph img{width:100%;height:100%;object-fit:cover;display:block}
 .venue .l{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .venue .n{font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:4px;line-height:1.1}
 .venue .a{font-size:13px;color:var(--ink-2);margin-top:4px}
@@ -775,14 +778,8 @@ function makeSample(){
     {id:uid(), name:'Langbord 2', type:'long', x:520, y:90, seats:16, ends:true, seatMap:T2},
   ];
   // Eksempel-plantegning af Odd Fellow Palæet – ret mål og rum, så det passer
-  const rooms = [
-    {id:uid(), name:'Festsalen', x:20, y:20, w:760, h:900}, {id:uid(), name:'Lille sal', x:800, y:20, w:320, h:400}, {id:uid(), name:'Foyer', x:800, y:440, w:320, h:480},
-  ];
-  const z = (type,label,x,y,w,h) => ({id:uid(), type, label, x, y, w, h});
-  const zones = [
-    z('dance','Dansegulv',200,670,320,210), z('dj','DJ',560,700,120,100), z('cake','Kagebord',50,700,110,60),
-    z('lounge','Lounge',830,70,260,320), z('bar','Bar',830,480,260,80), z('other','Garderobe',830,600,130,70), z('entrance','Indgang',900,880,140,30),
-  ];
+  const rooms = sampleRooms();
+  const zones = sampleZones();
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
     t('Book lokale','2027-06-01','AB',true), t('Aftal dato med kirke/rådhus','2027-06-15','AB',true), t('Fastlæg budget og gæsteantal','2027-07-01','AB',true),
@@ -801,7 +798,7 @@ function makeSample(){
   ];
   const places = [
     {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'13:00', contact:'', phone:'', url:'', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 14:00', contact:'', phone:'', url:'', note:'Velkomstdrink, middag og fest. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
+    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 14:00', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Velkomstdrink, middag og fest. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
   ];
   const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
@@ -841,6 +838,15 @@ const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til for�
 
 /* ---------- state ---------- */
 function uid(){ return Math.random().toString(36).slice(2,9); }
+// Standardplan: festsal med de to langborde, tilstødende dansesal (halv længde, samme bredde) og lounge af samme størrelse
+function sampleRooms(){ return [
+  {id:uid(), name:'Festsalen', x:20, y:20, w:760, h:900}, {id:uid(), name:'Dansesal', x:800, y:20, w:380, h:900}, {id:uid(), name:'Lounge', x:1200, y:20, w:380, h:900},
+]; }
+function sampleZones(){ const z=(type,label,x,y,w,h)=>({id:uid(), type, label, x, y, w, h}); return [
+  z('cake','Kagebord',50,720,110,60), z('gifts','Gavebord',640,720,110,60), z('entrance','Indgang',340,890,120,30),
+  z('dance','Dansegulv',830,180,320,440), z('dj','DJ',830,680,150,110), z('bar','Bar',1000,680,150,110),
+  z('lounge','Lounge – sofaer og hvil',1230,80,320,480), z('buffet','Kaffe og kage',1230,600,320,100), z('other','Garderobe',1230,760,150,80),
+]; }
 let state = normalize(localLoad() || makeSample());
 let page = 'overblik';
 const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
@@ -869,10 +875,12 @@ function normalize(s){
     (s.zones||[]).forEach(z=>{ if(z.type==='dance'&&z.y===570) z.y=670; if(z.type==='dj'&&z.y===600) z.y=700; if(z.type==='cake'&&z.y===600) z.y=700; if(z.type==='entrance'&&z.y===780) z.y=880; });
   }
   s.tables16=true;
+  if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
+  s.layoutV2=true;
   s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
   s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80) }));
   const ROLES=['Vielse','Fest','Overnatning','Andet'];
-  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', note:x.note||'' }));
+  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
   s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
   s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done }));
@@ -969,7 +977,7 @@ function renderOverblik(){
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
     return `<li class="${cls}"><span class="d"><b>${x.due?fmtDate(x.due):'–'}</b>${d==null?'':rel(d)}</span><span class="n">${esc(x.title)}${x.owner?`<span class="tag">${esc(ownerName(x.owner))}</span>`:''}</span><span></span></li>`; }).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Alle opgaver er klaret 🎉</span><span></span></li>';
   const church=state.places.find(x=>x.role==='Vielse'), party=state.places.find(x=>x.role==='Fest');
-  const vcard=(pl,label)=> pl ? `<div class="venue"><div class="l">${label}${pl.time?` · ${esc(pl.time)}`:''}</div><div class="n">${esc(pl.name)}</div><div class="a">${esc(pl.address)}</div><div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a><a href="#steder">Detaljer</a>${pl.note?`<span style="font-size:12px;color:var(--muted);align-self:center">${esc(pl.note.split('\n')[0].slice(0,70))}</span>`:''}</div></div>` : `<div class="venue"><div class="l">${label}</div><div class="n" style="color:var(--muted)">Ikke valgt endnu</div><div class="a"><a href="#steder">Tilføj under Steder</a></div></div>`;
+  const vcard=(pl,label)=> pl ? `<div class="venue${photoOf(pl)?' haspic':''}">${photoOf(pl)?`<div class="ph"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}"></div>`:''}<div class="l">${label}${pl.time?` · ${esc(pl.time)}`:''}</div><div class="n">${esc(pl.name)}</div><div class="a">${esc(pl.address)}</div><div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a><a href="#steder">Detaljer</a>${pl.note?`<span style="font-size:12px;color:var(--muted);align-self:center">${esc(pl.note.split('\n')[0].slice(0,70))}</span>`:''}</div></div>` : `<div class="venue"><div class="l">${label}</div><div class="n" style="color:var(--muted)">Ikke valgt endnu</div><div class="a"><a href="#steder">Tilføj under Steder</a></div></div>`;
   const route = church&&party ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}` : '';
   $('venues').innerHTML = vcard(church,'Vielse') + `<div class="between"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>${route?`<a href="${route}" target="_blank" rel="noopener" style="font-size:12px">Rute</a>`:''}</div>` + vcard(party,'Fest');
   const PAGE_NAMES={overblik:'Overblik',budget:'Budget',gaester:'Gæster',bordplan:'Bordplan',tidsplan:'Tidsplan',program:'Program',steder:'Steder',leverandorer:'Leverandører',indslag:'Taler & indslag',gaver:'Gaver',noter:'Noter'};
@@ -1246,13 +1254,16 @@ function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=st
 
 /* ---------- STEDER ---------- */
 const ROLES=['Vielse','Fest','Overnatning','Andet'];
+const PHOTOS = { 'odd fellow': 'odd-fellow-palae.jpg' };
+const photoOf = pl => pl.photo || (Object.entries(PHOTOS).find(([k])=>(pl.name||'').toLowerCase().includes(k))||[])[1] || '';
 const mapsUrl = pl => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((pl.name+', '+pl.address).trim())}`;
 function renderPlaces(){
   const order={Vielse:0,Fest:1,Overnatning:2,Andet:3};
   const list=[...state.places].sort((a,b)=>order[a.role]-order[b.role]);
   $('places').innerHTML=list.map(pl=>`<div class="ecard" data-id="${pl.id}">
+    ${photoOf(pl)?`<div class="ph"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}"></div>`:''}
     <div class="h"><input class="t" data-f="name" value="${esc(pl.name)}" placeholder="Navn på sted" aria-label="Navn"><select class="role sel" data-f="role" aria-label="Rolle">${opts(ROLES,pl.role,x=>x)}</select><button class="iconbtn" data-del="1" aria-label="Slet sted">${svgX}</button></div>
-    <div class="f"><label>Adresse</label><input data-f="address" value="${esc(pl.address)}" placeholder="Vej, postnr. by"><label>Tid</label><input data-f="time" value="${esc(pl.time)}" placeholder="13:00 / fra 14:00"><label>Kontakt</label><input data-f="contact" value="${esc(pl.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(pl.phone)}" placeholder="12 34 56 78"><label>Link</label><input data-f="url" value="${esc(pl.url)}" placeholder="https://…"></div>
+    <div class="f"><label>Adresse</label><input data-f="address" value="${esc(pl.address)}" placeholder="Vej, postnr. by"><label>Tid</label><input data-f="time" value="${esc(pl.time)}" placeholder="13:00 / fra 14:00"><label>Kontakt</label><input data-f="contact" value="${esc(pl.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(pl.phone)}" placeholder="12 34 56 78"><label>Link</label><input data-f="url" value="${esc(pl.url)}" placeholder="https://…"><label>Billede</label><input data-f="photo" value="${esc(pl.photo)}" placeholder="URL eller filnavn i repoet"></div>
     <textarea data-f="note" placeholder="Aftaler, praktisk, spørgsmål…">${esc(pl.note)}</textarea>
     <div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a>${pl.url?`<a href="${esc(pl.url)}" target="_blank" rel="noopener">Hjemmeside</a>`:''}${pl.phone?`<a href="tel:${esc(pl.phone.replace(/\s/g,''))}">Ring</a>`:''}</div></div>`).join('')
     ||'<p class="empty">Ingen steder endnu.</p>';
@@ -1462,6 +1473,7 @@ $('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((
 
 /* ---------- events: steder / leverandører / indslag / gaver ---------- */
 bindEdits($('places'), ()=>state.places, (pl,f)=>{ if(f==='role'||f==='url'||f==='phone'||f==='address'||f==='name') return 'full'; return 'none'; });
+$('places').addEventListener('change',e=>{ if(e.target.dataset.f==='photo') renderPlaces(); });
 $('places').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.places.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.places,x.id,x.name||'Sted'); } });
 $('placeAdd').addEventListener('click',()=>{ const x={id:uid(),name:'',role:'Andet',address:'',time:'',contact:'',phone:'',url:'',note:''}; state.places.push(x); commit('full','nyt sted'); $('places').querySelector(`[data-id="${x.id}"] .t`).focus(); });
 $('copyAddr').addEventListener('click',()=>{ const txt=state.places.filter(p=>p.role!=='Andet'||p.name).map(p=>`${p.role}: ${p.name}${p.address?', '+p.address:''}${p.time?' – '+p.time:''}`).join('\n'); navigator.clipboard?.writeText(txt).then(()=>toast('Adresser kopieret')).catch(()=>toast('Kunne ikke kopiere')); });
