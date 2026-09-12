@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 20:10">
+<meta name="build" content="2026-09-12 20:24">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -657,7 +657,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
   <div class="seatgrid">
     <section class="card pool">
       <div class="card-head"><div><h3>Ikke placeret</h3><p class="hint" id="poolHint"></p></div></div>
-      <div class="filters" style="margin-top:8px"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button></div>
+      <div class="filters" id="poolFilters" style="margin-top:8px"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button></div>
       <div class="names" id="pool"></div>
       <div id="poolAction" style="margin-top:10px"></div>
     </section>
@@ -1046,8 +1046,8 @@ function renderHeader(){
   document.title = `${state.nameA} & ${state.nameB}`;
   document.querySelectorAll('#bFilters .fchip[data-f="A"],#page-tidsplan .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA);
   document.querySelectorAll('#bFilters .fchip[data-f="B"],#page-tidsplan .fchip[data-f="B"]').forEach(b=>b.textContent=state.nameB);
-  document.querySelectorAll('#page-gaester .fchip[data-f="A"],#page-bordplan .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA+'s');
-  document.querySelectorAll('#page-gaester .fchip[data-f="B"],#page-bordplan .fchip[data-f="B"]').forEach(b=>b.textContent=state.nameB+'s');
+  document.querySelectorAll('#page-gaester .fchip[data-f="A"],#poolFilters .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA+'s');
+  document.querySelectorAll('#page-gaester .fchip[data-f="B"],#poolFilters .fchip[data-f="B"]').forEach(b=>b.textContent=state.nameB+'s');
 }
 
 /* ---------- OVERBLIK ---------- */
@@ -1500,7 +1500,7 @@ bindSort($('gtbl').querySelector('thead'),'gSort','gDir',{name:1,rsvp:1},renderG
 /* ---------- events: seating ---------- */
 $('pool').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; ui.selGuest=ui.selGuest===b.dataset.g?null:b.dataset.g; renderSeating(); });
 $('poolAction').addEventListener('click',e=>{ if(e.target.id==='unseatSel'){ const id=ui.selGuest; unseat(id); ui.selGuest=null; commit('full',`${guestName(id)} taget væk`); } if(e.target.id==='clearSel'){ ui.selGuest=null; renderSeating(); } });
-bindFilters($('page-bordplan').querySelector('.filters'),'pFilter',renderSeating);
+bindFilters($('poolFilters'),'pFilter',renderSeating);
 $('addLong').addEventListener('click',()=>addTable('long'));
 $('addRound').addEventListener('click',()=>addTable('round'));
 $('printPlan').addEventListener('click',()=>window.print());
