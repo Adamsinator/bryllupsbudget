@@ -179,6 +179,8 @@ function mirrorMore(s) {
   (s.gifts || []).forEach(g => rows.push([g.from, g.gift, g.thanked ? 'Ja' : '', g.note]));
   rows.push([]); rows.push(['Ønskeseddel']); rows.push(['Ønske', 'Hvor / link', 'Ca. pris', 'Reserveret af', 'Note']);
   (s.wishes || []).forEach(w => rows.push([w.text, w.link, w.price || '', w.by, w.note]));
+  rows.push([]); rows.push(['Gemte bordplaner']); rows.push(['Navn', 'Gemt', 'Af', 'Placeret', 'Borde']);
+  (s.planVersions || []).forEach(v => { const tb = (v.data && v.data.tables) || []; rows.push([v.name, new Date(v.t || 0), ownerName(v.who, s), tb.reduce((a, t) => a + (t.lounge ? 0 : (t.seatMap || []).filter(x => x && x !== 'A' && x !== 'B').length), 0), tb.filter(t => !t.lounge).length]); });
   writeRows('Praktisk', rows);
 }
 
