@@ -511,7 +511,7 @@ body.locked .wrap{display:none}
 <!-- ============ BUDGET ============ -->
 <section class="page" id="page-budget" hidden>
   <section class="kpis" aria-label="Overblik">
-    <div class="kpi budget"><div class="l">Samlet ramme</div><div class="v"><input id="budget" class="inl tab" inputmode="numeric" aria-label="Samlet budget i kroner"><small>kr.</small></div><div class="sub"><input id="guests" class="inl tab" inputmode="numeric" aria-label="Antal gæster"> gæster · <span id="perGuest">–</span> <button class="linkbtn" id="guestsFromList" title="Brug antal fra gæstelisten"></button></div></div>
+    <div class="kpi budget"><div class="l">Samlet ramme</div><div class="v"><input id="budget" class="inl tab" inputmode="numeric" aria-label="Samlet budget i kroner"><small>kr.</small></div><div class="sub"><input id="guests" class="inl tab" inputmode="numeric" aria-label="Antal gæster"> gæster · <span id="perGuest">–</span><br><label style="display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:4px;cursor:pointer"><input type="checkbox" id="guestsAuto" style="accent-color:var(--accent);margin:0"> Følg gæstelisten (ja + afventer)</label></div></div>
     <div class="kpi"><div class="l">Det koster</div><div class="v" id="kPlanned">–</div><div class="sub" id="kPlannedSub">–</div></div>
     <div class="kpi"><div class="l">Betalt</div><div class="v" id="kPaid">–</div><div class="sub" id="kPaidSub">–</div></div>
     <div class="kpi buffer" id="kBufferWrap"><div class="l">Buffer <span class="pill" id="bufPill">–</span></div><div class="v" id="kBuffer">–</div><div class="sub" id="kBufferSub">–</div></div>
@@ -824,12 +824,13 @@ function normalize(s){
   s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
   s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'' }));
   s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now() }));
-  s.guests=+s.guests||0; s.budget=+s.budget||0; s.updatedAt=+s.updatedAt||0; s.nameA=s.nameA||'Mie'; s.nameB=s.nameB||'Adam';
+  s.guests=+s.guests||0; s.guestsAuto = s.guestsAuto!==false; s.budget=+s.budget||0; s.updatedAt=+s.updatedAt||0; s.nameA=s.nameA||'Mie'; s.nameB=s.nameB||'Adam';
   return s;
 }
 function localLoad(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&Array.isArray(s.items)) return s; }catch(e){} return null; }
 function localSave(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
-const plannedOf = i => i.perGuest!=null ? Math.round(i.perGuest*(state.guests||0)) : (+i.planned||0);
+function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=0; state.guests_list.forEach(g=>{ if(g.rsvp!=='no') n++; }); return n; } return +state.guests||0; }
+const plannedOf = i => i.perGuest!=null ? Math.round(i.perGuest*guestCount()) : (+i.planned||0);
 const ownerName = o => o==='A'?state.nameA : o==='B'?state.nameB : o==='AB'?'Begge' : '';
 const sideName = o => o==='A'?`${state.nameA}s` : o==='B'?`${state.nameB}s` : 'Fælles';
 
@@ -925,9 +926,7 @@ let COLORS={};
 function renderBudget(){
   const t=totals();
   if(document.activeElement!==$('budget')) $('budget').value=knum(t.budget);
-  if(document.activeElement!==$('guests')) $('guests').value=state.guests?knum(state.guests):'';
-  $('perGuest').textContent = state.guests>0?`${kr(t.planned/state.guests)} pr. gæst`:'sæt antal';
-  const gs=guestStats(); const fromList=gs.yes+gs.maybe; $('guestsFromList').textContent = fromList&&fromList!==state.guests?`Brug ${fromList} fra gæstelisten`:''; $('guestsFromList').dataset.n=fromList;
+  syncGuestField(t);
   $('kPlanned').textContent=kr(t.planned);
   $('kPlannedSub').textContent=(t.budget>0?`${pct(t.planned,t.budget)} af rammen · `:'')+`${state.items.length} poster`;
   $('kPaid').textContent=kr(t.paid);
@@ -943,6 +942,15 @@ function renderBudget(){
   $('tickMid').textContent=kr(max/2); $('tickMax').textContent=over?`${kr(t.planned)} (ramme ${kr(t.budget)})`:kr(t.budget);
   renderDonut(); renderBars();
   renderBudgetTable(t);
+}
+function syncGuestField(t){
+  const auto=state.guestsAuto&&state.guests_list.length>0, n=guestCount(); const inp=$('guests');
+  $('guestsAuto').checked=!!state.guestsAuto; inp.readOnly=auto; inp.style.borderBottomStyle=auto?'solid':'dashed'; inp.title=auto?'Følger gæstelisten – slå fra for at skrive et tal selv':'';
+  if(auto||document.activeElement!==inp) inp.value=n?knum(n):'';
+  const gs=guestStats();
+  $('perGuest').textContent = n>0?`${kr(t.planned/n)} pr. gæst`:'sæt antal';
+  if(state.guestsAuto&&!state.guests_list.length) $('perGuest').textContent += ' · gæstelisten er tom, så tallet bruges';
+  else if(auto) $('perGuest').textContent += ` · ${gs.yes} ja + ${gs.maybe} afventer`;
 }
 function donutData(){
   const sorted=state.items.map(i=>({...i,p:plannedOf(i)})).filter(i=>i.p>0).sort((a,b)=>b.p-a.p);
@@ -982,7 +990,7 @@ function renderBudgetTable(t){
     <td class="c-sw"><span class="sw" style="background:${COLORS[i.id]||'var(--other)'}"></span></td>
     <td class="c-name" data-l="Post"><input data-f="name" value="${esc(i.name)}" placeholder="Navn på post" aria-label="Navn"><input class="sup" data-f="supplier" value="${esc(i.supplier)}" placeholder="Leverandør / sted" aria-label="Leverandør"></td>
     <td data-l="Hvem ordner">${ownerSel(i.owner)}</td>
-    <td class="r" data-l="${pg?'Pris pr. gæst':'Pris'}"><div class="pgcell"><div class="pg"><button class="pgbtn${pg?' on':''}" data-pg="1" title="${pg?'Slå pris pr. gæst fra':'Beregn ud fra pris pr. gæst'}" aria-pressed="${pg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.2c2.8-.3 4.4 1.6 4.7 4.8"/></svg></button><input class="money tab" data-f="${pg?'perGuest':'planned'}" inputmode="numeric" value="${knum(pg?i.perGuest:i.planned)}" aria-label="${pg?'Pris pr. gæst':'Pris'}"></div>${pg?`<span class="calc tab">× ${knum(state.guests)} = ${knum(p)}</span>`:''}</div></td>
+    <td class="r" data-l="${pg?'Pris pr. gæst':'Pris'}"><div class="pgcell"><div class="pg"><button class="pgbtn${pg?' on':''}" data-pg="1" title="${pg?'Slå pris pr. gæst fra':'Beregn ud fra pris pr. gæst'}" aria-pressed="${pg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.2c2.8-.3 4.4 1.6 4.7 4.8"/></svg></button><input class="money tab" data-f="${pg?'perGuest':'planned'}" inputmode="numeric" value="${knum(pg?i.perGuest:i.planned)}" aria-label="${pg?'Pris pr. gæst':'Pris'}"></div>${pg?`<span class="calc tab">× ${knum(guestCount())} = ${knum(p)}</span>`:''}</div></td>
     <td class="r" data-l="Betalt"><div class="pg"><button class="pgbtn ok${paid?' on':''}" data-paid="1" title="${paid?'Betalt – klik for at nulstille':'Markér som betalt'}" aria-pressed="${paid}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button><input class="money tab" data-f="paid" inputmode="numeric" value="${knum(i.paid)}" aria-label="Betalt beløb"></div></td>
     <td class="pct c-pct tab">${pct(p,t.planned)}</td>
     <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(i.note)}" placeholder="Note" aria-label="Note"></td>
@@ -997,7 +1005,7 @@ function renderBudgetTable(t){
 function refreshBudgetLight(){
   const t=totals(); renderDonut(); renderBars();
   if(document.activeElement!==$('budget')) $('budget').value=knum(t.budget);
-  $('perGuest').textContent=state.guests>0?`${kr(t.planned/state.guests)} pr. gæst`:'sæt antal';
+  syncGuestField(t);
   $('kPlanned').textContent=kr(t.planned); $('kPlannedSub').textContent=(t.budget>0?`${pct(t.planned,t.budget)} af rammen · `:'')+`${state.items.length} poster`;
   $('kPaid').textContent=kr(t.paid); $('kPaidSub').textContent=`${state.items.filter(i=>plannedOf(i)>0&&i.paid>=plannedOf(i)).length} af ${state.items.length} poster betalt · ${kr(Math.max(0,t.planned-t.paid))} mangler`;
   const over=t.buffer<0, thin=!over&&t.budget>0&&t.buffer/t.budget<.08; const w=$('kBufferWrap'); w.classList.toggle('over',over); w.classList.toggle('thin',thin);
@@ -1008,7 +1016,7 @@ function refreshBudgetLight(){
   $('tickMid').textContent=kr(max/2); $('tickMax').textContent=over?`${kr(t.planned)} (ramme ${kr(t.budget)})`:kr(t.budget);
   $('brows').querySelectorAll('tr[data-id]').forEach(tr=>{ const i=state.items.find(x=>x.id===tr.dataset.id); if(!i) return; const p=plannedOf(i);
     tr.querySelector('.pct').textContent=pct(p,t.planned); tr.querySelector('.sw').style.background=COLORS[i.id]||'var(--other)';
-    const calc=tr.querySelector('.calc'); if(calc) calc.textContent=`× ${knum(state.guests)} = ${knum(p)}`;
+    const calc=tr.querySelector('.calc'); if(calc) calc.textContent=`× ${knum(guestCount())} = ${knum(p)}`;
     const ok=tr.querySelector('[data-paid]'); const paid=p>0&&i.paid>=p; ok.classList.toggle('on',paid); ok.setAttribute('aria-pressed',paid); });
   $('tPlanned').textContent=kr(t.planned); $('tPaid').textContent=kr(t.paid);
 }
@@ -1250,7 +1258,7 @@ window.addEventListener('hashchange',route);
 function logChange(label){ const now=Date.now(); const last=state.log[state.log.length-1]; label=(label||'').trim().slice(0,60);
   if(last && last.who===WHO && last.page===page && last.label===label && now-last.t<10*60000){ last.t=now; return; }
   state.log.push({t:now, who:WHO, page, label}); if(state.log.length>60) state.log.splice(0, state.log.length-60); }
-function commit(mode, label){ state.updatedAt=Date.now(); logChange(label); localSave(); if(mode==='light'&&page==='budget') refreshBudgetLight(); else if(mode==='none'){} else render(); renderHeader(); Sync.push(); }
+function commit(mode, label){ state.guestsEffective=guestCount(); state.updatedAt=Date.now(); logChange(label); localSave(); if(mode==='light'&&page==='budget') refreshBudgetLight(); else if(mode==='none'){} else render(); renderHeader(); Sync.push(); }
 
 /* generic editable-collection binding: input events on [data-f] inside [data-id] rows */
 function bindEdits(container, coll, onField){
@@ -1269,7 +1277,7 @@ function bindSort(thead, keyS, keyD, defaults, after){ thead.addEventListener('c
 bindEdits($('brows'), ()=>state.items, (item,f,el,row)=>{ if(f==='paid'){ return 'light'; } return f==='owner'&&ui.bFilter!=='all'?'full':'light'; });
 $('brows').addEventListener('click',e=>{
   const row=e.target.closest('tr[data-id]'); if(!row) return; const item=state.items.find(x=>x.id===row.dataset.id); if(!item) return;
-  if(e.target.closest('[data-pg]')){ if(item.perGuest!=null){ item.planned=plannedOf(item); item.perGuest=null; } else item.perGuest=state.guests>0?Math.round(item.planned/state.guests):0; item.u=Date.now(); commit(); const inp=$('brows').querySelector(`tr[data-id="${item.id}"] input.money`); inp.focus(); inp.select(); return; }
+  if(e.target.closest('[data-pg]')){ if(item.perGuest!=null){ item.planned=plannedOf(item); item.perGuest=null; } else item.perGuest=guestCount()>0?Math.round(item.planned/guestCount()):0; item.u=Date.now(); commit(); const inp=$('brows').querySelector(`tr[data-id="${item.id}"] input.money`); inp.focus(); inp.select(); return; }
   if(e.target.closest('[data-paid]')){ const p=plannedOf(item); item.paid = (p>0&&item.paid>=p)?0:p; item.u=Date.now(); row.querySelector('[data-f="paid"]').value=knum(item.paid); commit('light'); return; }
   if(e.target.closest('[data-del]')) delWithUndo(()=>state.items,item.id,item.name);
 });
@@ -1281,9 +1289,9 @@ bindFilters($('bFilters'),'bFilter',render);
 bindSort($('btbl').querySelector('thead'),'bSort','bDir',{planned:-1,paid:-1,name:1},render);
 $('budget').addEventListener('input',e=>{ state.budget=parseNum(e.target.value); commit('light'); });
 $('budget').addEventListener('blur',e=>{ e.target.value=knum(state.budget); });
-$('guests').addEventListener('input',e=>{ state.guests=parseNum(e.target.value); commit('light'); });
-$('guests').addEventListener('blur',e=>{ e.target.value=state.guests?knum(state.guests):''; });
-$('guestsFromList').addEventListener('click',e=>{ state.guests=+e.target.dataset.n||0; commit(); });
+$('guests').addEventListener('input',e=>{ if(e.target.readOnly) return; state.guests=parseNum(e.target.value); commit('light'); });
+$('guests').addEventListener('blur',e=>{ e.target.value=guestCount()?knum(guestCount()):''; });
+$('guestsAuto').addEventListener('change',e=>{ const n=guestCount(); state.guestsAuto=e.target.checked; if(!state.guestsAuto) state.guests=n; commit('full', state.guestsAuto?'gæsteantal følger gæstelisten':'gæsteantal sat manuelt'); });
 
 /* ---------- events: guests ---------- */
 bindEdits($('grows'), ()=>state.guests_list, (g,f,el)=>{ if(f==='rsvp') el.className='sel rsvp st-'+g.rsvp; return 'none'; });
@@ -1456,7 +1464,10 @@ function mergeStates(local, remote){
   return out;
 }
 const Sync=(()=>{
-  let mode='local', dbDoc=null, timer=null, pending=null, code='', dirty=false;
+  let mode='local', dbDoc=null, timer=null, pending=null, code='', dirty=false; const CODE_KEY=KEY+'.code', ACTIVE_KEY=KEY+'.active', IDLE_MS=60*60000;
+  function touch(){ try{ localStorage.setItem(ACTIVE_KEY,String(Date.now())); }catch(e){} }
+  function idle(){ try{ return Date.now()-(+localStorage.getItem(ACTIVE_KEY)||0) > IDLE_MS; }catch(e){ return true; } }
+  function forget(){ code=''; try{ localStorage.removeItem(CODE_KEY); localStorage.removeItem(ACTIVE_KEY); }catch(e){} }
   function status(cls,text){ $('sync').className='sync '+cls; $('syncText').textContent=text; }
   function editing(){ const a=document.activeElement; return a&&a!==document.body&&a.matches('input,select,textarea,[contenteditable]'); }
   function apply(remote){ if(!remote||!Array.isArray(remote.items)) return; if((+remote.updatedAt||0)<=(state.updatedAt||0)&&!dirty) return; if(editing()){ pending=remote; return; }
@@ -1465,7 +1476,7 @@ const Sync=(()=>{
   document.addEventListener('focusout',()=>{ if(pending){ const p=pending; pending=null; setTimeout(()=>apply(p),50); } });
   async function api(payload){ const r=await fetch(CFG.API_URL,{method:'POST',body:JSON.stringify({code,...payload})}); const j=await r.json(); if(!j.ok){ const e=new Error(j.error||'api'); e.code=j.error; throw e; } return j; }
   async function pull(){ if(mode!=='api'||!code) return; try{ const j=await api({action:'get'}); if(j.state) apply(j.state); if(!pending) status('ok','Synkroniseret'); }
-    catch(e){ if(e.code==='bad-code'){ code=''; lock('Adgangskoden er ændret – log ind igen.'); } else status('error','Ingen forbindelse'); } }
+    catch(e){ if(e.code==='bad-code'){ forget(); lock('Adgangskoden er ændret – log ind igen.'); } else status('error','Ingen forbindelse'); } }
   async function pushNow(){ const at=state.updatedAt; try{ if(mode==='db'){ status('saving','Gemmer…'); await dbDoc.set(JSON.parse(JSON.stringify(state))); if(state.updatedAt===at) dirty=false; status('ok','Synkroniseret'); }
       else if(mode==='api'&&code){ status('saving','Gemmer…'); const j=await api({action:'set',state});
         if(j.stale&&j.state){ /* nogen gemte imens – flet og gem igen */ state=normalize(mergeStates(state,j.state)); localSave(); render(); const j2=await api({action:'set',state}); if(j2.stale&&j2.state){ state=normalize(mergeStates(state,j2.state)); localSave(); render(); await api({action:'set',state}); } status('ok','Flettet med den andens rettelser'); setTimeout(()=>status('ok','Synkroniseret'),2500); }
@@ -1477,16 +1488,22 @@ const Sync=(()=>{
   function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
   const askCode = lock;
   $('codeForm').addEventListener('submit',async e=>{ e.preventDefault(); code=$('codeInput').value.trim(); $('codeErr').textContent='';
-    try{ const j=await api({action:'get'}); unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik'; if(!WHO) askWho();
+    try{ const j=await api({action:'get'}); try{ localStorage.setItem(CODE_KEY,code); }catch(x){} touch(); unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik'; if(!WHO) askWho();
       if(j.state&&j.state.items&&j.state.items.length) apply(j.state); else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
     catch(err){ code=''; $('codeErr').textContent=err.code==='bad-code'?'Forkert adgangskode.':'Kunne ikke nå serveren. Prøv igen.'; } });
   $('logout').addEventListener('click',()=>{ if(!confirm('Log ud på denne enhed? Data ligger sikkert i arket og hentes igen, når I logger ind.')) return;
-    code=''; try{ localStorage.removeItem(KEY); }catch(e){} state=normalize(makeSample()); render(); lock(); status('','Logget ud'); });
+    forget(); try{ localStorage.removeItem(KEY); }catch(e){} state=normalize(makeSample()); render(); lock(); status('','Logget ud'); });
+  function checkIdle(){ if(mode!=='api'||!code) return; if(idle()){ forget(); try{ localStorage.removeItem(KEY); }catch(e){} state=normalize(makeSample()); render(); lock('Du blev logget ud efter en times inaktivitet.'); status('','Logget ud'); } }
   async function init(){
     if(window.claude&&typeof claude.use==='function'){ try{ const db=await claude.use('db'); if(db){ mode='db'; dbDoc=db.doc('bryllup/main'); status('saving','Forbinder…');
       dbDoc.onSnapshot(snap=>{ if(snap.exists) apply(snap.data()); else if(!snap.metadata.fromCache) pushNow(); if(!pending) status('ok','Synkroniseret'); },()=>status('error','Delt lagring utilgængelig'));
       $('footText').textContent='Alt deles live mellem alle, der har siden åben.'; if(!WHO) askWho(); return; } }catch(e){} }
-    if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; lock(); setInterval(()=>{ if(!document.hidden&&!dirty) pull(); },15000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
+    if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme. Du logges ud efter en times inaktivitet.';
+      try{ code=localStorage.getItem(CODE_KEY)||''; }catch(e){}
+      if(code&&!idle()){ touch(); unlock(); if(!WHO) askWho(); pull(); } else { forget(); lock(); }
+      ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{ if(code) touch(); },{passive:true}));
+      setInterval(()=>{ checkIdle(); if(!document.hidden&&!dirty&&code) pull(); },15000);
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkIdle(); if(code) pull(); } }); return; }
     status('','Gemt lokalt'); if(!WHO) askWho();
   }
   return {push,init};

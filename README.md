@@ -18,7 +18,7 @@ Sæt en lille Google Apps Script-server op, så I begge ser og retter det samme 
 3. Skift `ACCESS_CODE` øverst i scriptet til jeres egen kode.
 4. Deploy → New deployment → Web app · *Execute as: Me* · *Who has access: Anyone*. Kopiér web-app-URL'en.
 5. Indsæt URL'en i [`config.js`](config.js) som `API_URL` og commit.
-6. Åbn siden – den viser kun en låseskærm, indtil adgangskoden er indtastet. Koden gemmes ikke – der skal logges ind hver gang siden åbnes. "Log ud" i bunden låser med det samme og sletter de lokale data.
+6. Åbn siden – den viser kun en låseskærm, indtil adgangskoden er indtastet. Koden huskes på enheden, men efter **1 times inaktivitet** logges man ud og skal indtaste den igen. "Log ud" i bunden låser med det samme og sletter de lokale data.
 
 Herefter:
 - Ændringer gemmes på serveren ~1 sekund efter I retter noget, og hentes hver 30. sekund samt hver gang siden får fokus.
@@ -32,7 +32,7 @@ Herefter:
 ## Undersider
 
 - **Overblik** – nedtælling, kirke → fest med adresser og rute, status på budget/gæster/bordplan/tidsplan, seneste ændringer, næste opgaver og seneste noter
-- **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet
+- **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet, som automatisk følger gæstelisten (ja + afventer) – kan slås fra og sættes manuelt
 - **Gæster** – navn, side, relation, svar (ja/afventer/nej), barn, kost/allergi; filtre, søgning, "tilføj flere ad gangen"
 - **Plantegning & bordplan** – tegn festlokalet: rum (med mål i meter, 1 m = 50 px), områder (dansegulv, lounge, bar, DJ, buffet, kagebord…), langborde (pladser på begge sider, evt. bordender) og runde borde; træk alt rundt og træk i hjørnet for at ændre størrelse; zoom; navnene sidder på pladserne; klik eller træk gæster på plads; print plantegning/bordkort; kost-liste til kokken
 - **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")

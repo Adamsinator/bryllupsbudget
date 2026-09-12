@@ -76,6 +76,7 @@ function writeState(state) {
 function plannedOf(item, guests) {
   return item.perGuest != null ? Math.round(item.perGuest * (guests || 0)) : (Number(item.planned) || 0);
 }
+function guestsOf(s) { return Number(s.guestsEffective != null ? s.guestsEffective : s.guests) || 0; }
 
 function ownerName(o, s) { return o === 'A' ? s.nameA : o === 'B' ? s.nameB : o === 'AB' ? 'Begge' : ''; }
 function sideName(o, s) { return o === 'A' ? s.nameA + 's' : o === 'B' ? s.nameB + 's' : 'Fælles'; }
@@ -92,16 +93,16 @@ function writeRows(name, rows) {
 function mirrorItems(s) {
   const rows = [['Post', 'Hvem ordner', 'Pris', 'Pris pr. gæst', 'Betalt', 'Mangler', 'Betalt?', 'Leverandør', 'Note']];
   (s.items || []).forEach(i => {
-    const p = plannedOf(i, s.guests), paid = Number(i.paid) || 0;
+    const p = plannedOf(i, guestsOf(s)), paid = Number(i.paid) || 0;
     rows.push([i.name, ownerName(i.owner, s), p, i.perGuest != null ? i.perGuest : '', paid, Math.max(0, p - paid), p > 0 && paid >= p ? 'Ja' : '', i.supplier || '', i.note || '']);
   });
-  const planned = (s.items || []).reduce((a, i) => a + plannedOf(i, s.guests), 0);
+  const planned = (s.items || []).reduce((a, i) => a + plannedOf(i, guestsOf(s)), 0);
   const paid = (s.items || []).reduce((a, i) => a + (Number(i.paid) || 0), 0);
   rows.push([]);
   rows.push(['I alt', '', planned, '', paid, Math.max(0, planned - paid)]);
   rows.push(['Ramme', '', Number(s.budget) || 0]);
   rows.push(['Buffer', '', (Number(s.budget) || 0) - planned]);
-  rows.push(['Gæster (budget)', '', Number(s.guests) || 0]);
+  rows.push(['Gæster (budget)', '', guestsOf(s)]);
   rows.push(['Dato', '', s.date || '']);
   writeRows('Poster', rows);
 }
@@ -163,7 +164,7 @@ function backup(s) {
 function logHistory(s) {
   const sh = sheet('Historik');
   if (sh.getLastRow() === 0) sh.appendRow(['Tidspunkt', 'Budget', 'Planlagt', 'Betalt', 'Buffer', 'Poster']);
-  const planned = s.items.reduce((a, i) => a + plannedOf(i, s.guests), 0);
+  const planned = s.items.reduce((a, i) => a + plannedOf(i, guestsOf(s)), 0);
   const paid = s.items.reduce((a, i) => a + (Number(i.paid) || 0), 0);
   const row = [new Date(), Number(s.budget) || 0, planned, paid, (Number(s.budget) || 0) - planned, s.items.length];
   const last = sh.getLastRow();
