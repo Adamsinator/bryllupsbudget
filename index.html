@@ -303,6 +303,14 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .toast button{background:transparent;border:0;color:inherit;font-weight:700;text-decoration:underline;padding:0}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;place-items:center;z-index:30;padding:20px}
 .modal.show{display:grid}
+body.locked .wrap{display:none}
+.modal.gate{background:var(--ground)}
+.modal.gate .box{max-width:360px;text-align:center}
+.modal.gate h1{font-size:clamp(30px,5vw,40px);margin-bottom:4px}
+.modal.gate .box p{margin:8px 0 18px}
+.modal.gate input{text-align:center;font-size:17px;letter-spacing:.08em}
+.modal.gate .row{justify-content:center}
+.modal.gate .primary{width:100%;padding:10px}
 .modal .box{background:var(--surface);border-radius:12px;padding:22px 24px;max-width:400px;width:100%;box-shadow:var(--shadow)}
 .modal .box p{margin:6px 0 14px;color:var(--ink-2);font-size:14px}
 .modal input,.modal textarea{width:100%;border:1px solid var(--hair);border-radius:7px;padding:9px 11px;background:var(--surface-2);margin-bottom:12px}
@@ -354,6 +362,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 </style>
 </head>
 <body>
+<script>if((window.BUDGET_CONFIG||{}).API_URL) document.body.classList.add('locked');</script>
 <div class="wrap">
 
 <header class="top">
@@ -488,7 +497,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
     <button class="ghost" id="export">Eksportér JSON</button>
     <button class="ghost" id="import">Importér JSON</button>
     <input type="file" id="file" accept="application/json" hidden>
-    <button class="ghost" id="code" hidden>Skift adgangskode</button>
+    <button class="ghost" id="logout" hidden>Log ud</button>
     <button class="ghost danger" id="reset">Nulstil til eksempel</button>
   </div>
 </footer>
@@ -496,10 +505,10 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 
 <div class="tip" id="tip"></div>
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastBtn" hidden>Fortryd</button></div>
-<div class="modal" id="codeModal" role="dialog" aria-modal="true">
-  <form class="box" id="codeForm"><h2>Fælles planlægning</h2><p>Indtast jeres adgangskode for at hente og dele alt mellem jer.</p>
-  <input id="codeInput" type="password" autocomplete="current-password" placeholder="Adgangskode" required><div class="err" id="codeErr"></div>
-  <div class="row"><button type="button" class="ghost" id="codeSkip">Kun lokalt</button><button type="submit" class="primary">Forbind</button></div></form>
+<div class="modal gate" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <form class="box" id="codeForm"><p class="eyebrow" style="justify-content:center">Bryllupsplanlægning</p><h1 id="gateTitle"><span id="gateA">Mie</span> <span class="amp">&amp;</span> <span id="gateB">Adam</span></h1><p>Indtast jeres adgangskode for at åbne planlægningen.</p>
+  <input id="codeInput" type="password" autocomplete="current-password" placeholder="Adgangskode" required autofocus><div class="err" id="codeErr"></div>
+  <div class="row"><button type="submit" class="primary">Åbn</button></div></form>
 </div>
 <div class="modal" id="bulkModal" role="dialog" aria-modal="true">
   <form class="box" id="bulkForm"><h2>Tilføj flere gæster</h2><p>Ét navn pr. linje. Skriv evt. side efter komma: <em>Louise Berg, Mie</em></p>
@@ -944,19 +953,21 @@ const Sync=(()=>{
       else if(mode==='api'&&code){ status('saving','Gemmer…'); const j=await api({action:'set',state}); if(j.stale&&j.state) apply(j.state); status('ok','Synkroniseret'); } }
     catch(e){ status('error',mode==='api'?'Kunne ikke gemme på serveren':'Kunne ikke gemme delt'); } }
   function push(){ if(mode==='local'){ status('','Gemt lokalt'); return; } clearTimeout(timer); timer=setTimeout(pushNow,700); }
-  function askCode(err){ $('codeErr').textContent=err||''; $('codeModal').classList.add('show'); setTimeout(()=>$('codeInput').focus(),50); }
+  function lock(err){ document.body.classList.add('locked'); $('gateA').textContent=state.nameA; $('gateB').textContent=state.nameB; $('codeErr').textContent=err||''; $('codeModal').classList.add('show'); setTimeout(()=>$('codeInput').focus(),50); }
+  function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
+  const askCode = lock;
   $('codeForm').addEventListener('submit',async e=>{ e.preventDefault(); code=$('codeInput').value.trim(); $('codeErr').textContent='';
-    try{ const j=await api({action:'get'}); try{localStorage.setItem(CODE_KEY,code);}catch(x){} $('codeModal').classList.remove('show'); $('codeInput').value='';
+    try{ const j=await api({action:'get'}); try{localStorage.setItem(CODE_KEY,code);}catch(x){} unlock(); $('codeInput').value='';
       if(j.state&&j.state.items&&j.state.items.length) apply(j.state); else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
     catch(err){ code=''; $('codeErr').textContent=err.code==='bad-code'?'Forkert adgangskode.':'Kunne ikke nå serveren. Prøv igen.'; } });
-  $('codeSkip').addEventListener('click',()=>{ $('codeModal').classList.remove('show'); status('','Kun lokalt'); });
-  $('code').addEventListener('click',()=>askCode());
+  $('logout').addEventListener('click',()=>{ if(!confirm('Log ud på denne enhed? Data ligger sikkert i arket og hentes igen, når I logger ind.')) return;
+    code=''; try{ localStorage.removeItem(CODE_KEY); localStorage.removeItem(KEY); }catch(e){} state=normalize(makeSample()); render(); lock(); status('','Logget ud'); });
   async function init(){
     if(window.claude&&typeof claude.use==='function'){ try{ const db=await claude.use('db'); if(db){ mode='db'; dbDoc=db.doc('bryllup/main'); status('saving','Forbinder…');
       dbDoc.onSnapshot(snap=>{ if(snap.exists) apply(snap.data()); else if(!snap.metadata.fromCache) pushNow(); if(!pending) status('ok','Synkroniseret'); },()=>status('error','Delt lagring utilgængelig'));
       $('footText').textContent='Alt deles live mellem alle, der har siden åben.'; return; } }catch(e){} }
-    if(CFG.API_URL){ mode='api'; $('code').hidden=false; $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; try{ code=localStorage.getItem(CODE_KEY)||''; }catch(e){}
-      if(!code) askCode(); else pull(); setInterval(()=>{ if(!document.hidden) pull(); },30000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
+    if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; try{ code=localStorage.getItem(CODE_KEY)||''; }catch(e){}
+      if(!code) lock(); else { unlock(); pull(); } setInterval(()=>{ if(!document.hidden) pull(); },30000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
     status('','Gemt lokalt');
   }
   return {push,init};

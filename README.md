@@ -18,7 +18,7 @@ Sæt en lille Google Apps Script-server op, så I begge ser og retter det samme 
 3. Skift `ACCESS_CODE` øverst i scriptet til jeres egen kode.
 4. Deploy → New deployment → Web app · *Execute as: Me* · *Who has access: Anyone*. Kopiér web-app-URL'en.
 5. Indsæt URL'en i [`config.js`](config.js) som `API_URL` og commit.
-6. Åbn siden – den spørger om adgangskoden én gang pr. enhed.
+6. Åbn siden – den viser kun en låseskærm, indtil adgangskoden er indtastet (én gang pr. enhed). "Log ud" i bunden låser igen og sletter de lokale data.
 
 Herefter:
 - Ændringer gemmes på serveren ~1 sekund efter I retter noget, og hentes hver 30. sekund samt hver gang siden får fokus.
