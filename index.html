@@ -239,6 +239,8 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .task.late:not(.done) input[type=date]{color:var(--crit)}
 .task select{border:1px solid transparent;background:transparent;border-radius:5px;padding:3px 20px 3px 7px;font-size:12.5px;color:var(--ink-2)}
 .program{margin-top:12px;display:flex;flex-direction:column}
+.nightdiv{display:flex;align-items:center;gap:10px;margin:10px 0 4px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.nightdiv::before,.nightdiv::after{content:"";flex:1;border-top:1px dashed var(--hair)}
 .slot{display:grid;grid-template-columns:70px 14px 1fr 28px;gap:12px;align-items:start;padding:8px 0;position:relative}
 .slot::before{content:"";position:absolute;left:88px;top:0;bottom:0;width:1px;background:var(--hair)}
 .slot:first-child::before{top:18px} .slot:last-child::before{bottom:auto;height:18px}
@@ -383,6 +385,7 @@ body.locked .wrap{display:none}
   <a href="#gaester" data-p="gaester">Gæster <span class="c" id="nGuests"></span></a>
   <a href="#bordplan" data-p="bordplan">Bordplan <span class="c" id="nSeat"></span></a>
   <a href="#tidsplan" data-p="tidsplan">Tidsplan <span class="c" id="nTasks"></span></a>
+  <a href="#program" data-p="program">Program <span class="c" id="nProg"></span></a>
   <a href="#noter" data-p="noter">Noter <span class="c" id="nNotes"></span></a>
 </nav>
 
@@ -478,11 +481,15 @@ body.locked .wrap{display:none}
       <div id="taskGroups"></div>
       <div style="margin-top:14px"><button class="addbtn" id="taskAdd">+ Tilføj opgave</button></div>
     </section>
-    <section class="card" style="grid-column:1/-1">
-      <div class="card-head"><div><h2>Dagens program</h2><p class="hint">Sådan skal selve dagen forløbe.</p></div><button class="addbtn" id="slotAdd">+ Tilføj punkt</button></div>
-      <div class="program" id="program"></div>
-    </section>
   </div>
+</section>
+
+<!-- ============ PROGRAM ============ -->
+<section class="page" id="page-program" hidden>
+  <section class="card" style="margin-top:20px">
+    <div class="card-head"><div><h2>Dagens program</h2><p class="hint" id="progHint">Sådan skal selve dagen forløbe. Punkter efter midnat hører til natten – de ligger sidst.</p></div><button class="addbtn" id="slotAdd">+ Tilføj punkt</button></div>
+    <div class="program" id="program"></div>
+  </section>
 </section>
 
 <!-- ============ NOTER ============ -->
@@ -639,6 +646,7 @@ function renderHeader(){
   $('nSeat').textContent = `${st.size}/${gs.yes}`;
   $('nTasks').textContent = `${ts.total-ts.done} åbne`;
   $('nNotes').textContent = state.notes.length;
+  $('nProg').textContent = state.program.length;
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===page));
   document.title = `${state.nameA} & ${state.nameB}`;
   document.querySelectorAll('#bFilters .fchip[data-f="A"],#page-tidsplan .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA);
@@ -658,7 +666,7 @@ function renderOverblik(){
     <a class="tile" href="#budget"><div class="l">Budget</div><div class="v tab">${kr(t.planned)}</div><div class="s">${t.budget>0?`${pct(t.planned,t.budget)} af rammen på ${kr(t.budget)}`:'Ingen ramme sat'} · ${over?'<span style="color:var(--crit)">overskredet</span>':`buffer ${kr(t.buffer)}`}</div><div class="mini"><span style="width:${Math.min(100,t.budget?t.planned/t.budget*100:0)}%${over?';background:var(--crit)':''}"></span></div></a>
     <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${gs.child} børn`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
     <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${st.size} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${state.tables.length} borde · ${state.tables.reduce((a,x)=>a+x.seats,0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,st.size/gs.yes*100):0}%"></span></div></a>
-    <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage · programmet har ${state.program.length} punkter</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
+    <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
     return `<li class="${cls}"><span class="d"><b>${x.due?fmtDate(x.due):'–'}</b>${d==null?'':rel(d)}</span><span class="n">${esc(x.title)}${x.owner?`<span class="tag">${esc(ownerName(x.owner))}</span>`:''}</span><span></span></li>`; }).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Alle opgaver er klaret 🎉</span><span></span></li>';
@@ -811,8 +819,13 @@ function renderTasks(){
     return `<div class="month"><h3>${label}<small>${wd}</small></h3>${arr.map(t=>{ const d=t.due?daysUntil(t.due):null;
       return `<div class="task${t.done?' done':''}${t.due&&t.due<today?' late':''}" data-id="${t.id}"><input type="checkbox" data-f="done" data-t="bool" ${t.done?'checked':''} aria-label="Klaret"><input class="t" data-f="title" value="${esc(t.title)}" placeholder="Opgave" aria-label="Opgave"><input type="date" data-f="due" value="${t.due}" aria-label="Deadline" title="${d==null?'':rel(d)}">${ownerSel(t.owner)}<button class="iconbtn" data-del="1" aria-label="Slet opgave">${svgX}</button></div>`; }).join('')}</div>`; }).join('')
     ||`<p class="empty">${state.tasks.length?'Ingen opgaver matcher.':'Ingen opgaver endnu.'}</p>`;
-  const prog=[...state.program].sort((a,b)=>a.time.localeCompare(b.time));
-  $('program').innerHTML=prog.map(p=>`<div class="slot" data-id="${p.id}"><input class="time tab" data-f="time" value="${esc(p.time)}" placeholder="13:00" aria-label="Tidspunkt"><span class="dot"></span><div><input class="title" data-f="title" value="${esc(p.title)}" placeholder="Hvad sker der?" aria-label="Punkt"><input class="desc" data-f="desc" value="${esc(p.desc)}" placeholder="Detaljer" aria-label="Detaljer"></div><button class="iconbtn" data-del="1" aria-label="Slet punkt">${svgX}</button></div>`).join('')||'<p class="empty">Programmet er tomt.</p>';
+}
+function progMinutes(t){ const m=/^(\d{1,2})[.:](\d{2})$/.exec((t||'').trim()); if(!m) return 9999; const h=+m[1], mi=+m[2]; return (h<6?h+24:h)*60+mi; }
+function renderProgram(){
+  const prog=[...state.program].sort((a,b)=>progMinutes(a.time)-progMinutes(b.time));
+  let night=false;
+  $('program').innerHTML=prog.map(p=>{ let div=''; if(!night&&progMinutes(p.time)>=24*60&&progMinutes(p.time)<9999){ night=true; div='<div class="nightdiv"><span>Efter midnat – næste dag</span></div>'; }
+    return div+`<div class="slot" data-id="${p.id}"><input class="time tab" data-f="time" value="${esc(p.time)}" placeholder="13:00" aria-label="Tidspunkt"><span class="dot"></span><div><input class="title" data-f="title" value="${esc(p.title)}" placeholder="Hvad sker der?" aria-label="Punkt"><input class="desc" data-f="desc" value="${esc(p.desc)}" placeholder="Detaljer" aria-label="Detaljer"></div><button class="iconbtn" data-del="1" aria-label="Slet punkt">${svgX}</button></div>`; }).join('')||'<p class="empty">Programmet er tomt.</p>';
 }
 function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=state.date.split('-').map(Number); const n=(wy-y)*12+(wm-m); return n>0?`${n} mdr. før`:n===0?'bryllupsmåneden':`${-n} mdr. efter`; }
 
@@ -826,7 +839,7 @@ function renderNotes(){
 function fmtStamp(ms){ const d=new Date(ms); return `${d.getDate()}. ${MONTHS[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
 /* ---------- orchestration ---------- */
-const PAGES={overblik:renderOverblik,budget:renderBudget,gaester:renderGuests,bordplan:renderSeating,tidsplan:renderTasks,noter:renderNotes};
+const PAGES={overblik:renderOverblik,budget:renderBudget,gaester:renderGuests,bordplan:renderSeating,tidsplan:renderTasks,program:renderProgram,noter:renderNotes};
 function render(){ renderHeader(); PAGES[page](); }
 function route(){ const h=(location.hash||'#overblik').slice(1); page=PAGES[h]?h:'overblik'; document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+page); ui.selGuest=null; render(); window.scrollTo({top:0}); }
 window.addEventListener('hashchange',route);
@@ -911,9 +924,9 @@ $('taskGroups').addEventListener('click',e=>{ const row=e.target.closest('[data-
 $('taskAdd').addEventListener('click',()=>{ const t={id:uid(),title:'',due:'',owner:'',done:false}; state.tasks.push(t); if(ui.tFilter!=='open'&&ui.tFilter!=='all'){ ui.tFilter='all'; document.querySelectorAll('#page-tidsplan .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); } commit(); const row=$('taskGroups').querySelector(`[data-id="${t.id}"]`); row.querySelector('[data-f="title"]').focus(); row.scrollIntoView({block:'nearest'}); });
 bindFilters($('page-tidsplan').querySelector('.filters'),'tFilter',renderTasks);
 bindEdits($('program'), ()=>state.program, ()=>'none');
-$('program').addEventListener('change',e=>{ if(e.target.dataset.f==='time') renderTasks(); });
+$('program').addEventListener('change',e=>{ if(e.target.dataset.f==='time') renderProgram(); });
 $('program').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const p=state.program.find(x=>x.id===row.dataset.id); delWithUndo(()=>state.program,p.id,p.title||p.time); } });
-$('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((a,b)=>a.time.localeCompare(b.time)).pop(); const p={id:uid(),time:last?last.time:'12:00',title:'',desc:''}; state.program.push(p); commit(); const row=$('program').querySelector(`[data-id="${p.id}"]`); row.querySelector('.time').focus(); row.scrollIntoView({block:'nearest'}); });
+$('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((a,b)=>progMinutes(a.time)-progMinutes(b.time)).pop(); const p={id:uid(),time:last?last.time:'12:00',title:'',desc:''}; state.program.push(p); commit(); const row=$('program').querySelector(`[data-id="${p.id}"]`); row.querySelector('.time').focus(); row.scrollIntoView({block:'nearest'}); });
 
 /* ---------- events: notes ---------- */
 bindEdits($('notes'), ()=>state.notes, (n,f,el,row)=>{ row.querySelector('.f span:last-child').textContent=fmtStamp(n.updated); return 'none'; });
@@ -957,7 +970,7 @@ const Sync=(()=>{
   function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
   const askCode = lock;
   $('codeForm').addEventListener('submit',async e=>{ e.preventDefault(); code=$('codeInput').value.trim(); $('codeErr').textContent='';
-    try{ const j=await api({action:'get'}); try{localStorage.setItem(CODE_KEY,code);}catch(x){} unlock(); $('codeInput').value='';
+    try{ const j=await api({action:'get'}); try{localStorage.setItem(CODE_KEY,code);}catch(x){} unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik';
       if(j.state&&j.state.items&&j.state.items.length) apply(j.state); else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
     catch(err){ code=''; $('codeErr').textContent=err.code==='bad-code'?'Forkert adgangskode.':'Kunne ikke nå serveren. Prøv igen.'; } });
   $('logout').addEventListener('click',()=>{ if(!confirm('Log ud på denne enhed? Data ligger sikkert i arket og hentes igen, når I logger ind.')) return;

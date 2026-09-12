@@ -35,7 +35,8 @@ Herefter:
 - **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet
 - **Gæster** – navn, side, relation, svar (ja/afventer/nej), barn, kost/allergi; filtre, søgning, "tilføj flere ad gangen"
 - **Bordplan** – borde med antal pladser; placér gæster ved klik eller træk-og-slip; advarsel når et bord er overfyldt
-- **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før"), og dagens program time for time
+- **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")
+- **Program** – selve dagen time for time; punkter før kl. 06 regnes som natten efter og ligger sidst
 - **Noter** – fritekstnoter med fastgørelse, forfatter og søgning
 
 Alt gemmes automatisk; sletning kan fortrydes; JSON-eksport/-import; lys/mørk tema; fungerer på mobil.
