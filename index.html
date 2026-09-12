@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 21:17">
+<meta name="build" content="2026-09-12 21:26">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -679,7 +679,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
       </div>
       <div class="planlegend"><span><i style="background:rgba(232,123,164,.45);border-color:var(--muted)"></i>Kvinde</span><span><i style="background:rgba(42,120,214,.4);border-color:var(--muted)"></i>Mand</span><span><i style="border-color:var(--s2)"></i>Mies side</span><span><i style="border-color:var(--s3)"></i>Adams side</span><span><i style="border-color:var(--accent)"></i>Fælles</span><span><i style="border-color:var(--accent);border-width:3px"></i>Brudeparret</span><span><i style="border-style:dashed"></i>Har ikke svaret</span></div>
       <div class="card" style="margin-top:14px;padding:14px 16px">
-        <div class="card-head"><div><h3>Gemte bordplaner</h3><p class="hint">Gem den aktuelle plan som en navngiven version – så kan I prøve forskellige opstillinger og hente en gammel igen.</p></div>
+        <div class="card-head"><div><h3>Gemte bordplaner</h3><p class="hint">En version gemmer bordene (også loungeborde) og hvem der sidder hvor. Rum, områder og døre er fælles for alle versioner. Prøv fx 2 langborde i én version og 4 i en anden.</p></div>
           <div class="filters"><button class="ghost" id="verSave">Gem som version…</button><button class="ghost" id="verNew">Ny tom bordplan</button></div></div>
         <div id="verList" class="list" style="margin-top:6px"></div>
       </div>
@@ -946,7 +946,7 @@ function normalize(s){
   s.tables16=true;
   s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
   s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80), u:+r.u||0 }));
-  s.planVersions = (s.planVersions||[]).filter(v=>v&&v.data).map(v=>({ id:v.id||uid(), name:v.name||'Uden navn', t:+v.t||Date.now(), who:v.who||'', data:{ tables:v.data.tables||[], rooms:v.data.rooms||[], zones:v.data.zones||[], doors:v.data.doors||[] }, u:+v.u||0 }));
+  s.planVersions = (s.planVersions||[]).filter(v=>v&&v.data).map(v=>({ id:v.id||uid(), name:v.name||'Uden navn', t:+v.t||Date.now(), who:v.who||'', data:{ tables:v.data.tables||[] }, u:+v.u||0 }));
   s.doors = (s.doors||[]).map(d=>({ id:d.id||uid(), type:d.type==='open'?'open':'door', x:+d.x||0, y:+d.y||0, len:Math.max(20,+d.len||50), dir:d.dir==='v'?'v':'h', flip:!!d.flip, u:+d.u||0 }));
   if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
   s.layoutV2=true;
@@ -1323,7 +1323,7 @@ function renderTlists(){
   $('tlists').innerHTML = seatTables().map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
     return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
 }
-function planData(){ return JSON.parse(JSON.stringify({tables:state.tables,rooms:state.rooms,zones:state.zones,doors:state.doors})); }
+function planData(){ return JSON.parse(JSON.stringify({tables:state.tables})); } // versioner gemmer kun bordene (inkl. loungeborde) og placeringerne – rum, områder og døre er fælles for alle versioner
 function versionStats(d){ const seated=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.seatMap||[]).filter(x=>x&&x!=='A'&&x!=='B').length),0); const cap=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.type==='long'?t.seats*2+(t.ends?2:0):t.seats)),0); return {seated,cap,tables:(d.tables||[]).filter(t=>!t.lounge).length}; }
 function renderVersions(){
   const list=[...state.planVersions].sort((a,b)=>b.t-a.t);
@@ -1589,8 +1589,8 @@ $('verSave').addEventListener('click',()=>{ const name=prompt('Navn på denne bo
 $('verNew').addEventListener('click',()=>{ if(!confirm('Start en ny tom bordplan? Alle gæster fjernes fra bordene (rum og borde beholdes). Gem først, hvis du vil kunne hente den nuværende igen.')) return;
   planSnap(); const now=Date.now(); state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(()=>null); t.u=now; }); commit('full','ny tom bordplan'); });
 $('verList').addEventListener('click',e=>{ const li=e.target.closest('li[data-id]'); if(!li) return; const v=state.planVersions.find(x=>x.id===li.dataset.id); if(!v) return;
-  if(e.target.closest('[data-vload]')){ if(!confirm(`Hent «${v.name}»? Den erstatter den aktuelle bordplan (rum, borde og placeringer). Gem først, hvis du vil beholde den nuværende.`)) return;
-    planSnap(); const now=Date.now(); const d=JSON.parse(JSON.stringify(v.data)); ['tables','rooms','zones','doors'].forEach(k=>{ state[k]=d[k]||[]; state[k].forEach(x=>x.u=now); }); state=normalize(state); ui.sel=null; ui.selGuest=null; commit('full',`hentede bordplanen «${v.name}»`); toast(`«${v.name}» hentet`); }
+  if(e.target.closest('[data-vload]')){ if(!confirm(`Hent «${v.name}»? Den erstatter bordene og placeringerne i den aktuelle plan (rum, områder og døre rører den ikke). Gem først, hvis du vil beholde den nuværende.`)) return;
+    planSnap(); const now=Date.now(); const d=JSON.parse(JSON.stringify(v.data)); state.tables=d.tables||[]; state.tables.forEach(x=>x.u=now); state=normalize(state); ui.sel=null; ui.selGuest=null; commit('full',`hentede bordplanen «${v.name}»`); toast(`«${v.name}» hentet`); }
   else if(e.target.closest('[data-vrename]')){ const n=prompt('Nyt navn:', v.name); if(n&&n.trim()){ v.name=n.trim(); v.u=Date.now(); commit('full',`omdøbte bordplan til «${v.name}»`); } }
   else if(e.target.closest('[data-vdel]')){ delWithUndo(()=>state.planVersions, v.id, v.name); } });
 const PLAN_UNDO=[];
