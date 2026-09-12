@@ -39,7 +39,7 @@ Herefter:
 - **Plantegning & bordplan** – tegn festlokalet: rum (med mål i meter, 1 m = 50 px), områder (dansegulv, lounge, bar, DJ, buffet, kagebord…), langborde (pladser på begge sider, evt. bordender) og runde borde; træk alt rundt og træk i hjørnet for at ændre størrelse; zoom; navnene sidder på pladserne; klik eller træk gæster på plads; print plantegning/bordkort; kost-liste til kokken
 - **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")
 - **Program** – selve dagen time for time; punkter før kl. 06 regnes som natten efter og ligger sidst
-- **Steder** – kirke, fest og overnatning med adresse, tid, kontakt, aftaler, billede; kort- og rutelinks; liste over gæster der overnatter. Billedet af Odd Fellow Palæet ligger som `odd-fellow-palae.jpg` – læg flere billeder i repoet og skriv filnavnet i feltet *Billede*
+- **Steder** – kirke, fest og overnatning med adresse, tid, kontakt, aftaler, billede; kort- og rutelinks; liste over gæster der overnatter. Billederne ligger som `odd-fellow-palae.jpg`, `frederiksborg-slot.jpg` og `frederiksborg-slotskirke.jpg` (et sted kan have to billeder) – læg flere billeder i repoet og skriv filnavnet i feltet *Billede*
 - **Leverandører** – fotograf, DJ, blomster… med status (ikke kontaktet / i dialog / booket), kontakt, aftalt og mangler
 - **Taler & indslag** – toastmasterens køreseddel, fotoliste til fotografen, sange til DJ'en
 - **Gaver** – hvem gav hvad, og om takkekortet er sendt

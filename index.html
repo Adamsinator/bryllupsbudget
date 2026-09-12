@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:49">
+<meta name="build" content="2026-09-12 18:57">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -380,6 +380,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .venue .ph,.ecard .ph{margin:-16px -18px 12px;height:170px;overflow:hidden;border-radius:var(--r) var(--r) 0 0}
 .ecard .ph{margin:-14px -16px 10px;height:150px}
 .venue .ph img,.ecard .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ecard .ph.two{display:grid;grid-template-columns:1fr 1fr;gap:2px}
 .venue .l{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .venue .n{font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:4px;line-height:1.1}
 .venue .a{font-size:13px;color:var(--ink-2);margin-top:4px}
@@ -802,7 +803,7 @@ function makeSample(){
     s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('02:00','Tak for i aften',''),
   ];
   const places = [
-    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13:00', contact:'', phone:'', url:'', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
+    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13:00', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
     {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:00–14:30', contact:'', phone:'', url:'', photo:'', note:'Reception lige efter vielsen – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
     {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 18:00 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
@@ -901,7 +902,7 @@ function normalize(s){
     if(!s.tasks.some(t=>/reception/i.test(t.title))) s.tasks.push(seed.tasks.find(t=>/reception/i.test(t.title)));
     s.dayV2=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
-  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', note:x.note||'' }));
+  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
   s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
   s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done }));
@@ -1277,16 +1278,18 @@ function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=st
 
 /* ---------- STEDER ---------- */
 const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
-const PHOTOS = { 'odd fellow': 'odd-fellow-palae.jpg' };
-const photoOf = pl => pl.photo || (Object.entries(PHOTOS).find(([k])=>(pl.name||'').toLowerCase().includes(k))||[])[1] || '';
+const PHOTOS = { 'odd fellow': ['odd-fellow-palae.jpg',''], 'frederiksborg': ['frederiksborg-slot.jpg','frederiksborg-slotskirke.jpg'] };
+const known = pl => (Object.entries(PHOTOS).find(([k])=>(pl.name||'').toLowerCase().includes(k))||[])[1] || ['',''];
+const photoOf = pl => pl.photo || known(pl)[0];
+const photo2Of = pl => pl.photo2 || known(pl)[1];
 const mapsUrl = pl => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((pl.name+', '+pl.address).trim())}`;
 function renderPlaces(){
   const order={Vielse:0,Reception:1,Fest:2,Overnatning:3,Andet:4};
   const list=[...state.places].sort((a,b)=>order[a.role]-order[b.role]);
   $('places').innerHTML=list.map(pl=>`<div class="ecard" data-id="${pl.id}">
-    ${photoOf(pl)?`<div class="ph"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}"></div>`:''}
+    ${photoOf(pl)?`<div class="ph${photo2Of(pl)?' two':''}"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}">${photo2Of(pl)?`<img src="${esc(photo2Of(pl))}" alt="${esc(pl.name)} – indvendig">`:''}</div>`:''}
     <div class="h"><input class="t" data-f="name" value="${esc(pl.name)}" placeholder="Navn på sted" aria-label="Navn"><select class="role sel" data-f="role" aria-label="Rolle">${opts(ROLES,pl.role,x=>x)}</select><button class="iconbtn" data-del="1" aria-label="Slet sted">${svgX}</button></div>
-    <div class="f"><label>Adresse</label><input data-f="address" value="${esc(pl.address)}" placeholder="Vej, postnr. by"><label>Tid</label><input data-f="time" value="${esc(pl.time)}" placeholder="13:00 / fra 14:00"><label>Kontakt</label><input data-f="contact" value="${esc(pl.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(pl.phone)}" placeholder="12 34 56 78"><label>Link</label><input data-f="url" value="${esc(pl.url)}" placeholder="https://…"><label>Billede</label><input data-f="photo" value="${esc(pl.photo)}" placeholder="URL eller filnavn i repoet"></div>
+    <div class="f"><label>Adresse</label><input data-f="address" value="${esc(pl.address)}" placeholder="Vej, postnr. by"><label>Tid</label><input data-f="time" value="${esc(pl.time)}" placeholder="13:00 / fra 14:00"><label>Kontakt</label><input data-f="contact" value="${esc(pl.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(pl.phone)}" placeholder="12 34 56 78"><label>Link</label><input data-f="url" value="${esc(pl.url)}" placeholder="https://…"><label>Billede</label><input data-f="photo" value="${esc(pl.photo)}" placeholder="URL eller filnavn i repoet"><label>Billede 2</label><input data-f="photo2" value="${esc(pl.photo2)}" placeholder="valgfrit"></div>
     <textarea data-f="note" placeholder="Aftaler, praktisk, spørgsmål…">${esc(pl.note)}</textarea>
     <div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a>${pl.url?`<a href="${esc(pl.url)}" target="_blank" rel="noopener">Hjemmeside</a>`:''}${pl.phone?`<a href="tel:${esc(pl.phone.replace(/\s/g,''))}">Ring</a>`:''}</div></div>`).join('')
     ||'<p class="empty">Ingen steder endnu.</p>';
@@ -1497,7 +1500,7 @@ $('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((
 
 /* ---------- events: steder / leverandører / indslag / gaver ---------- */
 bindEdits($('places'), ()=>state.places, (pl,f)=>f==='role'?'full':'none');
-$('places').addEventListener('change',e=>{ if(['photo','url','phone','address','name'].includes(e.target.dataset.f)) renderPlaces(); });
+$('places').addEventListener('change',e=>{ if(['photo','photo2','url','phone','address','name'].includes(e.target.dataset.f)) renderPlaces(); });
 $('places').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.places.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.places,x.id,x.name||'Sted'); } });
 $('placeAdd').addEventListener('click',()=>{ const x={id:uid(),name:'',role:'Andet',address:'',time:'',contact:'',phone:'',url:'',note:''}; state.places.push(x); commit('full','nyt sted'); $('places').querySelector(`[data-id="${x.id}"] .t`).focus(); });
 $('copyAddr').addEventListener('click',()=>{ const txt=state.places.filter(p=>p.role!=='Andet'||p.name).map(p=>`${p.role}: ${p.name}${p.address?', '+p.address:''}${p.time?' – '+p.time:''}`).join('\n'); navigator.clipboard?.writeText(txt).then(()=>toast('Adresser kopieret')).catch(()=>toast('Kunne ikke kopiere')); });
