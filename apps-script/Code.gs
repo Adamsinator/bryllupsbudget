@@ -140,8 +140,8 @@ function mirrorItems(s) {
 function mirrorGuests(s) {
   const seat = {};
   (s.tables || []).forEach(t => (t.seatMap || t.guests || []).forEach((id, i) => { if (id) seat[id] = t.name + (t.seatMap ? ' (plads ' + (i + 1) + ')' : ''); }));
-  const rows = [['Navn', 'Side', 'Relation', 'Svar', 'Barn', 'Overnatning', 'Kost / allergi', 'Bord', 'Note']];
-  (s.guests_list || []).forEach(g => rows.push([g.name, sideName(g.side, s), g.rel || '', RSVP[g.rsvp] || g.rsvp, g.child ? 'Ja' : '', g.stay ? 'Ja' : '', g.diet || '', seat[g.id] || '', g.note || '']));
+  const rows = [['Navn', 'Side', 'Køn', 'Relation', 'Svar', 'Barn', 'Overnatning', 'Kost / allergi', 'Bord', 'Note']];
+  (s.guests_list || []).forEach(g => rows.push([g.name, sideName(g.side, s), g.sex === 'f' ? 'Kvinde' : g.sex === 'm' ? 'Mand' : '', g.rel || '', RSVP[g.rsvp] || g.rsvp, g.child ? 'Ja' : '', g.stay ? 'Ja' : '', g.diet || '', seat[g.id] || '', g.note || '']));
   const yes = (s.guests_list || []).filter(g => g.rsvp === 'yes').length;
   rows.push([]);
   rows.push(['Inviteret', (s.guests_list || []).length]);
@@ -177,6 +177,8 @@ function mirrorMore(s) {
   (s.speeches || []).forEach(x => rows.push([x.who, x.what, x.when, x.minutes, x.done ? 'Ja' : '', x.note]));
   rows.push([]); rows.push(['Gaver']); rows.push(['Fra', 'Gave', 'Takkekort sendt', 'Note']);
   (s.gifts || []).forEach(g => rows.push([g.from, g.gift, g.thanked ? 'Ja' : '', g.note]));
+  rows.push([]); rows.push(['Ønskeseddel']); rows.push(['Ønske', 'Hvor / link', 'Ca. pris', 'Reserveret af', 'Note']);
+  (s.wishes || []).forEach(w => rows.push([w.text, w.link, w.price || '', w.by, w.note]));
   writeRows('Praktisk', rows);
 }
 

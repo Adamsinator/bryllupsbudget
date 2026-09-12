@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 19:43">
+<meta name="build" content="2026-09-12 20:10">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -300,9 +300,10 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .seat{cursor:pointer}
 .seat circle{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
 .seat circle.hit{fill:transparent!important;stroke:none!important}
-.seat.occ circle:not(.hit){stroke:var(--accent);fill:var(--accent-soft)}
-.seat.occ.side-A circle:not(.hit){stroke:var(--s5)} .seat.occ.side-B circle:not(.hit){stroke:var(--s1)}
-.seat.couple circle:not(.hit){fill:var(--accent);stroke:var(--accent)}
+.seat.occ circle:not(.hit){stroke:var(--accent);stroke-width:2.2;fill:var(--surface-3)}
+.seat.occ.side-A circle:not(.hit){stroke:var(--s2)} .seat.occ.side-B circle:not(.hit){stroke:var(--s3)}
+.seat.occ.sex-f circle:not(.hit){fill:rgba(232,123,164,.45)} .seat.occ.sex-m circle:not(.hit){fill:rgba(42,120,214,.4)}
+.seat.couple circle:not(.hit){stroke:var(--accent);stroke-width:3}
 .seat.maybe circle:not(.hit){stroke-dasharray:3 2}
 .seat.sel circle:not(.hit){stroke:var(--crit);stroke-width:2.5}
 .seat:hover circle:not(.hit){stroke-width:2.5}
@@ -331,7 +332,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .seatgrid{display:grid;grid-template-columns:200px 1fr;gap:14px;margin-top:12px;align-items:start}
 .planarea{min-width:0}
 .planbox{position:relative}
-.canvaswrap{min-height:min(78vh,900px)}
+.canvaswrap{min-height:calc(100vh - 250px)}
 .zoom.float{position:absolute;top:8px;right:8px;z-index:2;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:3px;margin:0}
 .pool .card-head h3{font-size:16px}
 .pool .names{max-height:min(66vh,760px)}
@@ -348,7 +349,10 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .gchip .side{width:8px;height:8px;border-radius:50%;flex:none}
 .gchip .q{margin-left:auto;font-size:11px;color:var(--warn-text);font-weight:700}
 .gchip.sel .q{color:inherit}
-.side-A{background:var(--s5)} .side-B{background:var(--s1)} .side-AB{background:var(--accent)}
+.side-A{background:var(--s2)} .side-B{background:var(--s3)} .side-AB{background:var(--accent)}
+.gchip.sex-f{background:rgba(232,123,164,.16)} .gchip.sex-m{background:rgba(42,120,214,.14)}
+.planlegend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-top:8px;align-items:center}
+.planlegend i{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;vertical-align:-3px;border:2px solid var(--muted);background:var(--surface-3)}
 .tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .tbc{background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px 14px;min-height:150px;transition:border-color .12s,background .12s}
 .tbc.drop{border-color:var(--accent);background:var(--accent-soft)}
@@ -638,9 +642,9 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
     </div>
     <div class="chips" id="gChips"></div>
     <div class="tblwrap"><table class="tbl" id="gtbl">
-      <thead><tr><th class="sort on" data-s="name">Navn</th><th>Side</th><th>Relation</th><th class="sort" data-s="rsvp">Svar</th><th class="c" style="width:52px">Barn</th><th class="c" style="width:52px">Overnat.</th><th>Kost / allergi</th><th>Note</th><th style="width:30px"></th></tr></thead>
+      <thead><tr><th class="sort on" data-s="name">Navn</th><th>Side</th><th>Køn</th><th>Relation</th><th class="sort" data-s="rsvp">Svar</th><th class="c" style="width:52px">Barn</th><th class="c" style="width:52px">Overnat.</th><th>Kost / allergi</th><th>Note</th><th style="width:30px"></th></tr></thead>
       <tbody id="grows"></tbody>
-      <tfoot><tr class="addrow"><td colspan="9"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="addbtn" id="gAdd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tilføj gæst</button><button class="addbtn" id="gBulk">Tilføj flere ad gangen</button><button class="addbtn" id="gDiet">Kost-liste til kokken</button></div></td></tr></tfoot>
+      <tfoot><tr class="addrow"><td colspan="10"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="addbtn" id="gAdd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tilføj gæst</button><button class="addbtn" id="gBulk">Tilføj flere ad gangen</button><button class="addbtn" id="gDiet">Kost-liste til kokken</button></div></td></tr></tfoot>
     </table></div>
     <datalist id="relations"><option value="Familie"><option value="Venner"><option value="Kolleger"><option value="Studiekammerater"><option value="Naboer"><option value="Barndomsvenner"></datalist>
   </section>
@@ -667,6 +671,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
         <button class="addbtn" id="addRoom">+ Rum</button><button class="addbtn" id="addDoor">+ Dør</button><button class="addbtn" id="addOpen">+ Åbning</button><button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
         <select class="addbtn sel" id="addZone" aria-label="Tilføj område"><option value="">+ Område…</option></select>
       </div>
+      <div class="planlegend"><span><i style="background:rgba(232,123,164,.45);border-color:var(--muted)"></i>Kvinde</span><span><i style="background:rgba(42,120,214,.4);border-color:var(--muted)"></i>Mand</span><span><i style="border-color:var(--s2)"></i>Mies side</span><span><i style="border-color:var(--s3)"></i>Adams side</span><span><i style="border-color:var(--accent)"></i>Fælles</span><span><i style="border-color:var(--accent);border-width:3px"></i>Brudeparret</span><span><i style="border-style:dashed"></i>Har ikke svaret</span></div>
       <p class="hint" style="margin-top:8px">Træk rum, døre, områder og borde på plads; træk i hjørnet for at ændre størrelse (1 m = 50 px). Læg en dør oven på en væg, så laver den hul i den. Loungeborde (hak i bjælken) tæller ikke med i bordplanen. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu. Træk på tomt gulv for at rulle, knib for at zoome.</p>
     </div>
   </div>
@@ -733,6 +738,11 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
     <div class="chips" id="giftChips"></div>
     <div class="tblwrap"><table class="tbl" id="gifttbl"><thead><tr><th>Fra</th><th>Gave</th><th>Note</th><th class="c" style="width:90px">Takkekort sendt</th><th style="width:30px"></th></tr></thead><tbody id="gifts"></tbody></table></div>
   </section>
+  <section class="card" style="margin-top:18px">
+    <div class="card-head"><div><h2>Ønskeseddel</h2><p class="hint">Det I ønsker jer – med link, ca. pris og hvem der har sagt, de tager den.</p></div><div class="filters"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="free">Ledige</button><button class="addbtn" id="wishAdd">+ Tilføj ønske</button></div></div>
+    <div class="chips" id="wishChips"></div>
+    <div class="tblwrap"><table class="tbl" id="wishtbl"><thead><tr><th>Ønske</th><th>Hvor / link</th><th class="r" style="width:110px">Ca. pris</th><th>Reserveret af</th><th>Note</th><th style="width:30px"></th></tr></thead><tbody id="wishes"></tbody></table></div>
+  </section>
 </section>
 
 <!-- ============ NOTER ============ -->
@@ -768,7 +778,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 </div>
 <div class="cards" id="cards"></div>
 <div class="modal" id="bulkModal" role="dialog" aria-modal="true">
-  <form class="box" id="bulkForm"><h2>Tilføj flere gæster</h2><p>Ét navn pr. linje. Skriv evt. side efter komma: <em>Louise Berg, Mie</em></p>
+  <form class="box" id="bulkForm"><h2>Tilføj flere gæster</h2><p>Ét navn pr. linje. Skriv evt. side og køn efter komma: <em>Louise Berg, Mie, K</em> (K/M – ellers gættes ud fra fornavnet)</p>
   <textarea id="bulkText" placeholder="Anna Holm, Mie&#10;Peter Holm, Mie&#10;Jonas Vinter, Adam"></textarea>
   <div class="row"><button type="button" class="ghost" id="bulkCancel">Annullér</button><button type="submit" class="primary">Tilføj</button></div></form>
 </div>
@@ -786,7 +796,7 @@ const m = px => (Math.round(px/PXM*10)/10).toString().replace('.',',');
 
 /* ---------- sample data ---------- */
 function makeSample(){
-  const g = (name, side, rel, rsvp='maybe', child=false, diet='') => ({id:uid(), name, side, rel, rsvp, child, diet, note:''});
+  const g = (name, side, rel, rsvp='maybe', child=false, diet='', sex='') => ({id:uid(), name, side, rel, rsvp, child, diet, sex: sex || guessSex(name), note:''});
   const guests = [
     g('Hanne Vestergaard','A','Familie','yes'), g('Jørgen Vestergaard','A','Familie','yes'), g('Louise Vestergaard','A','Familie','yes'), g('Emil Vestergaard','A','Familie','yes',true),
     g('Bente Kjær','B','Familie','yes'), g('Ole Kjær','B','Familie','yes'), g('Camilla Kjær','B','Familie','maybe'), g('Rasmus Kjær','B','Familie','maybe'),
@@ -849,6 +859,7 @@ function makeSample(){
     {id:uid(), title:'', artist:'', kind:'Første dans', note:''}, {id:uid(), title:'', artist:'', kind:'Ind i kirken', note:''}, {id:uid(), title:'', artist:'', kind:'Ud af kirken', note:''},
   ];
   const gifts = [];
+  const wishes = [ {id:uid(), text:'Bidrag til bryllupsrejsen', link:'', price:0, by:'', note:'Gerne som pengegave – vi laver en rejsekasse'}, {id:uid(), text:'Kaffemaskine', link:'', price:3500, by:'', note:''}, {id:uid(), text:'Middag på restaurant', link:'', price:1500, by:'', note:'Gavekort'} ];
   const n = (title, body, who, pin=false) => ({id:uid(), title, body, who, pin, updated:Date.now()});
   const notes = [
     n('Idéer til lokalet','Æresport ved indgangen\nLyskæder over langbordene\nSkilt med "Mie & Adam" ved indkørslen', 'A', true),
@@ -863,12 +874,15 @@ function makeSample(){
     i('Blomster & dekoration',7000,0,'A','Brudebuket, borde, æresport'), i('Invitationer & tryk',2500,2500,'A'), i('Bryllupskage',3500,0,'A'),
     i('Frisør & makeup',3500,0,'A','Prøve + selve dagen'), i('Transport',3000,0,'B','Bil til kirken, bus til gæster'),
   ];
-  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, rooms, zones, doors:sampleDoors(), tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
+  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, rooms, zones, doors:sampleDoors(), tasks, program, notes, places, vendors, speeches, photos, songs, gifts, wishes, log:[] };
 }
 const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til forældre','Kirke & præst','Rådhus','Børnepasning','Lyd & lys','Bordkort & menukort','Uforudset'];
 
 /* ---------- state ---------- */
 function uid(){ return Math.random().toString(36).slice(2,9); }
+const FEMALE=['hanne','louise','bente','camilla','signe','ida','line','julie','anne','marie','sofie','alma','karen','mie','mette','maria','lene','pia','susanne','kirsten','helle','lotte','sara','emma','laura','freja','clara','ida','ella','nanna','maja','sofia','anna','lærke','katrine','christina','rikke','trine','tina','charlotte','lise','birgitte','dorte','gitte','jette','eva','inge','ulla','anja','stine','cecilie','josefine','amalie','caroline','nina','nadia','frederikke','mathilde','emilie','olivia','isabella','victoria','agnes','astrid','asta','liv','vera','ellen','ingrid','johanne','rebecca','simone','louise','malene','mia','sanne','tanja','heidi','majken','ditte','sidsel','solveig','mai','maiken','bolette','lykke'];
+const MALE=['jørgen','emil','ole','rasmus','mikkel','frederik','jonas','christian','thomas','lars','mads','adam','peter','anders','morten','martin','jens','henrik','søren','niels','michael','jesper','jan','per','kim','jakob','jacob','nikolaj','nicolai','mathias','simon','oliver','william','noah','lucas','victor','oscar','magnus','sebastian','alexander','tobias','kasper','casper','daniel','jonathan','patrick','philip','benjamin','marcus','markus','andreas','kristian','steffen','stefan','bo','erik','hans','poul','knud','svend','bent','flemming','carsten','torben','claus','klaus','allan','brian','dennis','rené','rune','troels','jeppe','esben','asger','bjørn','aksel','axel','valdemar','villads','august','elias','malthe','storm','felix','viggo','anton','johan','lasse','kristoffer','christoffer','frederik','ulrik','jonas'];
+function guessSex(name){ const f=(name||'').trim().split(/\s+/)[0].toLowerCase(); if(!f) return ''; if(FEMALE.includes(f)) return 'f'; if(MALE.includes(f)) return 'm'; return ''; }
 // Standardplan: festsal med de to langborde, tilstødende dansesal (halv længde, samme bredde) og lounge af samme størrelse
 function sampleRooms(){ return [
   {id:uid(), name:'Festsalen', x:20, y:20, w:760, h:900}, {id:uid(), name:'Dansesal', x:800, y:20, w:380, h:900}, {id:uid(), name:'Lounge', x:1200, y:20, w:380, h:900},
@@ -883,18 +897,19 @@ function sampleZones(){ const z=(type,label,x,y,w,h)=>({id:uid(), type, label, x
 ]; }
 let state; try{ state = normalize(localLoad() || makeSample()); }catch(e){ console.error('Kunne ikke læse gemte data – starter fra eksempel', e); try{ localStorage.setItem(KEY+'.broken', localStorage.getItem(KEY)||''); }catch(x){} state = normalize(makeSample()); }
 let page = 'overblik';
-const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
+const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all', wishFilter:'all' };
 
 function normalize(s){
   s.v = 4;
   // Data gemt af ældre versioner mangler nyere afsnit (steder, leverandører, plantegning…): udfyld dem fra skabelonen
-  { const need=['places','vendors','speeches','photos','songs','rooms','zones','tasks','program','gifts','notes'].filter(k=>!Array.isArray(s[k]));
+  { const need=['places','vendors','speeches','photos','songs','rooms','zones','tasks','program','gifts','notes','wishes'].filter(k=>!Array.isArray(s[k]));
     // Ældre versioner gemte tomme lister for afsnit, der ikke fandtes endnu – udfyld dem én gang (flaget huskes i arket)
+    if(!Array.isArray(s.wishes)) need.push('wishes');
     if(!s.seeded2) ['places','vendors','speeches','photos','songs','rooms','zones'].forEach(k=>{ if(!Array.isArray(s[k])||!s[k].length) need.push(k); });
     if(need.length){ const seed=makeSample(); [...new Set(need)].forEach(k=>{ s[k]=seed[k]; }); }
     s.seeded2=true; }
   s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'' }));
-  s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', note:g.note||'' }));
+  s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', sex:['f','m'].includes(g.sex)?g.sex:'', note:g.note||'', u:+g.u||0 }));
   const gids = new Set(s.guests_list.map(g=>g.id));
   gids.add('A'); gids.add('B');
   s.tables = (s.tables||[]).map((t,k)=>{
@@ -957,7 +972,8 @@ function normalize(s){
   s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
   s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done }));
   s.songs = (s.songs||[]).map(x=>({ id:x.id||uid(), title:x.title||'', artist:x.artist||'', kind:x.kind||'Must-play', note:x.note||'' }));
-  s.gifts = (s.gifts||[]).map(x=>({ id:x.id||uid(), from:x.from||'', gift:x.gift||'', note:x.note||'', thanked:!!x.thanked }));
+  s.gifts = (s.gifts||[]).map(x=>({ id:x.id||uid(), from:x.from||'', gift:x.gift||'', note:x.note||'', thanked:!!x.thanked, u:+x.u||0 }));
+  s.wishes = (s.wishes||[]).map(x=>({ id:x.id||uid(), text:x.text||'', link:x.link||'', price:+x.price||0, by:x.by||'', note:x.note||'', u:+x.u||0 }));
   s.log = (s.log||[]).filter(x=>x&&x.t).slice(-60);
   const cut=Date.now()-60*86400000; s.tomb = Object.fromEntries(Object.entries(s.tomb||{}).filter(([k,t])=>+t>cut));
   s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
@@ -995,13 +1011,14 @@ const svgX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 
 /* ---------- derived ---------- */
 function totals(){ const planned=state.items.reduce((a,i)=>a+plannedOf(i),0), paid=state.items.reduce((a,i)=>a+(+i.paid||0),0), budget=+state.budget||0; return {planned,paid,budget,buffer:budget-planned}; }
-function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0,stay:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; }); return s; }
+function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0,stay:0,f:0,m:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.rsvp!=='no'&&g.sex) s[g.sex]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; }); return s; }
 function seated(){ const m=new Map(); seatTables().forEach(t=>t.seatMap.forEach((id,i)=>{ if(id) m.set(id,{table:t,seat:i}); })); return m; }
 function seatedGuests(){ let n=0; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B') n++; })); return n; }
 function totalSeats(t){ return t.lounge ? 0 : (t.type==='long' ? t.seats*2 + (t.ends?2:0) : t.seats); }
 function seatTables(){ return state.tables.filter(t=>!t.lounge); }
 function guestName(id){ if(id==='A') return state.nameA; if(id==='B') return state.nameB; return state.guests_list.find(g=>g.id===id)?.name||''; }
 function guestSide(id){ if(id==='A') return 'A'; if(id==='B') return 'B'; return state.guests_list.find(g=>g.id===id)?.side||'AB'; }
+function guestSex(id){ if(id==='A') return 'f'; if(id==='B') return 'm'; return state.guests_list.find(g=>g.id===id)?.sex||''; }
 function shortName(n){ n=(n||'').trim(); if(n.length<=14) return n; const p=n.split(/\s+/); return p.length>1 ? `${p[0]} ${p[p.length-1][0]}.` : n.slice(0,13)+'…'; }
 let WHO=''; try{ WHO=sessionStorage.getItem('bryllup.who')||''; }catch(e){}
 function taskStats(){ const total=state.tasks.length, done=state.tasks.filter(t=>t.done).length; return {total,done}; }
@@ -1173,11 +1190,12 @@ function guestRows(){
 }
 function renderGuests(){
   const gs=guestStats();
-  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
+  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
   const list=guestRows();
   $('grows').innerHTML=list.map(g=>`<tr data-id="${g.id}">
     <td class="c-name" data-l="Navn"><input data-f="name" value="${esc(g.name)}" placeholder="Navn" aria-label="Navn"></td>
     <td data-l="Side"><select class="sel" data-f="side" aria-label="Side">${opts(['A','B','AB'],g.side,sideName)}</select></td>
+    <td data-l="Køn"><select class="sel" data-f="sex" aria-label="Køn">${opts(['','f','m'],g.sex,x=>x==='f'?'Kvinde':x==='m'?'Mand':'–')}</select></td>
     <td data-l="Relation"><input data-f="rel" list="relations" value="${esc(g.rel)}" placeholder="Familie, venner…" aria-label="Relation"></td>
     <td data-l="Svar"><select class="sel rsvp st-${g.rsvp}" data-f="rsvp" aria-label="Svar">${opts(Object.keys(RSVP),g.rsvp,o=>RSVP[o])}</select></td>
     <td class="c" data-l="Barn"><input type="checkbox" data-f="child" data-t="bool" ${g.child?'checked':''} aria-label="Barn"></td>
@@ -1185,7 +1203,7 @@ function renderGuests(){
     <td data-l="Kost / allergi"><input data-f="diet" value="${esc(g.diet)}" placeholder="Vegetar, glutenfri…" aria-label="Kost"></td>
     <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(g.note)}" placeholder="Note" aria-label="Note"></td>
     <td class="c-del"><button class="del" data-del="1" aria-label="Slet ${esc(g.name)}">${svgX}</button></td></tr>`).join('')
-    || `<tr><td colspan="9"><div class="empty">${state.guests_list.length?'Ingen gæster matcher.':'Ingen gæster endnu – tilføj dem herunder.'}</div></td></tr>`;
+    || `<tr><td colspan="10"><div class="empty">${state.guests_list.length?'Ingen gæster matcher.':'Ingen gæster endnu – tilføj dem herunder.'}</div></td></tr>`;
   document.querySelectorAll('#gtbl th.sort').forEach(th=>th.classList.toggle('on',th.dataset.s===ui.gSort));
 }
 
@@ -1210,7 +1228,7 @@ function renderSeating(){
   const st=seated(); const gs=guestStats();
   const pool=[...(st.has('A')?[]:[{id:'A',name:state.nameA,side:'A',couple:true}]),...(st.has('B')?[]:[{id:'B',name:state.nameB,side:'B',couple:true}]),
     ...state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||g.side===ui.pFilter||g.side==='AB')).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
-  $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}" draggable="true" data-g="${g.id}" title="${g.couple?'Brudeparret':esc(sideName(g.side))+(g.rel?' · '+esc(g.rel):'')}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.couple?' <span class="tag">brudepar</span>':''}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
+  $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}${g.sex?' sex-'+g.sex:g.couple?(g.id==='A'?' sex-f':' sex-m'):''}" draggable="true" data-g="${g.id}" title="${g.couple?'Brudeparret':esc(sideName(g.side))+(g.rel?' · '+esc(g.rel):'')}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.couple?' <span class="tag">brudepar</span>':''}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
   const selSeated = ui.selGuest && st.get(ui.selGuest);
   $('poolHint').textContent = ui.selGuest ? `Klik på en plads til ${guestName(ui.selGuest)}` : `${pool.length} mangler plads.`;
   $('poolAction').innerHTML = selSeated ? `<button class="ghost" id="unseatSel">Tag ${esc(shortName(guestName(ui.selGuest)))} væk fra ${esc(selSeated.table.name)}</button>` : ui.selGuest ? `<button class="ghost" id="clearSel">Fortryd valg</button>` : '';
@@ -1267,7 +1285,7 @@ function drawPlan(){
     const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`
       : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-2">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`;
     const seats=g.seats.map(sd=>{ const id=t.seatMap[sd.i]; const nm=id?guestName(id):''; const gg=id&&id!=='A'&&id!=='B'?state.guests_list.find(x=>x.id===id):null;
-      const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
+      const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', id?'sex-'+(guestSex(id)||'x'):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
       return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle class="hit" cx="${sd.x}" cy="${sd.y}" r="${SEAT.R+9}" fill="transparent" stroke="none"/><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}">${id?esc(shortName(nm)):(sd.i+1)}</text></g>`; }).join('');
     return `<g class="tb${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${label}${seats}</g>`; });
   svg.innerHTML = defs + rooms + zones + doors + parts.join('') + (!state.tables.length&&!state.rooms.length ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et rum, et langbord eller et rundt bord for at komme i gang.</text>` : '');
@@ -1401,6 +1419,14 @@ function renderGifts(){
   $('gifts').innerHTML=list.map(g=>`<tr data-id="${g.id}"><td class="c-name" data-l="Fra"><input data-f="from" list="guestnames" value="${esc(g.from)}" placeholder="Hvem"></td><td data-l="Gave"><input data-f="gift" value="${esc(g.gift)}" placeholder="Hvad"></td><td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(g.note)}" placeholder="Note"></td><td class="c" data-l="Takkekort sendt"><input type="checkbox" data-f="thanked" data-t="bool" ${g.thanked?'checked':''}></td><td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')
     ||`<tr><td colspan="5"><div class="empty">${state.gifts.length?'Alle takkekort er sendt 💌':'Ingen gaver registreret endnu.'}</div></td></tr>`;
   let dl=$('guestnames'); if(!dl){ dl=document.createElement('datalist'); dl.id='guestnames'; document.body.appendChild(dl); } dl.innerHTML=state.guests_list.map(g=>`<option value="${esc(g.name)}">`).join('');
+  renderWishes();
+}
+function renderWishes(){
+  const taken=state.wishes.filter(w=>w.by.trim()).length; const sum=state.wishes.reduce((a,w)=>a+(+w.price||0),0);
+  $('wishChips').innerHTML=`<span class="stpill"><b>${state.wishes.length}</b> ønsker</span><span class="stpill st-yes"><b>${taken}</b> reserveret</span><span class="stpill"><b>${state.wishes.length-taken}</b> ledige</span>${sum?`<span class="stpill">ca. <b>${kr(sum)}</b> i alt</span>`:''}`;
+  const list=state.wishes.filter(w=>ui.wishFilter==='all'||!w.by.trim());
+  $('wishes').innerHTML=list.map(w=>`<tr data-id="${w.id}"${w.by.trim()?' style="opacity:.6"':''}><td class="c-name" data-l="Ønske"><input data-f="text" value="${esc(w.text)}" placeholder="Hvad ønsker I jer?"></td><td data-l="Hvor / link"><input data-f="link" value="${esc(w.link)}" placeholder="Butik eller https://…"></td><td class="r" data-l="Ca. pris"><input class="money tab" data-f="price" inputmode="numeric" value="${w.price?knum(w.price):''}" placeholder="kr."></td><td data-l="Reserveret af"><input data-f="by" list="guestnames" value="${esc(w.by)}" placeholder="Hvem tager den?"></td><td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(w.note)}" placeholder="Note"></td><td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')
+    ||`<tr><td colspan="6"><div class="empty">${state.wishes.length?'Alle ønsker er reserveret 🎁':'Ingen ønsker endnu.'}</div></td></tr>`;
 }
 
 /* ---------- NOTER ---------- */
@@ -1457,15 +1483,15 @@ $('guests').addEventListener('blur',e=>{ e.target.value=guestCount()?knum(guestC
 $('guestsAuto').addEventListener('change',e=>{ const n=guestCount(); state.guestsAuto=e.target.checked; if(!state.guestsAuto) state.guests=n; commit('full', state.guestsAuto?'gæsteantal følger gæstelisten':'gæsteantal sat manuelt'); });
 
 /* ---------- events: guests ---------- */
-bindEdits($('grows'), ()=>state.guests_list, (g,f,el)=>{ if(f==='rsvp') el.className='sel rsvp st-'+g.rsvp; return 'none'; });
+bindEdits($('grows'), ()=>state.guests_list, (g,f,el,row)=>{ if(f==='rsvp') el.className='sel rsvp st-'+g.rsvp; if(f==='name'&&!g.sex){ const gs=guessSex(g.name); if(gs){ g.sex=gs; const sel=row.querySelector('[data-f="sex"]'); if(sel) sel.value=gs; } } return 'none'; });
 $('grows').addEventListener('input',e=>{ const f=e.target.dataset.f; if(f==='rsvp'||f==='child'||f==='diet') { renderGuests_chipsOnly(); } });
-function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
+function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
 $('grows').addEventListener('click',e=>{ const row=e.target.closest('tr[data-id]'); if(row&&e.target.closest('[data-del]')){ const g=state.guests_list.find(x=>x.id===row.dataset.id); delWithUndo(()=>state.guests_list,g.id,g.name); } });
-$('gAdd').addEventListener('click',()=>{ const g={id:uid(),name:'',side:'AB',rel:'',rsvp:'maybe',child:false,diet:'',note:''}; state.guests_list.push(g); ui.gFilter='all'; ui.gSearch=''; $('gSearch').value=''; document.querySelectorAll('#page-gaester .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); commit(); const tr=$('grows').querySelector(`tr[data-id="${g.id}"]`); tr.querySelector('[data-f="name"]').focus(); tr.scrollIntoView({block:'nearest'}); });
+$('gAdd').addEventListener('click',()=>{ const g={id:uid(),name:'',side:'AB',rel:'',rsvp:'maybe',child:false,diet:'',sex:'',note:''}; state.guests_list.push(g); ui.gFilter='all'; ui.gSearch=''; $('gSearch').value=''; document.querySelectorAll('#page-gaester .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); commit(); const tr=$('grows').querySelector(`tr[data-id="${g.id}"]`); tr.querySelector('[data-f="name"]').focus(); tr.scrollIntoView({block:'nearest'}); });
 $('gBulk').addEventListener('click',()=>{ $('bulkModal').classList.add('show'); setTimeout(()=>$('bulkText').focus(),50); });
 $('bulkCancel').addEventListener('click',()=>$('bulkModal').classList.remove('show'));
 $('bulkForm').addEventListener('submit',e=>{ e.preventDefault(); const lines=$('bulkText').value.split('\n').map(l=>l.trim()).filter(Boolean); let n=0;
-  lines.forEach(l=>{ const [name,sideRaw='']=l.split(',').map(x=>x.trim()); if(!name) return; const sr=sideRaw.toLowerCase(); const side=sr===state.nameA.toLowerCase()||sr==='a'?'A':sr===state.nameB.toLowerCase()||sr==='b'?'B':'AB'; state.guests_list.push({id:uid(),name,side,rel:'',rsvp:'maybe',child:false,diet:'',note:''}); n++; });
+  lines.forEach(l=>{ const [name,sideRaw='']=l.split(',').map(x=>x.trim()); if(!name) return; const sr=sideRaw.toLowerCase(); const side=sr===state.nameA.toLowerCase()||sr==='a'?'A':sr===state.nameB.toLowerCase()||sr==='b'?'B':'AB'; const third=(l.split(',')[2]||'').trim().toLowerCase(); const sex=third.startsWith('k')||third==='f'?'f':third.startsWith('m')?'m':guessSex(name); state.guests_list.push({id:uid(),name,side,rel:'',rsvp:'maybe',child:false,diet:'',sex,note:''}); n++; });
   $('bulkText').value=''; $('bulkModal').classList.remove('show'); commit(); toast(`${n} gæster tilføjet`); });
 $('gSearch').addEventListener('input',e=>{ ui.gSearch=e.target.value; renderGuests(); });
 bindFilters($('page-gaester').querySelector('.filters'),'gFilter',renderGuests);
@@ -1598,6 +1624,11 @@ bindEdits($('gifts'), ()=>state.gifts, (g,f)=>{ if(f==='thanked'){ const open=st
 $('gifts').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.gifts.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.gifts,x.id,x.from||x.gift||'Gave'); } });
 $('giftAdd').addEventListener('click',()=>{ ui.giftFilter='all'; document.querySelectorAll('#page-gaver .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); const x={id:uid(),from:'',gift:'',note:'',thanked:false}; state.gifts.push(x); commit('full','ny gave'); $('gifts').querySelector(`[data-id="${x.id}"] input`).focus(); });
 bindFilters($('page-gaver').querySelector('.filters'),'giftFilter',renderGifts);
+bindEdits($('wishes'), ()=>state.wishes, (w,f)=>{ if(f==='by'||f==='price'){ const taken=state.wishes.filter(x=>x.by.trim()).length; const sum=state.wishes.reduce((a,x)=>a+(+x.price||0),0); $('wishChips').innerHTML=`<span class="stpill"><b>${state.wishes.length}</b> ønsker</span><span class="stpill st-yes"><b>${taken}</b> reserveret</span><span class="stpill"><b>${state.wishes.length-taken}</b> ledige</span>${sum?`<span class="stpill">ca. <b>${kr(sum)}</b> i alt</span>`:''}`; } return 'none'; });
+$('wishes').addEventListener('change',e=>{ if(e.target.dataset.f==='by') renderWishes(); });
+$('wishes').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.wishes.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.wishes,x.id,x.text||'Ønske'); } });
+$('wishAdd').addEventListener('click',()=>{ ui.wishFilter='all'; document.querySelectorAll('#page-gaver .card:last-child .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); const x={id:uid(),text:'',link:'',price:0,by:'',note:''}; state.wishes.push(x); commit('full','nyt ønske'); $('wishes').querySelector(`[data-id="${x.id}"] input`).focus(); });
+bindFilters($('page-gaver').querySelector('.card:last-child .filters'),'wishFilter',renderWishes);
 
 /* ---------- who am I ---------- */
 function askWho(){ $('whoA').textContent=state.nameA; $('whoB').textContent=state.nameB; $('whoModal').classList.add('show'); }
@@ -1636,7 +1667,7 @@ $('toastBtn').addEventListener('click',()=>{ if(toastUndo) toastUndo(); toastUnd
 
 /* ---------- sync layer: localStorage + (artifact db | Apps Script API) ---------- */
 /* Fletning af to versioner: pr. element vinder den nyeste (u), sletninger huskes som tombstones */
-const COLLS=['items','guests_list','tables','rooms','zones','doors','tasks','program','notes','places','vendors','speeches','photos','songs','gifts'];
+const COLLS=['items','guests_list','tables','rooms','zones','doors','wishes','tasks','program','notes','places','vendors','speeches','photos','songs','gifts'];
 function mergeStates(local, remote){
   const out=structuredClone(remote); const tomb={...(remote.tomb||{}),...(local.tomb||{})}; out.tomb=tomb;
   const newerRemote=(+remote.updatedAt||0)>=(+local.updatedAt||0);
