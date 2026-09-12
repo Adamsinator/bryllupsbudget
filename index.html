@@ -665,7 +665,7 @@ body.locked .wrap{display:none}
     <button class="ghost" id="import">Importér JSON</button>
     <input type="file" id="file" accept="application/json" hidden>
     <button class="ghost" id="logout" hidden>Log ud</button>
-    <button class="ghost danger" id="reset">Nulstil til eksempel</button>
+    <button class="ghost" id="clean">Ryd eksempeldata</button><button class="ghost danger" id="reset">Nulstil til eksempel</button>
   </div>
 </footer>
 </div>
@@ -820,6 +820,7 @@ function normalize(s){
   s.songs = (s.songs||[]).map(x=>({ id:x.id||uid(), title:x.title||'', artist:x.artist||'', kind:x.kind||'Must-play', note:x.note||'' }));
   s.gifts = (s.gifts||[]).map(x=>({ id:x.id||uid(), from:x.from||'', gift:x.gift||'', note:x.note||'', thanked:!!x.thanked }));
   s.log = (s.log||[]).filter(x=>x&&x.t).slice(-60);
+  const cut=Date.now()-60*86400000; s.tomb = Object.fromEntries(Object.entries(s.tomb||{}).filter(([k,t])=>+t>cut));
   s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
   s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'' }));
   s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now() }));
@@ -1112,13 +1113,13 @@ function renderTlists(){
   $('tlists').innerHTML = state.tables.map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
     return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
 }
-function unseat(id){ state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(x=>x===id?null:x); }); }
+function unseat(id){ state.tables.forEach(t=>{ if(t.seatMap.includes(id)){ t.seatMap=t.seatMap.map(x=>x===id?null:x); t.u=Date.now(); } }); }
 function placeAt(gid, tid, seat){
   const t=state.tables.find(x=>x.id===tid); if(!t) return;
   const prev=seated().get(gid); const occupant=t.seatMap[seat];
   unseat(gid);
   if(occupant && occupant!==gid){ unseat(occupant); if(prev) prev.table.seatMap[prev.seat]=occupant; }
-  t.seatMap[seat]=gid; ui.selGuest=null; commit('full', `${guestName(gid)} → ${t.name}`);
+  t.seatMap[seat]=gid; t.u=Date.now(); if(prev) prev.table.u=Date.now(); ui.selGuest=null; commit('full', `${guestName(gid)} → ${t.name}`);
 }
 function addTable(type){
   const right=state.tables.reduce((a,t)=>Math.max(a,t.x+tableGeom(t).w+tableGeom(t).pad.r),20);
@@ -1255,12 +1256,12 @@ function commit(mode, label){ state.updatedAt=Date.now(); logChange(label); loca
 function bindEdits(container, coll, onField){
   container.addEventListener('input',e=>{ const row=e.target.closest('[data-id]'); const f=e.target.dataset.f; if(!row||!f) return; const item=coll().find(x=>x.id===row.dataset.id); if(!item) return;
     const t=e.target.dataset.t; const v = t==='bool'?e.target.checked : e.target.classList.contains('money')||f==='seats'?parseNum(e.target.value) : e.target.value;
-    item[f]=v; if(item.updated!==undefined) item.updated=Date.now();
+    item[f]=v; item.u=Date.now(); if(item.updated!==undefined) item.updated=Date.now();
     const mode = onField ? onField(item,f,e.target,row) : 'light'; commit(mode, item.name||item.title||item.text||item.who||item.from||item.time||''); });
   container.addEventListener('blur',e=>{ if(e.target.classList.contains('money')) e.target.value=knum(parseNum(e.target.value)); },true);
   container.addEventListener('focus',e=>{ if(e.target.classList.contains('money')) e.target.select(); },true);
 }
-function delWithUndo(coll, id, label){ const arr=coll(); const idx=arr.findIndex(x=>x.id===id); if(idx<0) return; const [it]=arr.splice(idx,1); commit('full',`${label||'element'} slettet`); toast(`«${label||'Element'}» slettet`,()=>{ coll().splice(Math.min(idx,coll().length),0,it); commit('full',`${label||'element'} gendannet`); }); }
+function delWithUndo(coll, id, label){ const arr=coll(); const idx=arr.findIndex(x=>x.id===id); if(idx<0) return; const [it]=arr.splice(idx,1); state.tomb[id]=Date.now(); commit('full',`${label||'element'} slettet`); toast(`«${label||'Element'}» slettet`,()=>{ delete state.tomb[id]; it.u=Date.now(); coll().splice(Math.min(idx,coll().length),0,it); commit('full',`${label||'element'} gendannet`); }); }
 function bindFilters(container, key, after){ container.addEventListener('click',e=>{ const b=e.target.closest('.fchip'); if(!b) return; ui[key]=b.dataset.f; container.querySelectorAll('.fchip').forEach(c=>c.classList.toggle('on',c===b)); after(); }); }
 function bindSort(thead, keyS, keyD, defaults, after){ thead.addEventListener('click',e=>{ const th=e.target.closest('th.sort'); if(!th) return; if(ui[keyS]===th.dataset.s) ui[keyD]*=-1; else { ui[keyS]=th.dataset.s; ui[keyD]=defaults[ui[keyS]]||1; } after(); }); }
 
@@ -1268,8 +1269,8 @@ function bindSort(thead, keyS, keyD, defaults, after){ thead.addEventListener('c
 bindEdits($('brows'), ()=>state.items, (item,f,el,row)=>{ if(f==='paid'){ return 'light'; } return f==='owner'&&ui.bFilter!=='all'?'full':'light'; });
 $('brows').addEventListener('click',e=>{
   const row=e.target.closest('tr[data-id]'); if(!row) return; const item=state.items.find(x=>x.id===row.dataset.id); if(!item) return;
-  if(e.target.closest('[data-pg]')){ if(item.perGuest!=null){ item.planned=plannedOf(item); item.perGuest=null; } else item.perGuest=state.guests>0?Math.round(item.planned/state.guests):0; commit(); const inp=$('brows').querySelector(`tr[data-id="${item.id}"] input.money`); inp.focus(); inp.select(); return; }
-  if(e.target.closest('[data-paid]')){ const p=plannedOf(item); item.paid = (p>0&&item.paid>=p)?0:p; row.querySelector('[data-f="paid"]').value=knum(item.paid); commit('light'); return; }
+  if(e.target.closest('[data-pg]')){ if(item.perGuest!=null){ item.planned=plannedOf(item); item.perGuest=null; } else item.perGuest=state.guests>0?Math.round(item.planned/state.guests):0; item.u=Date.now(); commit(); const inp=$('brows').querySelector(`tr[data-id="${item.id}"] input.money`); inp.focus(); inp.select(); return; }
+  if(e.target.closest('[data-paid]')){ const p=plannedOf(item); item.paid = (p>0&&item.paid>=p)?0:p; item.u=Date.now(); row.querySelector('[data-f="paid"]').value=knum(item.paid); commit('light'); return; }
   if(e.target.closest('[data-del]')) delWithUndo(()=>state.items,item.id,item.name);
 });
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-add-item]'); if(!b) return; const name=b.dataset.addItem;
@@ -1324,7 +1325,7 @@ $('tsel').addEventListener('input',e=>{ const o=selObj(); const f=e.target.datas
     else if(f==='type') o.type=e.target.value;
     else if(f==='w'||f==='h'){ const v=parseFloat(String(e.target.value).replace(',','.')); if(isFinite(v)&&v>0) o[f]=Math.max(30,Math.round(v*PXM/10)*10); }
   }
-  state.updatedAt=Date.now(); localSave(); logChange(o.name||o.label||''); if(f==='name'||f==='label'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
+  o.u=Date.now(); state.updatedAt=Date.now(); localSave(); logChange(o.name||o.label||''); if(f==='name'||f==='label'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
 $('tsel').addEventListener('click',e=>{ const o=selObj(); if(!o) return; const kind=ui.sel.kind;
   if(e.target.closest('[data-tclose]')){ ui.sel=null; renderSeating(); }
   if(e.target.closest('[data-tdel]')){
@@ -1352,7 +1353,7 @@ plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Mat
     const h=g.querySelector('.hdl'); h.setAttribute('x',o.w-7); h.setAttribute('y',o.h-7); const d=g.querySelector('.rdim,.zdim'); if(d){ d.textContent=`${m(o.w)} × ${m(o.h)} m`; if(drag.kind==='zone'){ d.setAttribute('x',o.w/2); d.setAttribute('y',o.h/2+14); } } const zn=g.querySelector('.zname'); if(zn){ zn.setAttribute('x',o.w/2); zn.setAttribute('y',o.h/2+(o.h>40?0:4)); } } });
 plan.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null; try{ plan.releasePointerCapture(e.pointerId); }catch(x){}
   const nm=d.o.name||d.o.label||ZONES[d.o.type]||'';
-  if(d.moved){ if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
+  if(d.moved){ d.o.u=Date.now(); if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
   else { ui.sel = (ui.sel&&ui.sel.kind===d.kind&&ui.sel.id===d.o.id) ? null : {kind:d.kind,id:d.o.id}; renderSeating(); } });
 plan.addEventListener('click',e=>{ const seat=e.target.closest('.seat'); if(!seat) return; const tid=seat.dataset.table, i=+seat.dataset.seat; const t=state.tables.find(x=>x.id===tid); const id=t.seatMap[i];
   if(ui.selGuest){ placeAt(ui.selGuest,tid,i); return; }
@@ -1413,7 +1414,7 @@ $('whoChip').addEventListener('click',askWho);
 /* ---------- events: notes ---------- */
 bindEdits($('notes'), ()=>state.notes, (n,f,el,row)=>{ row.querySelector('.f span:last-child').textContent=fmtStamp(n.updated); return 'none'; });
 $('notes').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(!row) return; const n=state.notes.find(x=>x.id===row.dataset.id);
-  if(e.target.closest('[data-pin]')){ n.pin=!n.pin; commit(); return; }
+  if(e.target.closest('[data-pin]')){ n.pin=!n.pin; n.u=Date.now(); commit(); return; }
   if(e.target.closest('[data-del]')){ if(n.body.trim()&&!confirm(`Slet noten «${n.title||'uden titel'}»?`)) return; delWithUndo(()=>state.notes,n.id,n.title||'Note'); } });
 $('noteAdd').addEventListener('click',()=>{ const n={id:uid(),title:'',body:'',who:'',pin:false,updated:Date.now()}; state.notes.unshift(n); ui.nSearch=''; $('nSearch').value=''; commit(); const row=$('notes').querySelector(`[data-id="${n.id}"]`); row.querySelector('.t').focus(); });
 $('nSearch').addEventListener('input',e=>{ ui.nSearch=e.target.value; renderNotes(); });
@@ -1426,6 +1427,12 @@ $('date').addEventListener('change',e=>{ state.date=e.target.value; commit(); })
 $('export').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`bryllup-${state.nameA}-${state.nameB}.json`.replace(/\s+/g,'-'); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Fil eksporteret'); });
 $('import').addEventListener('click',()=>$('file').click());
 $('file').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(txt=>{ const s=JSON.parse(txt); if(!s||!Array.isArray(s.items)) throw 0; state=normalize(s); commit(); toast('Importeret'); }).catch(()=>toast('Kunne ikke læse filen – er det en eksport herfra?')); e.target.value=''; });
+$('clean').addEventListener('click',()=>{ if(!confirm('Gør klar til jeres egne data?\n\nFjerner: eksempelgæster, bordplaceringer, eksempelnoter, gaver og ændringsloggen. Nulstiller beløb og betalt på budgetposterne og sætter opgaver til "ikke klaret".\n\nBeholder: budgetposter, rum/områder/borde, opgaver, program, steder, leverandører, taler, fotoliste og sange som skabelon.')) return;
+  const now=Date.now(); state.guests_list.forEach(g=>{ state.tomb[g.id]=now; }); state.guests_list=[]; state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(()=>null); t.u=now; });
+  state.notes.forEach(n=>{ state.tomb[n.id]=now; }); state.notes=[]; state.gifts.forEach(g=>{ state.tomb[g.id]=now; }); state.gifts=[]; state.log=[];
+  state.items.forEach(i=>{ i.paid=0; if(i.perGuest==null) i.planned=0; i.note=''; i.supplier=''; i.u=now; }); state.tasks.forEach(t=>{ t.done=false; t.u=now; }); state.speeches.forEach(x=>{ x.done=false; x.u=now; }); state.photos.forEach(x=>{ x.done=false; x.u=now; });
+  state.vendors.forEach(v=>{ if(v.name==='Odd Fellow Palæet') return; v.name=''; v.contact=''; v.phone=''; v.email=''; v.note=''; v.status='idea'; v.agreed=''; v.u=now; });
+  commit('full','ryddede eksempeldata'); toast('Klar til jeres egne data'); });
 $('reset').addEventListener('click',()=>{ if(confirm('Nulstil ALT til eksempeldata? Jeres egne tal, gæster, noter og opgaver overskrives – også for den anden, hvis I deler.')){ state=normalize(makeSample()); commit(); toast('Nulstillet'); } });
 const root=document.documentElement; try{ const th=localStorage.getItem(KEY+'.theme'); if(th) root.dataset.theme=th; }catch(e){}
 $('theme').addEventListener('click',()=>{ const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches; root.dataset.theme=dark?'light':'dark'; try{ localStorage.setItem(KEY+'.theme',root.dataset.theme); }catch(e){} });
@@ -1434,20 +1441,38 @@ function toast(msg,undo){ const t=$('toast'); $('toastText').textContent=msg; to
 $('toastBtn').addEventListener('click',()=>{ if(toastUndo) toastUndo(); toastUndo=null; $('toast').classList.remove('show'); });
 
 /* ---------- sync layer: localStorage + (artifact db | Apps Script API) ---------- */
+/* Fletning af to versioner: pr. element vinder den nyeste (u), sletninger huskes som tombstones */
+const COLLS=['items','guests_list','tables','rooms','zones','tasks','program','notes','places','vendors','speeches','photos','songs','gifts'];
+function mergeStates(local, remote){
+  const out=structuredClone(remote); const tomb={...(remote.tomb||{}),...(local.tomb||{})}; out.tomb=tomb;
+  const newerRemote=(+remote.updatedAt||0)>=(+local.updatedAt||0);
+  ['nameA','nameB','date','guests','budget'].forEach(k=>{ out[k]=newerRemote?remote[k]:local[k]; });
+  COLLS.forEach(k=>{ const L=local[k]||[], R=remote[k]||[]; const Lm=new Map(L.map(x=>[x.id,x])), Rm=new Map(R.map(x=>[x.id,x])); const res=[];
+    R.forEach(r=>{ const l=Lm.get(r.id); if(l){ res.push((+l.u||0)>(+r.u||0)?l:r); } else { const t=tomb[r.id]; if(!(t&&t>(+r.u||0))) res.push(r); } });
+    L.forEach(l=>{ if(!Rm.has(l.id)){ const t=tomb[l.id]; if(!(t&&t>(+l.u||0))) res.push(l); } });
+    out[k]=res; });
+  const seen=new Set(); out.log=[...(remote.log||[]),...(local.log||[])].filter(x=>{ const key=x.t+'|'+x.who+'|'+x.label; if(seen.has(key)) return false; seen.add(key); return true; }).sort((a,b)=>a.t-b.t).slice(-60);
+  out.updatedAt=Math.max(+local.updatedAt||0,+remote.updatedAt||0)+1;
+  return out;
+}
 const Sync=(()=>{
-  let mode='local', dbDoc=null, timer=null, pending=null, code='';
+  let mode='local', dbDoc=null, timer=null, pending=null, code='', dirty=false;
   function status(cls,text){ $('sync').className='sync '+cls; $('syncText').textContent=text; }
   function editing(){ const a=document.activeElement; return a&&a!==document.body&&a.matches('input,select,textarea,[contenteditable]'); }
-  function apply(remote){ if(!remote||!Array.isArray(remote.items)) return; if((+remote.updatedAt||0)<=(state.updatedAt||0)) return; if(editing()){ pending=remote; return; }
-    state=normalize(structuredClone(remote)); localSave(); render(); status('ok','Opdateret fra den anden'); setTimeout(()=>status('ok','Synkroniseret'),2500); }
+  function apply(remote){ if(!remote||!Array.isArray(remote.items)) return; if((+remote.updatedAt||0)<=(state.updatedAt||0)&&!dirty) return; if(editing()){ pending=remote; return; }
+    if(dirty){ if((+remote.updatedAt||0)<=(state.updatedAt||0)) return; state=normalize(mergeStates(state,remote)); localSave(); render(); status('saving','Fletter…'); pushNow(); }
+    else { state=normalize(structuredClone(remote)); localSave(); render(); status('ok','Opdateret fra den anden'); setTimeout(()=>status('ok','Synkroniseret'),2500); } }
   document.addEventListener('focusout',()=>{ if(pending){ const p=pending; pending=null; setTimeout(()=>apply(p),50); } });
   async function api(payload){ const r=await fetch(CFG.API_URL,{method:'POST',body:JSON.stringify({code,...payload})}); const j=await r.json(); if(!j.ok){ const e=new Error(j.error||'api'); e.code=j.error; throw e; } return j; }
   async function pull(){ if(mode!=='api'||!code) return; try{ const j=await api({action:'get'}); if(j.state) apply(j.state); if(!pending) status('ok','Synkroniseret'); }
     catch(e){ if(e.code==='bad-code'){ code=''; lock('Adgangskoden er ændret – log ind igen.'); } else status('error','Ingen forbindelse'); } }
-  async function pushNow(){ try{ if(mode==='db'){ status('saving','Gemmer…'); await dbDoc.set(JSON.parse(JSON.stringify(state))); status('ok','Synkroniseret'); }
-      else if(mode==='api'&&code){ status('saving','Gemmer…'); const j=await api({action:'set',state}); if(j.stale&&j.state) apply(j.state); status('ok','Synkroniseret'); } }
+  async function pushNow(){ const at=state.updatedAt; try{ if(mode==='db'){ status('saving','Gemmer…'); await dbDoc.set(JSON.parse(JSON.stringify(state))); if(state.updatedAt===at) dirty=false; status('ok','Synkroniseret'); }
+      else if(mode==='api'&&code){ status('saving','Gemmer…'); const j=await api({action:'set',state});
+        if(j.stale&&j.state){ /* nogen gemte imens – flet og gem igen */ state=normalize(mergeStates(state,j.state)); localSave(); render(); const j2=await api({action:'set',state}); if(j2.stale&&j2.state){ state=normalize(mergeStates(state,j2.state)); localSave(); render(); await api({action:'set',state}); } status('ok','Flettet med den andens rettelser'); setTimeout(()=>status('ok','Synkroniseret'),2500); }
+        else status('ok','Synkroniseret');
+        if(state.updatedAt===at||j.stale) dirty=false; } }
     catch(e){ status('error',mode==='api'?'Kunne ikke gemme på serveren':'Kunne ikke gemme delt'); } }
-  function push(){ if(mode==='local'){ status('','Gemt lokalt'); return; } clearTimeout(timer); timer=setTimeout(pushNow,700); }
+  function push(){ if(mode==='local'){ status('','Gemt lokalt'); return; } dirty=true; clearTimeout(timer); timer=setTimeout(pushNow,700); }
   function lock(err){ document.body.classList.add('locked'); $('gateA').textContent=state.nameA; $('gateB').textContent=state.nameB; $('codeErr').textContent=err||''; $('codeModal').classList.add('show'); setTimeout(()=>$('codeInput').focus(),50); }
   function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
   const askCode = lock;
@@ -1461,7 +1486,7 @@ const Sync=(()=>{
     if(window.claude&&typeof claude.use==='function'){ try{ const db=await claude.use('db'); if(db){ mode='db'; dbDoc=db.doc('bryllup/main'); status('saving','Forbinder…');
       dbDoc.onSnapshot(snap=>{ if(snap.exists) apply(snap.data()); else if(!snap.metadata.fromCache) pushNow(); if(!pending) status('ok','Synkroniseret'); },()=>status('error','Delt lagring utilgængelig'));
       $('footText').textContent='Alt deles live mellem alle, der har siden åben.'; if(!WHO) askWho(); return; } }catch(e){} }
-    if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; lock(); setInterval(()=>{ if(!document.hidden) pull(); },30000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
+    if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; lock(); setInterval(()=>{ if(!document.hidden&&!dirty) pull(); },15000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
     status('','Gemt lokalt'); if(!WHO) askWho();
   }
   return {push,init};

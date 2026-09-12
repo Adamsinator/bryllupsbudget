@@ -45,3 +45,11 @@ Herefter:
 - **Hvad er nyt** – efter login vælger man "Hvem er du?"; Overblik viser de seneste ændringer med navn
 
 Alt gemmes automatisk; sletning kan fortrydes; JSON-eksport/-import; lys/mørk tema; fungerer på mobil.
+
+## Første gang I bruger den rigtigt
+
+Tryk **Ryd eksempeldata** i bunden: fjerner de opdigtede gæster, bordplaceringer, noter og gaver og nulstiller beløb – men beholder budgetposter, rum/borde, opgaver, program, steder, leverandører, taler og fotoliste som skabelon. (**Nulstil til eksempel** lægger eksemplet tilbage.)
+
+## Samtidige rettelser og backup
+
+Retter I begge på samme tid, flettes rettelserne pr. element (den nyeste rettelse af et element vinder; sletninger huskes, så et slettet element ikke dukker op igen). Arket gemmer desuden de seneste 50 versioner i fanen **Backup** – kopiér JSON'en fra en række ind i `State!A1`, eller importér den i appen, for at rulle tilbage.

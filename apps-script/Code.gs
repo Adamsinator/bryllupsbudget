@@ -18,10 +18,12 @@
  *  - Opgaver  : tidsplanens opgaver og dagens program
  *  - Noter    : noterne
  *  - Praktisk : steder, leverandører, taler/indslag og gaver
+ *  - Backup   : de seneste 50 versioner af State (nyeste øverst)
  *  - Historik : én række pr. ændring af totalerne (pris/betalt/buffer over tid)
  */
 const ACCESS_CODE = 'SKIFT-MIG';
-const API_VERSION = 3;
+const API_VERSION = 4;
+const BACKUPS = 50; // antal gem der gemmes i Backup-fanen
 
 function doGet() { return out({ ok: true, v: API_VERSION }); }
 
@@ -41,6 +43,7 @@ function doPost(e) {
       // Sidste skriver vinder – men en ældre klient må ikke overskrive nyere data.
       if (current && (current.updatedAt || 0) > (inc.updatedAt || 0)) return out({ ok: true, stale: true, state: current, v: API_VERSION });
       writeState(inc);
+      try { backup(inc); } catch (err) {}
       try { mirrorItems(inc); mirrorGuests(inc); mirrorTasks(inc); mirrorNotes(inc); mirrorMore(inc); } catch (err) { /* spejling må aldrig blokere et gem */ }
       logHistory(inc);
       return out({ ok: true, state: inc, v: API_VERSION });
@@ -144,6 +147,17 @@ function mirrorMore(s) {
   rows.push([]); rows.push(['Gaver']); rows.push(['Fra', 'Gave', 'Takkekort sendt', 'Note']);
   (s.gifts || []).forEach(g => rows.push([g.from, g.gift, g.thanked ? 'Ja' : '', g.note]));
   writeRows('Praktisk', rows);
+}
+
+// Gemmer de seneste BACKUPS versioner, så et uheld kan rulles tilbage:
+// kopiér JSON fra en Backup-række ind i State!A1 (eller importér den i appen).
+function backup(s) {
+  const sh = sheet('Backup');
+  if (sh.getLastRow() === 0) sh.appendRow(['Tidspunkt', 'Poster', 'Gæster', 'JSON']);
+  sh.insertRowAfter(1);
+  sh.getRange(2, 1, 1, 4).setValues([[new Date(), (s.items || []).length, (s.guests_list || []).length, JSON.stringify(s)]]);
+  const last = sh.getLastRow();
+  if (last > BACKUPS + 1) sh.deleteRows(BACKUPS + 2, last - BACKUPS - 1);
 }
 
 function logHistory(s) {
