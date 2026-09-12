@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:22">
+<meta name="build" content="2026-09-12 18:27">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -1566,15 +1566,25 @@ const Sync=(()=>{
     if(dirty){ if((+remote.updatedAt||0)<=(state.updatedAt||0)) return; state=normalize(mergeStates(state,remote)); localSave(); render(); status('saving','Fletter…'); pushNow(); }
     else { state=normalize(structuredClone(remote)); localSave(); render(); status('ok','Opdateret fra den anden'); setTimeout(()=>status('ok','Synkroniseret'),2500); } }
   document.addEventListener('focusout',()=>{ if(pending){ const p=pending; pending=null; setTimeout(()=>apply(p),50); } });
-  async function api(payload){ const r=await fetch(CFG.API_URL,{method:'POST',body:JSON.stringify({code,...payload})}); const j=await r.json(); if(!j.ok){ const e=new Error(j.error||'api'); e.code=j.error; throw e; } return j; }
+  async function api(payload){ const r=await fetch(CFG.API_URL,{method:'POST',body:JSON.stringify({code,...payload})}); const txt=await r.text(); let j; try{ j=JSON.parse(txt); }catch(x){ const e=new Error('Serveren svarede ikke med data ('+r.status+')'); e.code='bad-response'; throw e; }
+    if(!j.ok){ const e=new Error(j.message||j.error||'api'); e.code=j.error; throw e; } return j; }
   async function pull(){ if(mode!=='api'||!code) return; try{ const j=await api({action:'get'}); if(j.state) apply(j.state); if(!pending) status('ok','Synkroniseret'); }
     catch(e){ if(e.code==='bad-code'){ forget(); lock('Adgangskoden er ændret – log ind igen.'); } else status('error','Ingen forbindelse'); } }
-  async function pushNow(){ const at=state.updatedAt; try{ if(mode==='db'){ status('saving','Gemmer…'); await dbDoc.set(JSON.parse(JSON.stringify(state))); if(state.updatedAt===at) dirty=false; status('ok','Synkroniseret'); }
+  let inflight=false, again=false, fails=0;
+  async function pushNow(){
+    if(inflight){ again=true; return; }   // ét gem ad gangen – nye rettelser samles op bagefter
+    inflight=true; const at=state.updatedAt;
+    try{ if(mode==='db'){ status('saving','Gemmer…'); await dbDoc.set(JSON.parse(JSON.stringify(state))); if(state.updatedAt===at) dirty=false; status('ok','Synkroniseret'); }
       else if(mode==='api'&&code){ status('saving','Gemmer…'); const j=await api({action:'set',state});
         if(j.stale&&j.state){ /* nogen gemte imens – flet og gem igen */ state=normalize(mergeStates(state,j.state)); localSave(); render(); const j2=await api({action:'set',state}); if(j2.stale&&j2.state){ state=normalize(mergeStates(state,j2.state)); localSave(); render(); await api({action:'set',state}); } status('ok','Flettet med den andens rettelser'); setTimeout(()=>status('ok','Synkroniseret'),2500); }
         else status('ok','Synkroniseret');
-        if(state.updatedAt===at||j.stale) dirty=false; } }
-    catch(e){ status('error',mode==='api'?'Kunne ikke gemme på serveren':'Kunne ikke gemme delt'); } }
+        if(state.updatedAt===at||j.stale) dirty=false; }
+      fails=0; }
+    catch(e){ fails++; console.warn('Gem fejlede', e);
+      if(e.code==='bad-code'){ forget(); lock('Adgangskoden er ændret – log ind igen.'); }
+      else if(fails<4){ status('saving',`Prøver igen… (${e.message||e.code||'fejl'})`); again=true; setTimeout(()=>{ inflight=false; pushNow(); }, 2000*fails); return; }
+      else { status('error','Kunne ikke gemme: '+(e.message||e.code||'ukendt fejl')); toast('Kunne ikke gemme på serveren: '+(e.message||e.code||'ukendt fejl')+' – dine rettelser ligger lokalt og forsøges igen.'); } }
+    inflight=false; if(again){ again=false; pushNow(); } }
   function push(){ if(mode==='local'){ status('','Gemt lokalt'); return; } dirty=true; clearTimeout(timer); timer=setTimeout(pushNow,700); }
   function lock(err){ document.body.classList.add('locked'); $('gateA').textContent=state.nameA; $('gateB').textContent=state.nameB; $('codeErr').textContent=err||''; $('codeModal').classList.add('show'); setTimeout(()=>$('codeInput').focus(),50); }
   function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
@@ -1594,7 +1604,7 @@ const Sync=(()=>{
       try{ code=localStorage.getItem(CODE_KEY)||''; }catch(e){}
       if(code&&!idle()){ touch(); unlock(); if(!WHO) askWho(); pull(); } else { forget(); lock(); }
       ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{ if(code) touch(); },{passive:true}));
-      setInterval(()=>{ checkIdle(); if(!document.hidden&&!dirty&&code) pull(); },15000);
+      setInterval(()=>{ checkIdle(); if(document.hidden||!code) return; if(dirty){ if(!inflight) pushNow(); } else pull(); },15000);
       document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkIdle(); if(code) pull(); } }); return; }
     status('','Gemt lokalt'); if(!WHO) askWho();
   }

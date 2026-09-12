@@ -54,4 +54,6 @@ Tryk **Ryd eksempeldata** i bunden: fjerner de opdigtede gæster, bordplaceringe
 
 ## Samtidige rettelser og backup
 
-Retter I begge på samme tid, flettes rettelserne pr. element (den nyeste rettelse af et element vinder; sletninger huskes, så et slettet element ikke dukker op igen). Arket gemmer desuden de seneste 50 versioner i fanen **Backup** – kopiér JSON'en fra en række ind i `State!A1`, eller importér den i appen, for at rulle tilbage.
+Retter I begge på samme tid, flettes rettelserne pr. element (den nyeste rettelse af et element vinder; sletninger huskes, så et slettet element ikke dukker op igen). Gem sker ét ad gangen og prøver selv igen, hvis serveren er optaget.
+
+Arket gemmer de seneste 50 versioner i fanen **Backup** (højst én hvert 5. minut). Rul tilbage: åbn Apps Script, kør `restoreBackup(rækkenummer)` – eller saml JSON-bidderne fra rækken (kolonne D, E, …) til én fil og importér den i appen. De læsbare faner (Poster, Gæster, …) genskrives højst én gang i minuttet; kør `refreshMirrors()` i editoren, hvis du vil have dem opdateret med det samme.

@@ -12,47 +12,69 @@
  *     (så beholder URL'en sig – lav IKKE en ny deployment).
  *
  * Arket får disse faner (alle genskrives ved hvert gem, undtagen Historik):
- *  - State    : hele planlægningen som JSON i A1 (det appen læser/skriver)
+ *  - State    : hele planlægningen som JSON i kolonne A (delt i bidder à 40.000 tegn – rør ikke)
  *  - Poster   : læsbar kopi af budgetposterne
  *  - Gæster   : læsbar kopi af gæstelisten inkl. bord
  *  - Opgaver  : tidsplanens opgaver og dagens program
  *  - Noter    : noterne
  *  - Praktisk : steder, leverandører, taler/indslag og gaver
- *  - Backup   : de seneste 50 versioner af State (nyeste øverst)
+ *  - Backup   : de seneste 50 versioner af State (nyeste øverst), højst én hvert 5. minut
  *  - Historik : én række pr. ændring af totalerne (pris/betalt/buffer over tid)
  */
 const ACCESS_CODE = 'SKIFT-MIG';
-const API_VERSION = 4;
+const API_VERSION = 5;
+const CHUNK = 40000;          // en celle kan max rumme 50.000 tegn – State deles i bidder i kolonne A
+const MIRROR_EVERY_MS = 60000; // de læsbare faner genskrives højst hvert minut (gem skal være hurtigt)
+const BACKUP_EVERY_MS = 5 * 60000;
 const BACKUPS = 50; // antal gem der gemmes i Backup-fanen
 
 function doGet() { return out({ ok: true, v: API_VERSION }); }
 
 function doPost(e) {
+  try {
+    return handle(e);
+  } catch (err) {
+    // Altid JSON tilbage – aldrig Googles HTML-fejlside (så appen kan vise hvad der gik galt)
+    return out({ ok: false, error: 'server', message: String(err && err.message || err), v: API_VERSION });
+  }
+}
+
+function handle(e) {
   let body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out({ ok: false, error: 'bad-json', v: API_VERSION }); }
   if (body.code !== ACCESS_CODE) return out({ ok: false, error: 'bad-code', v: API_VERSION });
 
+  if (body.action === 'get') return out({ ok: true, state: readState(), v: API_VERSION });
+  if (body.action !== 'set') return out({ ok: false, error: 'bad-action', v: API_VERSION });
+
+  const inc = body.state;
+  if (!inc || !Array.isArray(inc.items)) return out({ ok: false, error: 'bad-state', v: API_VERSION });
+
   const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+  if (!lock.tryLock(25000)) return out({ ok: false, error: 'busy', message: 'Serveren var optaget – prøver igen', v: API_VERSION });
   try {
     const current = readState();
-    if (body.action === 'get') return out({ ok: true, state: current, v: API_VERSION });
-    if (body.action === 'set') {
-      const inc = body.state;
-      if (!inc || !Array.isArray(inc.items)) return out({ ok: false, error: 'bad-state', v: API_VERSION });
-      // Sidste skriver vinder – men en ældre klient må ikke overskrive nyere data.
-      if (current && (current.updatedAt || 0) > (inc.updatedAt || 0)) return out({ ok: true, stale: true, state: current, v: API_VERSION });
-      writeState(inc);
-      try { backup(inc); } catch (err) {}
-      try { mirrorItems(inc); mirrorGuests(inc); mirrorTasks(inc); mirrorNotes(inc); mirrorMore(inc); } catch (err) { /* spejling må aldrig blokere et gem */ }
-      logHistory(inc);
-      return out({ ok: true, state: inc, v: API_VERSION });
+    // Sidste skriver vinder – men en ældre klient må ikke overskrive nyere data.
+    if (current && (current.updatedAt || 0) > (inc.updatedAt || 0)) return out({ ok: true, stale: true, state: current, v: API_VERSION });
+    writeState(inc);
+    // De tunge ting (spejlfaner, backup, historik) kører kun af og til, så et gem tager under et sekund
+    const props = PropertiesService.getScriptProperties();
+    const now = Date.now();
+    const lastMirror = Number(props.getProperty('lastMirror') || 0);
+    if (now - lastMirror > MIRROR_EVERY_MS) {
+      props.setProperty('lastMirror', String(now));
+      try { mirrorItems(inc); mirrorGuests(inc); mirrorTasks(inc); mirrorNotes(inc); mirrorMore(inc); logHistory(inc); } catch (err) { /* spejling må aldrig blokere et gem */ }
     }
-    return out({ ok: false, error: 'bad-action', v: API_VERSION });
+    const lastBackup = Number(props.getProperty('lastBackup') || 0);
+    if (now - lastBackup > BACKUP_EVERY_MS) { props.setProperty('lastBackup', String(now)); try { backup(inc); } catch (err) {} }
+    return out({ ok: true, updatedAt: inc.updatedAt, v: API_VERSION });
   } finally {
     lock.releaseLock();
   }
 }
+
+// Kald denne manuelt fra editoren (Kør ▶), hvis du vil have spejlfanerne opdateret nu
+function refreshMirrors() { const s = readState(); if (s) { mirrorItems(s); mirrorGuests(s); mirrorTasks(s); mirrorNotes(s); mirrorMore(s); logHistory(s); backup(s); } }
 
 function out(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
@@ -64,13 +86,21 @@ function sheet(name) {
 }
 
 function readState() {
-  const raw = sheet('State').getRange('A1').getValue();
+  const sh = sheet('State');
+  const last = Math.max(1, sh.getLastRow());
+  const cells = sh.getRange(1, 1, last, 1).getValues().map(r => String(r[0] || ''));
+  const raw = cells.join('');
   if (!raw) return null;
   try { return JSON.parse(raw); } catch (e) { return null; }
 }
 
 function writeState(state) {
-  sheet('State').getRange('A1').setValue(JSON.stringify(state));
+  const json = JSON.stringify(state);
+  const parts = [];
+  for (let i = 0; i < json.length; i += CHUNK) parts.push([json.slice(i, i + CHUNK)]);
+  const sh = sheet('State');
+  sh.clearContents();
+  sh.getRange(1, 1, parts.length, 1).setValues(parts);
 }
 
 function plannedOf(item, guests) {
@@ -151,14 +181,25 @@ function mirrorMore(s) {
 }
 
 // Gemmer de seneste BACKUPS versioner, så et uheld kan rulles tilbage:
-// kopiér JSON fra en Backup-række ind i State!A1 (eller importér den i appen).
+// Gendan: kopiér JSON-bidderne fra en Backup-række (kolonne D, E, …) sammen til én fil og importér den i appen –
+// eller kald restoreBackup(rækkenummer) herfra i editoren.
 function backup(s) {
   const sh = sheet('Backup');
-  if (sh.getLastRow() === 0) sh.appendRow(['Tidspunkt', 'Poster', 'Gæster', 'JSON']);
+  if (sh.getLastRow() === 0) sh.appendRow(['Tidspunkt', 'Poster', 'Gæster', 'JSON (bidder)']);
   sh.insertRowAfter(1);
-  sh.getRange(2, 1, 1, 4).setValues([[new Date(), (s.items || []).length, (s.guests_list || []).length, JSON.stringify(s)]]);
+  const json = JSON.stringify(s); const parts = [];
+  for (let i = 0; i < json.length; i += CHUNK) parts.push(json.slice(i, i + CHUNK));
+  sh.getRange(2, 1, 1, 3 + parts.length).setValues([[new Date(), (s.items || []).length, (s.guests_list || []).length].concat(parts)]);
   const last = sh.getLastRow();
   if (last > BACKUPS + 1) sh.deleteRows(BACKUPS + 2, last - BACKUPS - 1);
+}
+
+function restoreBackup(row) {
+  const sh = sheet('Backup');
+  const vals = sh.getRange(row, 4, 1, Math.max(1, sh.getLastColumn() - 3)).getValues()[0].map(v => String(v || '')).join('');
+  const s = JSON.parse(vals); s.updatedAt = Date.now();
+  writeState(s);
+  Logger.log('Gendannet fra række ' + row + ' (' + (s.items || []).length + ' poster, ' + (s.guests_list || []).length + ' gæster)');
 }
 
 function logHistory(s) {
