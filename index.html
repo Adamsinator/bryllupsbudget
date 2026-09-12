@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 21:26">
+<meta name="build" content="2026-09-12 22:18">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -268,7 +268,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .tsel input,.tsel select{border:1px solid var(--hair);background:var(--surface);border-radius:6px;padding:4px 8px;font-size:13px}
 .tsel input.n{width:130px} .tsel input.num{width:52px;text-align:center}
 .tsel label{display:inline-flex;gap:5px;align-items:center;color:var(--ink-2)}
-.canvaswrap{margin-top:0;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);overflow:auto;position:relative;background-image:radial-gradient(var(--hair) 1px,transparent 1px);background-size:20px 20px}
+.canvaswrap{margin-top:0;padding-top:46px;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);overflow:auto;position:relative;background-image:radial-gradient(var(--hair) 1px,transparent 1px);background-size:20px 20px} /* plads foroven til fortryd- og zoomknapperne, så de ikke dækker tegningen */
 .canvaswrap svg{display:block;font-family:Karla,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
 .room .body{fill:var(--surface);stroke:var(--ink-2);stroke-width:2;cursor:grab}
 .room.sel .body{stroke:var(--accent);stroke-width:3}
@@ -320,11 +320,25 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .tlist h3{font-size:15px;margin-bottom:4px}
 .tlist ol{margin:0;padding-left:18px;color:var(--ink-2)}
 .tlist .e{color:var(--muted);font-style:italic}
+/* fortryd/gentag + fokuseret bordplan */
+.histfloat{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;gap:3px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:3px}
+.histfloat button{border:1px solid var(--hair);background:var(--surface);min-width:44px;height:34px;border-radius:6px;color:var(--ink-2);font-size:17px;line-height:1}
+.histfloat button:disabled{opacity:.35}
+.histfloat button:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
+.seatbar [data-hist]:disabled{opacity:.45}
+.seatbar .histhint{font-size:12px;color:var(--muted)}
+#focusBtn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.focusonly{display:none}
+#page-bordplan.focus .focusonly{display:block}
+#page-bordplan.focus .addgroup,#page-bordplan.focus .planlegend,#page-bordplan.focus .vercard,#page-bordplan.focus .planhint{display:none!important}
+#page-bordplan.focus .canvaswrap{background-image:none}
+#page-bordplan.focus .tb .body{cursor:default}
 .cards{display:none}
 @media print{
-  .top,.nav,.foot,.seatbar,.tsel,.pool,.zoom,.card-head .filters,.addbtn,.iconbtn,.del,.themebtn,.toast,.tip{display:none!important}
+  .top,.nav,.foot,.seatbar,.tsel,.pool,.zoom,.histfloat,.card-head .filters,.addbtn,.iconbtn,.del,.themebtn,.toast,.tip{display:none!important}
   body{background:#fff;color:#000} .wrap{max-width:none;padding:0}
-  .card,.canvaswrap{border:0;box-shadow:none;background:#fff;overflow:visible}
+  .card,.canvaswrap{border:0;box-shadow:none;background:#fff;overflow:visible;padding-top:0}
+  .canvaswrap{min-height:0!important} .planhint,.focusonly{display:none!important}
   body.print-cards .page,body.print-cards .wrap{display:none!important}
   body.print-cards .cards{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10mm;padding:10mm}
   body.print-cards.cards-2 .cards{grid-template-columns:repeat(2,1fr)} body.print-cards.cards-2 .card1{height:70mm} body.print-cards.cards-2 .card1 b{font-size:30px}
@@ -659,7 +673,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 <!-- ============ BORDPLAN ============ -->
 <section class="page wide" id="page-bordplan" hidden>
   <div class="card-head" style="align-items:center;margin-top:18px"><div><h2>Plantegning og bordplan</h2><p class="hint" id="seatHint"></p></div>
-    <div class="filters"><button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
+    <div class="filters"><button class="ghost" id="focusBtn" aria-pressed="false" title="Vis kun bordene og navnene – intet kan flyttes ved et uheld">◎ Fokuseret bordplan</button><button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
   <div class="seatgrid">
     <section class="card pool">
       <div class="card-head"><div><h3>Ikke placeret</h3><p class="hint" id="poolHint"></p></div></div>
@@ -669,21 +683,24 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
     </section>
     <div class="planarea">
       <div class="planbox"><div class="canvaswrap" id="canvaswrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <span class="histfloat"><button data-hist="undo" disabled aria-label="Fortryd">↶</button><button data-hist="redo" disabled aria-label="Gentag">↷</button></span>
         <span class="zoom float"><button id="zoomOut" title="Zoom ud">−</button><span id="zoomPct">100 %</span><button id="zoomIn" title="Zoom ind">+</button><button id="zoomFit" title="Tilpas bredden" style="width:auto;padding:0 8px;font-size:12px">Tilpas</button></span>
       </div>
       <div class="tsel" id="tsel" hidden></div>
       <div class="seatbar">
-        <button class="ghost" id="planUndo" disabled title="Fortryd sidste flytning/størrelse (Cmd+Z)">↶ Fortryd</button><span class="sep"></span><span class="lbl" style="margin-right:4px">Tilføj</span>
+        <button class="ghost" data-hist="undo" disabled title="Fortryd sidste ændring på bordplanen (⌘Z)">↶ Fortryd</button><button class="ghost" data-hist="redo" disabled title="Gentag (⇧⌘Z)">↷ Gentag</button><span class="histhint" id="histHint"></span>
+        <span class="addgroup" style="display:contents"><span class="sep"></span><span class="lbl" style="margin-right:4px">Tilføj</span>
         <button class="addbtn" id="addRoom">+ Rum</button><button class="addbtn" id="addDoor">+ Dør</button><button class="addbtn" id="addOpen">+ Åbning</button><button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
-        <select class="addbtn sel" id="addZone" aria-label="Tilføj område"><option value="">+ Område…</option></select>
+        <select class="addbtn sel" id="addZone" aria-label="Tilføj område"><option value="">+ Område…</option></select></span>
       </div>
       <div class="planlegend"><span><i style="background:rgba(232,123,164,.45);border-color:var(--muted)"></i>Kvinde</span><span><i style="background:rgba(42,120,214,.4);border-color:var(--muted)"></i>Mand</span><span><i style="border-color:var(--s2)"></i>Mies side</span><span><i style="border-color:var(--s3)"></i>Adams side</span><span><i style="border-color:var(--accent)"></i>Fælles</span><span><i style="border-color:var(--accent);border-width:3px"></i>Brudeparret</span><span><i style="border-style:dashed"></i>Har ikke svaret</span></div>
-      <div class="card" style="margin-top:14px;padding:14px 16px">
+      <div class="card vercard" style="margin-top:14px;padding:14px 16px">
         <div class="card-head"><div><h3>Gemte bordplaner</h3><p class="hint">En version gemmer bordene (også loungeborde) og hvem der sidder hvor. Rum, områder og døre er fælles for alle versioner. Prøv fx 2 langborde i én version og 4 i en anden.</p></div>
           <div class="filters"><button class="ghost" id="verSave">Gem som version…</button><button class="ghost" id="verNew">Ny tom bordplan</button></div></div>
         <div id="verList" class="list" style="margin-top:6px"></div>
       </div>
-      <p class="hint" style="margin-top:8px">Træk rum, døre, områder og borde på plads; træk i hjørnet for at ændre størrelse (1 m = 50 px). Læg en dør oven på en væg, så laver den hul i den. Loungeborde (hak i bjælken) tæller ikke med i bordplanen. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu. Træk på tomt gulv for at rulle, knib for at zoome.</p>
+      <p class="hint focusonly" style="margin-top:8px">Fokuseret bordplan: kun bordene, pladserne og navnene vises – rum, områder og døre er skjult, og intet kan flyttes ved et uheld. Klik på en gæst og derefter på en plads. Træk på tegningen for at rulle, knib for at zoome. Tryk «◎ Afslut fokus» øverst for at redigere plantegningen igen.</p>
+      <p class="hint planhint" style="margin-top:8px">Træk rum, døre, områder og borde på plads; træk i hjørnet for at ændre størrelse (1 m = 50 px). Læg en dør oven på en væg, så laver den hul i den. Loungeborde (hak i bjælken) tæller ikke med i bordplanen. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu. Træk på tomt gulv for at rulle, knib for at zoome.</p>
     </div>
   </div>
   <div class="tlists" id="tlists"></div>
@@ -911,7 +928,7 @@ function sampleZones(){ const z=(type,label,x,y,w,h)=>({id:uid(), type, label, x
 ]; }
 let state; try{ state = normalize(localLoad() || makeSample()); }catch(e){ console.error('Kunne ikke læse gemte data – starter fra eksempel', e); try{ localStorage.setItem(KEY+'.broken', localStorage.getItem(KEY)||''); }catch(x){} state = normalize(makeSample()); }
 let page = 'overblik';
-const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all', wishFilter:'all' };
+const ui = { focus:false, bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all', wishFilter:'all' };
 
 function normalize(s){
   s.v = 4;
@@ -1288,21 +1305,24 @@ function renderTsel(){
 }
 function drawPlan(){
   const svg=$('plan');
+  const F=!!ui.focus; // fokuseret bordplan: kun bordene i bordplanen, uden rum, områder, døre og loungeborde
+  const tabs = F ? seatTables() : state.tables;
   let minX=Infinity,minY=Infinity,maxX=0,maxY=0;
-  const geos=state.tables.map(t=>{ const g=tableGeom(t); const b=tableBox(t,g); minX=Math.min(minX,b.x0); minY=Math.min(minY,b.y0); maxX=Math.max(maxX,b.x1); maxY=Math.max(maxY,b.y1); return g; });
+  const geos=tabs.map(t=>{ const g=tableGeom(t); const b=tableBox(t,g); minX=Math.min(minX,b.x0); minY=Math.min(minY,b.y0); maxX=Math.max(maxX,b.x1); maxY=Math.max(maxY,b.y1); return g; });
+  if(!F){
   state.doors.forEach(d=>{ minX=Math.min(minX,d.x-10); minY=Math.min(minY,d.y-d.len-10); maxX=Math.max(maxX,d.x+d.len+10); maxY=Math.max(maxY,d.y+d.len+10); });
-  [...state.rooms,...state.zones].forEach(r=>{ minX=Math.min(minX,r.x-10); minY=Math.min(minY,r.y-10); maxX=Math.max(maxX,r.x+r.w+10); maxY=Math.max(maxY,r.y+r.h+10); });
+  [...state.rooms,...state.zones].forEach(r=>{ minX=Math.min(minX,r.x-10); minY=Math.min(minY,r.y-10); maxX=Math.max(maxX,r.x+r.w+10); maxY=Math.max(maxY,r.y+r.h+10); }); }
   if(!isFinite(minX)){ minX=0;minY=0;maxX=600;maxY=240; }
-  const ox=Math.min(0,minX), oy=Math.min(0,minY); const W=Math.max(640,maxX-ox+20), H=Math.max(260,maxY-oy+20);
+  const ox=F?minX-10:Math.min(0,minX), oy=F?minY-10:Math.min(0,minY); const W=Math.max(F?320:640,maxX-ox+20), H=Math.max(260,maxY-oy+20);
   svg.setAttribute('viewBox',`${ox} ${oy} ${W} ${H}`); svg.setAttribute('width',Math.round(W*ui.zoom)); svg.setAttribute('height',Math.round(H*ui.zoom)); svg.dataset.w=W;
   const isSel=(k,id)=>ui.sel&&ui.sel.kind===k&&ui.sel.id===id;
   const defs=`<defs><pattern id="pDance" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="rgba(74,58,167,.08)"/><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(74,58,167,.35)" stroke-width="2"/></pattern></defs>`;
-  const rooms=state.rooms.map(r=>`<g class="room${isSel('room',r.id)?' sel':''}" data-kind="room" data-id="${r.id}" transform="translate(${r.x} ${r.y})"><rect class="body" x="0" y="0" width="${r.w}" height="${r.h}" rx="3"/><text class="rname" x="12" y="24">${esc(r.name)}</text><text class="rdim" x="12" y="38">${m(r.w)} × ${m(r.h)} m</text>${isSel('room',r.id)?`<rect class="hdl" data-kind="room" data-id="${r.id}" x="${r.w-7}" y="${r.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
-  const zones=state.zones.map(z=>`<g class="zone z-${z.type}${isSel('zone',z.id)?' sel':''}" data-kind="zone" data-id="${z.id}" transform="translate(${z.x} ${z.y})"><rect class="body" x="0" y="0" width="${z.w}" height="${z.h}"/><text class="zname" x="${z.w/2}" y="${z.h/2+(z.h>40?0:4)}" text-anchor="middle">${esc(z.label||ZONES[z.type])}</text>${z.h>40?`<text class="zdim" x="${z.w/2}" y="${z.h/2+14}" text-anchor="middle">${m(z.w)} × ${m(z.h)} m</text>`:''}${isSel('zone',z.id)?`<rect class="hdl" data-kind="zone" data-id="${z.id}" x="${z.w-7}" y="${z.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
-  const doors=state.doors.map(d=>{ const L=d.len, sel=isSel('door',d.id); const rot=d.dir==='v'?'rotate(90)':''; const fl=d.flip?'scale(1,-1)':'';
+  const rooms=F?'':state.rooms.map(r=>`<g class="room${isSel('room',r.id)?' sel':''}" data-kind="room" data-id="${r.id}" transform="translate(${r.x} ${r.y})"><rect class="body" x="0" y="0" width="${r.w}" height="${r.h}" rx="3"/><text class="rname" x="12" y="24">${esc(r.name)}</text><text class="rdim" x="12" y="38">${m(r.w)} × ${m(r.h)} m</text>${isSel('room',r.id)?`<rect class="hdl" data-kind="room" data-id="${r.id}" x="${r.w-7}" y="${r.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
+  const zones=F?'':state.zones.map(z=>`<g class="zone z-${z.type}${isSel('zone',z.id)?' sel':''}" data-kind="zone" data-id="${z.id}" transform="translate(${z.x} ${z.y})"><rect class="body" x="0" y="0" width="${z.w}" height="${z.h}"/><text class="zname" x="${z.w/2}" y="${z.h/2+(z.h>40?0:4)}" text-anchor="middle">${esc(z.label||ZONES[z.type])}</text>${z.h>40?`<text class="zdim" x="${z.w/2}" y="${z.h/2+14}" text-anchor="middle">${m(z.w)} × ${m(z.h)} m</text>`:''}${isSel('zone',z.id)?`<rect class="hdl" data-kind="zone" data-id="${z.id}" x="${z.w-7}" y="${z.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
+  const doors=F?'':state.doors.map(d=>{ const L=d.len, sel=isSel('door',d.id); const rot=d.dir==='v'?'rotate(90)':''; const fl=d.flip?'scale(1,-1)':'';
     const leaf = d.type==='door' ? `<path class="leaf" d="M0 0 L0 ${-L} A${L} ${L} 0 0 1 ${L} 0" transform="${fl}"/>` : '';
     return `<g class="door${sel?' sel':''}" data-kind="door" data-id="${d.id}" transform="translate(${d.x} ${d.y}) ${rot}"><rect class="hit" x="-4" y="${-L-4}" width="${L+8}" height="${2*L+8}" fill="transparent"/><line class="gap" x1="0" y1="0" x2="${L}" y2="0"/>${leaf}<line class="jamb" x1="0" y1="-5" x2="0" y2="5"/><line class="jamb" x1="${L}" y1="-5" x2="${L}" y2="5"/></g>`; }).join('');
-  const parts=state.tables.map((t,k)=>{ const g=geos[k]; const sel=isSel('table',t.id);
+  const parts=tabs.map((t,k)=>{ const g=geos[k]; const sel=isSel('table',t.id);
     if(t.lounge){ const body=t.type==='round'?`<circle class="body lounge" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>`:`<rect class="body lounge" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
       const lbl=t.type==='round'?`<text class="tname" x="${g.cx}" y="${g.cy+4}" text-anchor="middle">${esc(t.name)}</text>`:`<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="4">${esc(t.name)}</text>`;
       return `<g class="tb lounge${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${lbl}</g>`; }
@@ -1315,7 +1335,7 @@ function drawPlan(){
       const tr=sd.rot!=null?` transform="rotate(${sd.rot.toFixed(1)} ${sd.tx} ${sd.ty})" dy="4"`:''; const txt=id?esc(sd.inside?shortName(nm,16):shortName(nm)):(sd.i+1);
       return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle class="hit" cx="${sd.x}" cy="${sd.y}" r="${SEAT.R+9}" fill="transparent" stroke="none"/><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text class="${sd.inside?'in':''}" x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}"${tr}>${txt}</text></g>`; }).join('');
     return `<g class="tb${sel?' sel':''}${rotT?' rot':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})${rotT}">${body}${label}${seats}</g>`; });
-  svg.innerHTML = defs + rooms + zones + doors + parts.join('') + (!state.tables.length&&!state.rooms.length ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et rum, et langbord eller et rundt bord for at komme i gang.</text>` : '');
+  svg.innerHTML = defs + rooms + zones + doors + parts.join('') + (!tabs.length&&(F||!state.rooms.length) ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">${F?'Ingen borde i bordplanen endnu – afslut fokus for at tilføje borde.':'Tilføj et rum, et langbord eller et rundt bord for at komme i gang.'}</text>` : '');
   $('zoomPct').textContent=Math.round(ui.zoom*100)+' %';
   if(!ui.zoomed){ const cw=$('canvaswrap').clientWidth; if(cw>0){ ui.zoomed=true; if(W*ui.zoom>cw-2){ ui.zoom=Math.max(.3,(cw-2)/W); svg.setAttribute('width',Math.round(W*ui.zoom)); svg.setAttribute('height',Math.round(H*ui.zoom)); $('zoomPct').textContent=Math.round(ui.zoom*100)+' %'; } } }
 }
@@ -1333,6 +1353,7 @@ function renderVersions(){
 function unseat(id){ state.tables.forEach(t=>{ if(t.seatMap.includes(id)){ t.seatMap=t.seatMap.map(x=>x===id?null:x); t.u=Date.now(); } }); }
 function placeAt(gid, tid, seat){
   const t=state.tables.find(x=>x.id===tid); if(!t) return;
+  if(t.seatMap[seat]!==gid) planSnap(`${guestName(gid)} → ${t.name}`); // ingen tom fortryd, hvis gæsten allerede sidder dér
   const prev=seated().get(gid); const occupant=t.seatMap[seat];
   unseat(gid);
   if(occupant && occupant!==gid){ unseat(occupant); if(prev) prev.table.seatMap[prev.seat]=occupant; }
@@ -1341,10 +1362,10 @@ function placeAt(gid, tid, seat){
 function addTable(type){
   const right=state.tables.reduce((a,t)=>Math.max(a,t.x+tableGeom(t).w+tableGeom(t).pad.r),20);
   const t={id:uid(), name:type==='round'?`Bord ${state.tables.length+1}`:`Langbord ${state.tables.filter(x=>x.type==='long').length+1}`, type, x:right+140, y:60, seats:type==='round'?8:6, ends:false, seatMap:[]};
-  t.seatMap=Array(totalSeats(t)).fill(null); state.tables.push(t); ui.sel={kind:'table',id:t.id}; commit('full', t.name);
+  t.seatMap=Array(totalSeats(t)).fill(null); planSnap(`${t.name} tilføjet`); state.tables.push(t); ui.sel={kind:'table',id:t.id}; commit('full', t.name);
 }
-function addRoom(){ const right=[...state.rooms].reduce((a,r)=>Math.max(a,r.x+r.w),0); const r={id:uid(), name:`Rum ${state.rooms.length+1}`, x:right?right+40:20, y:20, w:300, h:300}; state.rooms.push(r); ui.sel={kind:'room',id:r.id}; commit('full', r.name); }
-function addZone(type){ const z={id:uid(), type, label:ZONES[type], x:40, y:40, w:type==='dance'?250:type==='entrance'?120:160, h:type==='dance'?200:type==='entrance'?30:100}; const sel=selObj(); if(ui.sel&&ui.sel.kind==='room'&&sel){ z.x=sel.x+20; z.y=sel.y+50; } state.zones.push(z); ui.sel={kind:'zone',id:z.id}; commit('full', z.label); }
+function addRoom(){ const right=[...state.rooms].reduce((a,r)=>Math.max(a,r.x+r.w),0); const r={id:uid(), name:`Rum ${state.rooms.length+1}`, x:right?right+40:20, y:20, w:300, h:300}; planSnap(`${r.name} tilføjet`); state.rooms.push(r); ui.sel={kind:'room',id:r.id}; commit('full', r.name); }
+function addZone(type){ const z={id:uid(), type, label:ZONES[type], x:40, y:40, w:type==='dance'?250:type==='entrance'?120:160, h:type==='dance'?200:type==='entrance'?30:100}; const sel=selObj(); if(ui.sel&&ui.sel.kind==='room'&&sel){ z.x=sel.x+20; z.y=sel.y+50; } planSnap(`${z.label} tilføjet`); state.zones.push(z); ui.sel={kind:'zone',id:z.id}; commit('full', z.label); }
 function dietList(){
   const lines=[]; const gs=guestStats();
   const adults=state.guests_list.filter(g=>g.rsvp==='yes'&&!g.child).length, kids=state.guests_list.filter(g=>g.rsvp==='yes'&&g.child).length;
@@ -1535,7 +1556,7 @@ bindSort($('gtbl').querySelector('thead'),'gSort','gDir',{name:1,rsvp:1,side:1,s
 
 /* ---------- events: seating ---------- */
 $('pool').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; ui.selGuest=ui.selGuest===b.dataset.g?null:b.dataset.g; renderSeating(); });
-$('poolAction').addEventListener('click',e=>{ if(e.target.id==='unseatSel'){ const id=ui.selGuest; unseat(id); ui.selGuest=null; commit('full',`${guestName(id)} taget væk`); } if(e.target.id==='clearSel'){ ui.selGuest=null; renderSeating(); } });
+$('poolAction').addEventListener('click',e=>{ if(e.target.id==='unseatSel'){ const id=ui.selGuest; planSnap(`${guestName(id)} taget væk`); unseat(id); ui.selGuest=null; commit('full',`${guestName(id)} taget væk`); } if(e.target.id==='clearSel'){ ui.selGuest=null; renderSeating(); } });
 bindFilters($('poolFilters'),'pFilter',renderSeating);
 $('addLong').addEventListener('click',()=>addTable('long'));
 $('addRound').addEventListener('click',()=>addTable('round'));
@@ -1556,7 +1577,7 @@ function fixSeatMap(t, oldPer, oldEnds){
 const NUMF=['w','h','len','seats'];
 function tselApply(e){ const o=selObj(); const f=e.target.dataset.tf; if(!o||!f) return; const kind=ui.sel.kind;
   if(NUMF.includes(f)!==(e.type==='change')) return; // tal anvendes først når feltet forlades – tekst og hak med det samme
-  if(f!=='name'&&f!=='label') planSnap();
+  if(f!=='name'&&f!=='label') planSnap(`${o.name||o.label||(kind==='door'?(o.type==='door'?'Dør':'Åbning'):'element')} ændret`);
   if(kind==='table'){ const t=o;
     if(f==='name') t.name=e.target.value;
     else if(f==='seats'){ const op=t.seats, oe=t.ends; t.seats=Math.max(1,Math.min(40,parseNum(e.target.value)||1)); fixSeatMap(t,op,oe); }
@@ -1579,26 +1600,53 @@ $('tsel').addEventListener('keydown',e=>{ if(e.key==='Enter'&&NUMF.includes(e.ta
 $('tsel').addEventListener('click',e=>{ const o=selObj(); if(!o) return; const kind=ui.sel.kind;
   if(e.target.closest('[data-tclose]')){ ui.sel=null; renderSeating(); }
   if(e.target.closest('[data-tdel]')){
-    if(kind==='table'){ if(o.seatMap.some(Boolean)&&!confirm(`Slet «${o.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; ui.sel=null; delWithUndo(()=>state.tables,o.id,o.name); }
-    else if(kind==='room'){ ui.sel=null; delWithUndo(()=>state.rooms,o.id,o.name); }
-    else if(kind==='door'){ ui.sel=null; delWithUndo(()=>state.doors,o.id,o.type==='door'?'Dør':'Åbning'); }
-    else { ui.sel=null; delWithUndo(()=>state.zones,o.id,o.label||ZONES[o.type]); } } });
+    if(kind==='table'){ if(o.seatMap.some(Boolean)&&!confirm(`Slet «${o.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; planSnap(`${o.name} slettet`); ui.sel=null; delWithUndo(()=>state.tables,o.id,o.name); }
+    else if(kind==='room'){ planSnap(`${o.name} slettet`); ui.sel=null; delWithUndo(()=>state.rooms,o.id,o.name); }
+    else if(kind==='door'){ const dn=o.type==='door'?'Dør':'Åbning'; planSnap(`${dn} slettet`); ui.sel=null; delWithUndo(()=>state.doors,o.id,dn); }
+    else { const zn=o.label||ZONES[o.type]; planSnap(`${zn} slettet`); ui.sel=null; delWithUndo(()=>state.zones,o.id,zn); } } });
 $('addRoom').addEventListener('click',addRoom);
 $('verSave').addEventListener('click',()=>{ const name=prompt('Navn på denne bordplan (fx «Familie samlet» eller «Version 2»):', `Bordplan ${state.planVersions.length+1}`); if(!name) return;
   state.planVersions.push({id:uid(), name:name.trim(), t:Date.now(), who:WHO, data:planData(), u:Date.now()}); commit('full',`gemte bordplanen «${name.trim()}»`); toast(`«${name.trim()}» gemt – du arbejder videre på den aktuelle plan`); });
 $('verNew').addEventListener('click',()=>{ if(!confirm('Start en ny tom bordplan? Alle gæster fjernes fra bordene (rum og borde beholdes). Gem først, hvis du vil kunne hente den nuværende igen.')) return;
-  planSnap(); const now=Date.now(); state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(()=>null); t.u=now; }); commit('full','ny tom bordplan'); });
+  planSnap('ny tom bordplan'); const now=Date.now(); state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(()=>null); t.u=now; }); commit('full','ny tom bordplan'); });
 $('verList').addEventListener('click',e=>{ const li=e.target.closest('li[data-id]'); if(!li) return; const v=state.planVersions.find(x=>x.id===li.dataset.id); if(!v) return;
   if(e.target.closest('[data-vload]')){ if(!confirm(`Hent «${v.name}»? Den erstatter bordene og placeringerne i den aktuelle plan (rum, områder og døre rører den ikke). Gem først, hvis du vil beholde den nuværende.`)) return;
-    planSnap(); const now=Date.now(); const d=JSON.parse(JSON.stringify(v.data)); state.tables=d.tables||[]; state.tables.forEach(x=>x.u=now); state=normalize(state); ui.sel=null; ui.selGuest=null; commit('full',`hentede bordplanen «${v.name}»`); toast(`«${v.name}» hentet`); }
+    planSnap(`hentede «${v.name}»`); const now=Date.now(); const d=JSON.parse(JSON.stringify(v.data)); state.tables=d.tables||[]; state.tables.forEach(x=>x.u=now); state=normalize(state); ui.sel=null; ui.selGuest=null; commit('full',`hentede bordplanen «${v.name}»`); toast(`«${v.name}» hentet`); }
   else if(e.target.closest('[data-vrename]')){ const n=prompt('Nyt navn:', v.name); if(n&&n.trim()){ v.name=n.trim(); v.u=Date.now(); commit('full',`omdøbte bordplan til «${v.name}»`); } }
   else if(e.target.closest('[data-vdel]')){ delWithUndo(()=>state.planVersions, v.id, v.name); } });
-const PLAN_UNDO=[];
-function planSnap(){ PLAN_UNDO.push(JSON.stringify({tables:state.tables,rooms:state.rooms,zones:state.zones,doors:state.doors})); if(PLAN_UNDO.length>30) PLAN_UNDO.shift(); $('planUndo').disabled=false; }
-function planUndo(){ const snap=PLAN_UNDO.pop(); if(!snap) return; const o=JSON.parse(snap); const now=Date.now(); ['tables','rooms','zones','doors'].forEach(k=>{ state[k]=o[k]; state[k].forEach(x=>x.u=now); }); $('planUndo').disabled=!PLAN_UNDO.length; commit('full','fortrød ændring på plantegningen'); }
-$('planUndo').addEventListener('click',planUndo);
-document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='z'&&page==='bordplan'&&!e.target.matches('input,textarea,select,[contenteditable]')){ e.preventDefault(); planUndo(); } });
-function addDoor(type){ const sel=selObj(); const d={id:uid(), type, x:40, y:40, len:type==='door'?50:120, dir:'h', flip:false}; if(ui.sel&&ui.sel.kind==='room'&&sel){ d.x=sel.x+Math.round(sel.w/2/10)*10-Math.round(d.len/2/10)*10; d.y=sel.y+sel.h; } state.doors.push(d); ui.sel={kind:'door',id:d.id}; commit('full', type==='door'?'dør tilføjet':'åbning tilføjet'); }
+/* ---- fortryd/gentag på bordplanen (iPad har ikke ⌘Z – derfor knapper både ved tegningen og i bjælken) ---- */
+const PLAN_KEYS=['tables','rooms','zones','doors'];
+const PLAN_UNDO=[], PLAN_REDO=[];
+function planState(){ const o={}; PLAN_KEYS.forEach(k=>{ o[k]=state[k]; }); return JSON.stringify(o); }
+/* kaldes ALTID lige før en ændring, så fortryd fører tilbage til tilstanden før */
+function planSnap(label){ PLAN_UNDO.push({s:planState(), label:label||''}); if(PLAN_UNDO.length>40) PLAN_UNDO.shift(); PLAN_REDO.length=0; renderHist(); }
+function planApply(snap){ const o=JSON.parse(snap.s); const now=Date.now();
+  PLAN_KEYS.forEach(k=>{ state[k]=o[k]; state[k].forEach(x=>{ x.u=now; if(state.tomb[x.id]) delete state.tomb[x.id]; }); }); // ryd tombstone, så et gendannet bord ikke slettes igen ved synk
+  ui.sel=null; ui.selGuest=null; }
+function planStep(from,to,verb){ const snap=from.pop(); if(!snap) return; to.push({s:planState(), label:snap.label}); planApply(snap); renderHist();
+  commit('full', snap.label?`${verb.toLowerCase()} «${snap.label}»`:`${verb.toLowerCase()} ændring på bordplanen`); toast(snap.label?`${verb}: ${snap.label}`:verb); }
+function planUndo(){ planStep(PLAN_UNDO,PLAN_REDO,'Fortrudt'); }
+function planRedo(){ planStep(PLAN_REDO,PLAN_UNDO,'Gentaget'); }
+function renderHist(){
+  const u=PLAN_UNDO[PLAN_UNDO.length-1], r=PLAN_REDO[PLAN_REDO.length-1];
+  document.querySelectorAll('[data-hist="undo"]').forEach(b=>{ b.disabled=!u; b.title=u&&u.label?`Fortryd: ${u.label} (⌘Z)`:'Fortryd sidste ændring på bordplanen (⌘Z)'; });
+  document.querySelectorAll('[data-hist="redo"]').forEach(b=>{ b.disabled=!r; b.title=r&&r.label?`Gentag: ${r.label} (⇧⌘Z)`:'Gentag sidste fortrudte ændring (⇧⌘Z)'; });
+  $('histHint').textContent = u ? (u.label?`Fortryd: ${u.label}`:'') : 'Intet at fortryde endnu';
+}
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-hist]'); if(!b||b.disabled) return; b.dataset.hist==='undo'?planUndo():planRedo(); });
+document.addEventListener('keydown',e=>{ if(!(e.metaKey||e.ctrlKey)||page!=='bordplan') return; const k=(e.key||'').toLowerCase(); if(k!=='z'&&k!=='y') return;
+  if(e.target.matches('input,textarea,select,[contenteditable]')) return; e.preventDefault(); (k==='y'||e.shiftKey)?planRedo():planUndo(); });
+
+/* ---- fokuseret bordplan: kun borde, pladser og navne – intet kan flyttes ved et uheld ---- */
+function applyFocus(){ $('page-bordplan').classList.toggle('focus',!!ui.focus);
+  const b=$('focusBtn'); b.classList.toggle('on',!!ui.focus); b.setAttribute('aria-pressed',ui.focus?'true':'false'); b.textContent=ui.focus?'◎ Afslut fokus':'◎ Fokuseret bordplan'; }
+function setFocus(on){ ui.focus=!!on; try{ localStorage.setItem(KEY+'.focus',on?'1':'0'); }catch(e){}
+  ui.sel=null; ui.zoom=1; ui.zoomed=false; applyFocus(); renderSeating();
+  toast(on?'Fokuseret bordplan – kun borde og navne, intet kan flyttes':'Hele plantegningen vises igen'); }
+$('focusBtn').addEventListener('click',()=>setFocus(!ui.focus));
+try{ ui.focus = localStorage.getItem(KEY+'.focus')==='1'; }catch(e){}
+applyFocus(); renderHist();
+function addDoor(type){ const sel=selObj(); const d={id:uid(), type, x:40, y:40, len:type==='door'?50:120, dir:'h', flip:false}; if(ui.sel&&ui.sel.kind==='room'&&sel){ d.x=sel.x+Math.round(sel.w/2/10)*10-Math.round(d.len/2/10)*10; d.y=sel.y+sel.h; } planSnap(type==='door'?'dør tilføjet':'åbning tilføjet'); state.doors.push(d); ui.sel={kind:'door',id:d.id}; commit('full', type==='door'?'dør tilføjet':'åbning tilføjet'); }
 $('addDoor').addEventListener('click',()=>addDoor('door'));
 $('addOpen').addEventListener('click',()=>addDoor('open'));
 $('addZone').addEventListener('change',e=>{ if(e.target.value) addZone(e.target.value); e.target.value=''; });
@@ -1614,13 +1662,16 @@ $('zoomFit').addEventListener('click',()=>{ const W=+$('plan').dataset.w||640; s
 const plan=$('plan'); let drag=null;
 function svgPoint(ev){ const pt=plan.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; return pt.matrixTransform(plan.getScreenCTM().inverse()); }
 function findObj(kind,id){ return collOf(kind).find(x=>x.id===id); }
+function dragName(d){ return d.o.name||d.o.label||(d.kind==='door'?(d.o.type==='door'?'Dør':'Åbning'):ZONES[d.o.type])||'element'; }
 plan.addEventListener('pointerdown',e=>{
   if(e.target.closest('.seat')) return;
+  if(ui.focus){ const w=$('canvaswrap'); drag={mode:'pan',sx:e.clientX,sy:e.clientY,sl:w.scrollLeft,st:w.scrollTop,moved:false}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} return; } // fokus: træk ruller kun, intet kan rykkes
   const p=svgPoint(e);
   const hdl=e.target.closest('.hdl'); if(hdl){ const o=findObj(hdl.dataset.kind,hdl.dataset.id); drag={mode:'resize',kind:hdl.dataset.kind,o,el:hdl.closest('[data-kind]'),ox:p.x-o.w,oy:p.y-o.h,moved:false,sx:e.clientX,sy:e.clientY}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); return; }
   const el=e.target.closest('[data-kind]'); if(!el){ const w=$('canvaswrap'); drag={mode:'pan',sx:e.clientX,sy:e.clientY,sl:w.scrollLeft,st:w.scrollTop,moved:false}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} return; } const o=findObj(el.dataset.kind,el.dataset.id); if(!o) return;
   drag={mode:'move',kind:el.dataset.kind,o,el,dx:p.x-o.x,dy:p.y-o.y,moved:false,sx:e.clientX,sy:e.clientY}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); });
-plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true;
+plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return;
+  if(!drag.moved){ drag.moved=true; if(drag.mode!=='pan') planSnap(`${dragName(drag)} ${drag.mode==='move'?'flyttet':'ændret størrelse'}`); } // snapshot før første pixel flyttes
   if(drag.mode==='pan'){ const w=$('canvaswrap'); w.scrollLeft=drag.sl-(e.clientX-drag.sx); w.scrollTop=drag.st-(e.clientY-drag.sy); return; }
   const p=svgPoint(e); const o=drag.o;
   if(drag.mode==='move'){ o.x=Math.round((p.x-drag.dx)/10)*10; o.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${o.x} ${o.y})`+(drag.kind==='door'&&o.dir==='v'?' rotate(90)':'')); }
@@ -1628,8 +1679,8 @@ plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Mat
     const h=g.querySelector('.hdl'); h.setAttribute('x',o.w-7); h.setAttribute('y',o.h-7); const d=g.querySelector('.rdim,.zdim'); if(d){ d.textContent=`${m(o.w)} × ${m(o.h)} m`; if(drag.kind==='zone'){ d.setAttribute('x',o.w/2); d.setAttribute('y',o.h/2+14); } } const zn=g.querySelector('.zname'); if(zn){ zn.setAttribute('x',o.w/2); zn.setAttribute('y',o.h/2+(o.h>40?0:4)); } } });
 plan.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null; try{ plan.releasePointerCapture(e.pointerId); }catch(x){}
   if(d.mode==='pan'){ if(!d.moved&&ui.sel){ ui.sel=null; renderSeating(); } return; }
-  const nm=d.o.name||d.o.label||(d.kind==='door'?(d.o.type==='door'?'Dør':'Åbning'):ZONES[d.o.type])||'';
-  if(d.moved){ planSnap(); d.o.u=Date.now(); if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
+  const nm=dragName(d);
+  if(d.moved){ d.o.u=Date.now(); if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
   else { ui.sel = (ui.sel&&ui.sel.kind===d.kind&&ui.sel.id===d.o.id) ? null : {kind:d.kind,id:d.o.id}; renderSeating(); } });
 plan.addEventListener('click',e=>{ const seat=e.target.closest('.seat'); if(!seat) return; const tid=seat.dataset.table, i=+seat.dataset.seat; const t=state.tables.find(x=>x.id===tid); const id=t.seatMap[i];
   if(ui.selGuest){ placeAt(ui.selGuest,tid,i); return; }
@@ -1641,7 +1692,7 @@ plan.addEventListener('dragover',e=>{ const seat=e.target.closest('.seat'); plan
 plan.addEventListener('dragleave',e=>{ const seat=e.target.closest('.seat'); if(seat) seat.classList.remove('drop'); });
 plan.addEventListener('drop',e=>{ const seat=e.target.closest('.seat'); if(!seat||!dragId) return; e.preventDefault(); const id=dragId; dragId=null; placeAt(id, seat.dataset.table, +seat.dataset.seat); });
 $('pool').addEventListener('dragover',e=>{ if(dragId) e.preventDefault(); });
-$('pool').addEventListener('drop',e=>{ if(!dragId) return; e.preventDefault(); const id=dragId; dragId=null; unseat(id); commit('full',`${guestName(id)} taget væk`); });
+$('pool').addEventListener('drop',e=>{ if(!dragId) return; e.preventDefault(); const id=dragId; dragId=null; if(!seated().has(id)) return; planSnap(`${guestName(id)} taget væk`); unseat(id); commit('full',`${guestName(id)} taget væk`); });
 
 /* ---------- events: tasks & program ---------- */
 bindEdits($('taskGroups'), ()=>state.tasks, (t,f,el,row)=>{ if(f==='done'){ row.classList.toggle('done',t.done); const ts=taskStats(); $('taskPct').textContent=`${ts.done} af ${ts.total} klaret`; $('taskBar').style.width=(ts.total?ts.done/ts.total*100:0)+'%'; if(ui.tFilter==='open'){ setTimeout(()=>{ if(t.done) renderTasks(); },600); } return 'none'; } if(f==='due'||f==='owner') return 'none'; return 'none'; });
