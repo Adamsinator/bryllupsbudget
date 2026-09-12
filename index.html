@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 19:02">
+<meta name="build" content="2026-09-12 19:07">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -69,8 +69,8 @@ a{color:var(--accent)}
 .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 h1{font-family:Fraunces,Georgia,serif;font-weight:400;font-size:clamp(34px,4.6vw,52px);line-height:1.02;letter-spacing:-.01em;margin:0;text-wrap:balance;font-variation-settings:"opsz" 144}
 h1 .amp{font-style:italic;font-weight:300;color:var(--accent)}
-h1 [contenteditable]{outline:none;border-bottom:1px dashed transparent;padding:0 2px;border-radius:3px}
-h1 [contenteditable]:hover,h1 [contenteditable]:focus{border-bottom-color:var(--muted)}
+h1 a.home{color:inherit;text-decoration:none}
+h1 a.home:hover .amp{color:var(--ink)}
 .meta{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding-right:44px}
 .field{display:flex;flex-direction:column;gap:3px}
 .field label,.lbl{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -532,7 +532,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 <header class="top">
   <div>
     <p class="eyebrow">Bryllupsplanlægning <span class="sync" id="sync"><i></i><span id="syncText">Gemt lokalt</span></span> <button class="whochip" id="whoChip" title="Skift hvem der er logget ind"></button></p>
-    <h1><span contenteditable="true" spellcheck="false" id="nameA">Mie</span> <span class="amp">&amp;</span> <span contenteditable="true" spellcheck="false" id="nameB">Adam</span></h1>
+    <h1><a href="#overblik" class="home" title="Til forsiden"><span id="nameA">Mie</span> <span class="amp">&amp;</span> <span id="nameB">Adam</span></a></h1>
     <p class="venueline" id="venueLine"></p>
   </div>
   <div class="meta">
@@ -806,7 +806,7 @@ function makeSample(){
     {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13–14', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
     {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'', photo:'', note:'Reception 14:30–17:30 – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
     {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 18–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
-    {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
+    {id:uid(), name:'Best Western Hotel Hillerød', role:'Overnatning', address:'Milnersvej 41, 3400 Hillerød', time:'', contact:'', phone:'', url:'https://www.hotelhillerod.dk', note:'Lige over for Palæet – spørg om gruppepris og en blok af værelser til gæsterne.'},
   ];
   const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
   const vendors = [
@@ -920,6 +920,9 @@ function normalize(s){
     if(!(s.program||[]).some(p=>/lykønskninger/i.test(p.title))&&(s.program||[]).some(p=>p.title==='Reception')) s.program.push({id:uid(),time:'14:00',title:'Ris og lykønskninger ved kirken',desc:''});
     (s.tasks||[]).forEach(t=>{ if(t.title==='Find sted til receptionen (14–14:30, tæt på Slotskirken)') t.title='Find sted til receptionen (14:30–17:30, tæt på Slotskirken)'; });
     s.dayV3=true; }
+  if(!s.hotelV2){ const h=(s.places||[]).find(x=>x.role==='Overnatning'); const seedH=makeSample().places.find(x=>x.role==='Overnatning');
+    if(!h) s.places.push(seedH); else if(h.name==='Hotel Hillerød'){ h.name=seedH.name; h.address=seedH.address; h.url=h.url||seedH.url; if(/^Tæt på Palæet/.test(h.note||'')) h.note=seedH.note; }
+    s.hotelV2=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
@@ -976,8 +979,7 @@ function taskStats(){ const total=state.tasks.length, done=state.tasks.filter(t=
 
 /* ---------- header / nav ---------- */
 function renderHeader(){
-  if(document.activeElement!==$('nameA')) $('nameA').textContent=state.nameA;
-  if(document.activeElement!==$('nameB')) $('nameB').textContent=state.nameB;
+  $('nameA').textContent=state.nameA; $('nameB').textContent=state.nameB;
   $('date').value=state.date||'';
   let d='–'; if(state.date){ const diff=daysUntil(state.date); d=diff>0?`${knum(diff)} dage`:diff===0?'I dag!':`${knum(-diff)} dage siden`; }
   $('days').textContent=d;
@@ -1561,7 +1563,7 @@ $('nSearch').addEventListener('input',e=>{ ui.nSearch=e.target.value; renderNote
 
 /* ---------- header events ---------- */
 $('date').addEventListener('change',e=>{ state.date=e.target.value; commit(); });
-['nameA','nameB'].forEach(k=>{ const el=$(k); el.addEventListener('input',()=>{ state[k]=el.textContent.trim()||state[k]; state.updatedAt=Date.now(); localSave(); Sync.push(); }); el.addEventListener('blur',()=>render()); el.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); el.blur(); } }); });
+
 
 /* ---------- import / export / reset / theme / toast ---------- */
 $('export').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`bryllup-${state.nameA}-${state.nameB}.json`.replace(/\s+/g,'-'); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Fil eksporteret'); });
