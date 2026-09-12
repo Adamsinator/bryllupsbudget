@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 20:24">
+<meta name="build" content="2026-09-12 20:54">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -256,6 +256,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .slot input.time{width:100%;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 6px;font-weight:600;font-variant-numeric:tabular-nums}
 .slot input.title{width:100%;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 7px}
 .slot input.desc{width:100%;border:1px solid transparent;background:transparent;border-radius:5px;padding:2px 7px;font-size:12.5px;color:var(--muted)}
+.slot input.bad{color:var(--crit);border-color:var(--crit)}
 .slot input:hover{border-color:var(--hair)} .slot input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
 
 /* ---- seating (SVG) ---- */
@@ -373,8 +374,8 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 /* ---- generic entity cards (steder, leverandører) ---- */
 .ecards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:14px}
 .ecard{background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
-.ecard .h{display:flex;align-items:center;gap:6px}
-.ecard .h input.t{flex:1;min-width:0;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 6px;font-family:Fraunces,Georgia,serif;font-size:18px}
+.ecard .h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ecard .h input.t{flex:1 1 150px;min-width:0;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 6px;font-family:Fraunces,Georgia,serif;font-size:18px}
 .ecard .role{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:0}
 .ecard .f{display:grid;grid-template-columns:96px 1fr;gap:4px 8px;align-items:center;font-size:13.5px}
 .ecard .f label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -657,7 +658,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
   <div class="seatgrid">
     <section class="card pool">
       <div class="card-head"><div><h3>Ikke placeret</h3><p class="hint" id="poolHint"></p></div></div>
-      <div class="filters" id="poolFilters" style="margin-top:8px"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button></div>
+      <div class="filters" id="poolFilters" style="margin-top:8px"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button><button class="fchip" data-f="kids">Børn</button></div>
       <div class="names" id="pool"></div>
       <div id="poolAction" style="margin-top:10px"></div>
     </section>
@@ -1020,7 +1021,7 @@ function guestName(id){ if(id==='A') return state.nameA; if(id==='B') return sta
 function guestSide(id){ if(id==='A') return 'A'; if(id==='B') return 'B'; return state.guests_list.find(g=>g.id===id)?.side||'AB'; }
 function guestSex(id){ if(id==='A') return 'f'; if(id==='B') return 'm'; return state.guests_list.find(g=>g.id===id)?.sex||''; }
 function shortName(n){ n=(n||'').trim(); if(n.length<=14) return n; const p=n.split(/\s+/); return p.length>1 ? `${p[0]} ${p[p.length-1][0]}.` : n.slice(0,13)+'…'; }
-let WHO=''; try{ WHO=sessionStorage.getItem('bryllup.who')||''; }catch(e){}
+let WHO=''; try{ WHO=localStorage.getItem('bryllup.who')||sessionStorage.getItem('bryllup.who')||''; }catch(e){}
 function taskStats(){ const total=state.tasks.length, done=state.tasks.filter(t=>t.done).length; return {total,done}; }
 
 /* ---------- header / nav ---------- */
@@ -1226,8 +1227,8 @@ function tableGeom(t){
 }
 function renderSeating(){
   const st=seated(); const gs=guestStats();
-  const pool=[...(st.has('A')?[]:[{id:'A',name:state.nameA,side:'A',couple:true}]),...(st.has('B')?[]:[{id:'B',name:state.nameB,side:'B',couple:true}]),
-    ...state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||g.side===ui.pFilter||g.side==='AB')).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
+  const pool=[...(st.has('A')||ui.pFilter==='kids'||ui.pFilter==='B'?[]:[{id:'A',name:state.nameA,side:'A',couple:true}]),...(st.has('B')||ui.pFilter==='kids'||ui.pFilter==='A'?[]:[{id:'B',name:state.nameB,side:'B',couple:true}]),
+    ...state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||(ui.pFilter==='kids'?g.child:(g.side===ui.pFilter||g.side==='AB')))).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
   $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}${g.sex?' sex-'+g.sex:g.couple?(g.id==='A'?' sex-f':' sex-m'):''}" draggable="true" data-g="${g.id}" title="${g.couple?'Brudeparret':esc(sideName(g.side))+(g.rel?' · '+esc(g.rel):'')}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.couple?' <span class="tag">brudepar</span>':''}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
   const selSeated = ui.selGuest && st.get(ui.selGuest);
   $('poolHint').textContent = ui.selGuest ? `Klik på en plads til ${guestName(ui.selGuest)}` : `${pool.length} mangler plads.`;
@@ -1355,7 +1356,7 @@ function renderProgram(){
   const prog=[...state.program].sort((a,b)=>progMinutes(a.time)-progMinutes(b.time));
   let night=false;
   $('program').innerHTML=prog.map(p=>{ let div=''; if(!night&&progMinutes(p.time)>=24*60&&progMinutes(p.time)<9999){ night=true; div='<div class="nightdiv"><span>Efter midnat – næste dag</span></div>'; }
-    return div+`<div class="slot" data-id="${p.id}"><input class="time tab" data-f="time" value="${esc(p.time)}" placeholder="13:00" aria-label="Tidspunkt"><span class="dot"></span><div><input class="title" data-f="title" value="${esc(p.title)}" placeholder="Hvad sker der?" aria-label="Punkt"><input class="desc" data-f="desc" value="${esc(p.desc)}" placeholder="Detaljer" aria-label="Detaljer"></div><button class="iconbtn" data-del="1" aria-label="Slet punkt">${svgX}</button></div>`; }).join('')||'<p class="empty">Programmet er tomt.</p>';
+    return div+`<div class="slot" data-id="${p.id}"><input class="time tab${progMinutes(p.time)>=9999?' bad':''}" data-f="time" value="${esc(p.time)}" placeholder="13:00" aria-label="Tidspunkt" title="${progMinutes(p.time)>=9999?'Skriv tidspunkt som 13:00':''}"><span class="dot"></span><div><input class="title" data-f="title" value="${esc(p.title)}" placeholder="Hvad sker der?" aria-label="Punkt"><input class="desc" data-f="desc" value="${esc(p.desc)}" placeholder="Detaljer" aria-label="Detaljer"></div><button class="iconbtn" data-del="1" aria-label="Slet punkt">${svgX}</button></div>`; }).join('')||'<p class="empty">Programmet er tomt.</p>';
 }
 function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=state.date.split('-').map(Number); const n=(wy-y)*12+(wm-m); return n>0?`${n} mdr. før`:n===0?'bryllupsmåneden':`${-n} mdr. efter`; }
 
@@ -1483,10 +1484,10 @@ $('guests').addEventListener('blur',e=>{ e.target.value=guestCount()?knum(guestC
 $('guestsAuto').addEventListener('change',e=>{ const n=guestCount(); state.guestsAuto=e.target.checked; if(!state.guestsAuto) state.guests=n; commit('full', state.guestsAuto?'gæsteantal følger gæstelisten':'gæsteantal sat manuelt'); });
 
 /* ---------- events: guests ---------- */
-bindEdits($('grows'), ()=>state.guests_list, (g,f,el,row)=>{ if(f==='rsvp') el.className='sel rsvp st-'+g.rsvp; if(f==='name'&&!g.sex){ const gs=guessSex(g.name); if(gs){ g.sex=gs; const sel=row.querySelector('[data-f="sex"]'); if(sel) sel.value=gs; } } return 'none'; });
-$('grows').addEventListener('input',e=>{ const f=e.target.dataset.f; if(f==='rsvp'||f==='child'||f==='diet') { renderGuests_chipsOnly(); } });
+bindEdits($('grows'), ()=>state.guests_list, (g,f,el,row)=>{ if(f==='rsvp'){ el.className='sel rsvp st-'+g.rsvp; if(g.rsvp==='no') unseat(g.id); } if(f==='name'&&!g.sex){ const gs=guessSex(g.name); if(gs){ g.sex=gs; const sel=row.querySelector('[data-f="sex"]'); if(sel) sel.value=gs; } } return 'none'; });
+$('grows').addEventListener('input',e=>{ const f=e.target.dataset.f; if(['rsvp','child','diet','sex','stay'].includes(f)) renderGuests_chipsOnly(); });
 function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
-$('grows').addEventListener('click',e=>{ const row=e.target.closest('tr[data-id]'); if(row&&e.target.closest('[data-del]')){ const g=state.guests_list.find(x=>x.id===row.dataset.id); delWithUndo(()=>state.guests_list,g.id,g.name); } });
+$('grows').addEventListener('click',e=>{ const row=e.target.closest('tr[data-id]'); if(row&&e.target.closest('[data-del]')){ const g=state.guests_list.find(x=>x.id===row.dataset.id); unseat(g.id); delWithUndo(()=>state.guests_list,g.id,g.name); } });
 $('gAdd').addEventListener('click',()=>{ const g={id:uid(),name:'',side:'AB',rel:'',rsvp:'maybe',child:false,diet:'',sex:'',note:''}; state.guests_list.push(g); ui.gFilter='all'; ui.gSearch=''; $('gSearch').value=''; document.querySelectorAll('#page-gaester .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); commit(); const tr=$('grows').querySelector(`tr[data-id="${g.id}"]`); tr.querySelector('[data-f="name"]').focus(); tr.scrollIntoView({block:'nearest'}); });
 $('gBulk').addEventListener('click',()=>{ $('bulkModal').classList.add('show'); setTimeout(()=>$('bulkText').focus(),50); });
 $('bulkCancel').addEventListener('click',()=>$('bulkModal').classList.remove('show'));
@@ -1560,9 +1561,9 @@ function findObj(kind,id){ return collOf(kind).find(x=>x.id===id); }
 plan.addEventListener('pointerdown',e=>{
   if(e.target.closest('.seat')) return;
   const p=svgPoint(e);
-  const hdl=e.target.closest('.hdl'); if(hdl){ const o=findObj(hdl.dataset.kind,hdl.dataset.id); drag={mode:'resize',kind:hdl.dataset.kind,o,el:hdl.closest('[data-kind]'),ox:p.x-o.w,oy:p.y-o.h,moved:false,sx:e.clientX,sy:e.clientY}; plan.setPointerCapture(e.pointerId); e.preventDefault(); return; }
-  const el=e.target.closest('[data-kind]'); if(!el){ const w=$('canvaswrap'); drag={mode:'pan',sx:e.clientX,sy:e.clientY,sl:w.scrollLeft,st:w.scrollTop,moved:false}; plan.setPointerCapture(e.pointerId); return; } const o=findObj(el.dataset.kind,el.dataset.id); if(!o) return;
-  drag={mode:'move',kind:el.dataset.kind,o,el,dx:p.x-o.x,dy:p.y-o.y,moved:false,sx:e.clientX,sy:e.clientY}; plan.setPointerCapture(e.pointerId); e.preventDefault(); });
+  const hdl=e.target.closest('.hdl'); if(hdl){ const o=findObj(hdl.dataset.kind,hdl.dataset.id); drag={mode:'resize',kind:hdl.dataset.kind,o,el:hdl.closest('[data-kind]'),ox:p.x-o.w,oy:p.y-o.h,moved:false,sx:e.clientX,sy:e.clientY}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); return; }
+  const el=e.target.closest('[data-kind]'); if(!el){ const w=$('canvaswrap'); drag={mode:'pan',sx:e.clientX,sy:e.clientY,sl:w.scrollLeft,st:w.scrollTop,moved:false}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} return; } const o=findObj(el.dataset.kind,el.dataset.id); if(!o) return;
+  drag={mode:'move',kind:el.dataset.kind,o,el,dx:p.x-o.x,dy:p.y-o.y,moved:false,sx:e.clientX,sy:e.clientY}; try{ plan.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); });
 plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true;
   if(drag.mode==='pan'){ const w=$('canvaswrap'); w.scrollLeft=drag.sl-(e.clientX-drag.sx); w.scrollTop=drag.st-(e.clientY-drag.sy); return; }
   const p=svgPoint(e); const o=drag.o;
@@ -1630,9 +1631,14 @@ $('wishes').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'
 $('wishAdd').addEventListener('click',()=>{ ui.wishFilter='all'; document.querySelectorAll('#page-gaver .card:last-child .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); const x={id:uid(),text:'',link:'',price:0,by:'',note:''}; state.wishes.push(x); commit('full','nyt ønske'); $('wishes').querySelector(`[data-id="${x.id}"] input`).focus(); });
 bindFilters($('page-gaver').querySelector('.card:last-child .filters'),'wishFilter',renderWishes);
 
+/* textarea-højde følger indholdet (Safari kender ikke field-sizing) */
+function autosize(ta){ ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; }
+document.addEventListener('input',e=>{ if(e.target.tagName==='TEXTAREA'&&!e.target.readOnly) autosize(e.target); });
+new MutationObserver(()=>{ document.querySelectorAll('.note textarea,.ecard textarea').forEach(ta=>{ if(!ta.dataset.sized){ ta.dataset.sized='1'; autosize(ta); } }); }).observe(document.body,{childList:true,subtree:true});
+
 /* ---------- who am I ---------- */
 function askWho(){ $('whoA').textContent=state.nameA; $('whoB').textContent=state.nameB; $('whoModal').classList.add('show'); }
-function setWho(w){ WHO=w; try{ sessionStorage.setItem('bryllup.who',w); }catch(e){} $('whoModal').classList.remove('show'); renderHeader(); }
+function setWho(w){ WHO=w; try{ localStorage.setItem('bryllup.who',w); }catch(e){} $('whoModal').classList.remove('show'); renderHeader(); }
 $('whoA').addEventListener('click',()=>setWho('A')); $('whoB').addEventListener('click',()=>setWho('B'));
 $('whoChip').addEventListener('click',askWho);
 
@@ -1716,7 +1722,7 @@ const Sync=(()=>{
   const askCode = lock;
   $('codeForm').addEventListener('submit',async e=>{ e.preventDefault(); code=$('codeInput').value.trim(); $('codeErr').textContent='';
     try{ const j=await api({action:'get'}); try{ localStorage.setItem(CODE_KEY,code); }catch(x){} touch(); unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik'; if(!WHO) askWho();
-      if(j.state&&j.state.items&&j.state.items.length) apply(j.state); else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
+      if(j.state&&j.state.items&&j.state.items.length){ if((+j.state.updatedAt||0) < (state.updatedAt||0) && localLoad()) { dirty=true; pushNow(); } else apply(j.state); } else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
     catch(err){ code=''; $('codeErr').textContent=err.code==='bad-code'?'Forkert adgangskode.':'Kunne ikke nå serveren. Prøv igen.'; } });
   $('logout').addEventListener('click',()=>{ if(!confirm('Log ud på denne enhed? Data ligger sikkert i arket og hentes igen, når I logger ind.')) return;
     forget(); try{ localStorage.removeItem(KEY); }catch(e){} state=normalize(makeSample()); render(); lock(); status('','Logget ud'); });
