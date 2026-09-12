@@ -34,9 +34,9 @@ Herefter:
 ## Undersider
 
 - **Overblik** – nedtælling, kirke → fest med adresser og rute, status på budget/gæster/bordplan/tidsplan, seneste ændringer, næste opgaver og seneste noter
-- **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet, som automatisk følger gæstelisten (ja + afventer) – kan slås fra og sættes manuelt
+- **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med forventet pris, endelig pris (bruges når den er udfyldt), ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet, som automatisk følger gæstelisten (ja + afventer) – kan slås fra og sættes manuelt
 - **Gæster** – navn, side, køn (gættes ud fra fornavnet, kan rettes), relation, svar (ja/afventer/nej), barn, kost/allergi; filtre, søgning, "tilføj flere ad gangen"
-- **Plantegning & bordplan** – tegn festlokalet: rum (med mål i meter, 1 m = 50 px), områder (dansegulv, lounge, bar, DJ, buffet, kagebord…), døre og åbninger i væggene, langborde (pladser på begge sider, evt. bordender) og runde borde (loungeborde kan undtages fra bordplanen); træk alt rundt og træk i hjørnet for at ændre størrelse; zoom; navnene sidder på pladserne; klik eller træk gæster på plads; print plantegning/bordkort; kost-liste til kokken
+- **Plantegning & bordplan** – tegn festlokalet: rum (med mål i meter, 1 m = 50 px), områder (dansegulv, lounge, bar, DJ, buffet, kagebord…), døre og åbninger i væggene, langborde (pladser på begge sider, evt. bordender) og runde borde (loungeborde kan undtages fra bordplanen); træk alt rundt og træk i hjørnet for at ændre størrelse; zoom; navnene står inde på langbordene ud for hvert sæde og skråt ud fra runde borde; langborde kan lægges vandret; fortryd (⌘Z) for flyt/størrelse; klik eller træk gæster på plads; print plantegning/bordkort (tre størrelser); kost-liste til kokken
 - **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")
 - **Program** – selve dagen time for time; punkter før kl. 06 regnes som natten efter og ligger sidst
 - **Steder** – kirke, fest og overnatning med adresse, tid, kontakt, aftaler, billede; kort- og rutelinks; liste over gæster der overnatter. Billederne ligger som `odd-fellow-palae.jpg`, `frederiksborg-slot.jpg` og `frederiksborg-slotskirke.jpg` (et sted kan have to billeder) – læg flere billeder i repoet og skriv filnavnet i feltet *Billede*
@@ -46,7 +46,7 @@ Herefter:
 - **Noter** – fritekstnoter med fastgørelse, forfatter og søgning
 - **Hvad er nyt** – efter login vælger man "Hvem er du?"; Overblik viser de seneste ændringer med navn
 
-Alt gemmes automatisk; sletning kan fortrydes; JSON-eksport/-import; lys/mørk tema; fungerer på mobil.
+Søg på tværs af alt med ⌘K / luppen øverst. Alt gemmes automatisk; sletning kan fortrydes; JSON-eksport/-import; lys/mørk tema; fungerer på mobil.
 
 ## Første gang I bruger den rigtigt
 
