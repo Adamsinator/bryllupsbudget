@@ -5,6 +5,8 @@ Ren statisk side (én `index.html`), bygget til GitHub Pages.
 
 ## Kør den
 
+Lavet til iPad først, dernæst iPhone og Mac. Læg den på hjemmeskærmen (Del → Føj til hjemmeskærm) – så åbner den som en app uden browserlinjer.
+
 Åbn `index.html` i en browser, eller slå GitHub Pages til på repoet (Settings → Pages → Deploy from branch → `main` / root).
 
 Uden opsætning gemmes alt i browserens localStorage – dvs. hver telefon/computer har sit eget budget.
