@@ -29,7 +29,7 @@ Herefter:
 
 `localStorage` fungerer stadig som cache, så siden åbner med det samme og virker offline.
 
-**Cache-gotcha:** Pages serverer `config.js` med 10 minutters cache. Script-tagget i `index.html` har derfor `config.js?v=N` – **bump N i samme commit**, hver gang `config.js` ændres.
+**Cache-gotcha:** Pages serverer alt med 10 minutters cache. Script-tagget i `index.html` har derfor `config.js?v=N` – **bump N i samme commit**, hver gang `config.js` ændres. Kør `./build.sh` før hvert commit: det stempler `index.html` og `version.json` med samme build-tid, og siden viser selv "Ny version klar" og henter den nye side uden om cachen.
 
 ## Undersider
 
