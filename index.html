@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:33">
+<meta name="build" content="2026-09-12 18:39">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -860,7 +860,10 @@ function normalize(s){
   s.v = 4;
   // Data gemt af ældre versioner mangler nyere afsnit (steder, leverandører, plantegning…): udfyld dem fra skabelonen
   { const need=['places','vendors','speeches','photos','songs','rooms','zones','tasks','program','gifts','notes'].filter(k=>!Array.isArray(s[k]));
-    if(need.length){ const seed=makeSample(); need.forEach(k=>{ s[k]=seed[k]; }); } }
+    // Ældre versioner gemte tomme lister for afsnit, der ikke fandtes endnu – udfyld dem én gang (flaget huskes i arket)
+    if(!s.seeded2) ['places','vendors','speeches','photos','songs','rooms','zones'].forEach(k=>{ if(!Array.isArray(s[k])||!s[k].length) need.push(k); });
+    if(need.length){ const seed=makeSample(); [...new Set(need)].forEach(k=>{ s[k]=seed[k]; }); }
+    s.seeded2=true; }
   s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'' }));
   s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', note:g.note||'' }));
   const gids = new Set(s.guests_list.map(g=>g.id));
@@ -1481,8 +1484,8 @@ $('program').addEventListener('click',e=>{ const row=e.target.closest('[data-id]
 $('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((a,b)=>progMinutes(a.time)-progMinutes(b.time)).pop(); const p={id:uid(),time:last?last.time:'12:00',title:'',desc:''}; state.program.push(p); commit(); const row=$('program').querySelector(`[data-id="${p.id}"]`); row.querySelector('.time').focus(); row.scrollIntoView({block:'nearest'}); });
 
 /* ---------- events: steder / leverandører / indslag / gaver ---------- */
-bindEdits($('places'), ()=>state.places, (pl,f)=>{ if(f==='role'||f==='url'||f==='phone'||f==='address'||f==='name') return 'full'; return 'none'; });
-$('places').addEventListener('change',e=>{ if(e.target.dataset.f==='photo') renderPlaces(); });
+bindEdits($('places'), ()=>state.places, (pl,f)=>f==='role'?'full':'none');
+$('places').addEventListener('change',e=>{ if(['photo','url','phone','address','name'].includes(e.target.dataset.f)) renderPlaces(); });
 $('places').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.places.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.places,x.id,x.name||'Sted'); } });
 $('placeAdd').addEventListener('click',()=>{ const x={id:uid(),name:'',role:'Andet',address:'',time:'',contact:'',phone:'',url:'',note:''}; state.places.push(x); commit('full','nyt sted'); $('places').querySelector(`[data-id="${x.id}"] .t`).focus(); });
 $('copyAddr').addEventListener('click',()=>{ const txt=state.places.filter(p=>p.role!=='Andet'||p.name).map(p=>`${p.role}: ${p.name}${p.address?', '+p.address:''}${p.time?' – '+p.time:''}`).join('\n'); navigator.clipboard?.writeText(txt).then(()=>toast('Adresser kopieret')).catch(()=>toast('Kunne ikke kopiere')); });
