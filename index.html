@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 22:18">
+<meta name="build" content="2026-09-12 23:13">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -32,7 +32,7 @@
   --r:10px;
 }
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
+  :root:not([data-theme="light"]):not([data-theme="rose"]){
     color-scheme:dark;
     --ground:#121514; --surface:#1b1e1d; --surface-2:#222624; --surface-3:#2a2f2c;
     --ink:#f3f4f1; --ink-2:#c1c7c3; --muted:#8a938f; --hair:rgba(255,255,255,.10);
@@ -52,6 +52,19 @@
   --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;
   --other:#4a504c;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+:root[data-theme="rose"]{ /* lyst rosa tema – blush i stedet for gråt, dyb rosentræ som accent */
+  color-scheme:light;
+  --ground:#fbeef1; --surface:#fffafb; --surface-2:#fdf1f4; --surface-3:#f8e4ea;
+  --ink:#3b222b; --ink-2:#6e4a58; --muted:#a08490;
+  --hair:rgba(90,40,58,.13);
+  --accent:#a8406a; --accent-ink:#ffffff; --accent-soft:#fbdfe8;
+  --good:#0ca30c; --good-text:#00700a; --good-soft:rgba(12,163,12,.12);
+  --warn-soft:rgba(250,178,25,.2); --warn-text:#7a5200;
+  --crit:#c8324f; --crit-soft:rgba(200,50,79,.12);
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#7b5ec7;--s8:#e34948;
+  --other:#d8bfc8;
+  --shadow:0 1px 2px rgba(90,40,58,.06),0 10px 26px -14px rgba(90,40,58,.30);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -320,6 +333,11 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .tlist h3{font-size:15px;margin-bottom:4px}
 .tlist ol{margin:0;padding-left:18px;color:var(--ink-2)}
 .tlist .e{color:var(--muted);font-style:italic}
+/* med/uden børn: det, der ikke tæller med lige nu, tones ned */
+.ghost.kidsbtn.on,.ghost.kidsbtn.on:hover{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)} /* skal slå .ghost:hover, ellers bliver teksten usynlig under markøren */
+.tbl tbody tr.excl{opacity:.6}
+.seat.excl circle:not(.hit){opacity:.4} .seat.excl text{opacity:.45}
+.tlist li.excl{opacity:.6} .tlist li small{color:var(--muted);font-size:11px}
 /* fortryd/gentag + fokuseret bordplan */
 .histfloat{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;gap:3px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:3px}
 .histfloat button{border:1px solid var(--hair);background:var(--surface);min-width:44px;height:34px;border-radius:6px;color:var(--ink-2);font-size:17px;line-height:1}
@@ -658,7 +676,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
   <section class="card" style="margin-top:20px">
     <div class="card-head">
       <div><h2>Gæsteliste</h2><p class="hint">Hvem der er inviteret, og hvem der har svaret.</p></div>
-      <div class="filters"><input class="search" id="gSearch" placeholder="Søg navn…" aria-label="Søg"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="yes">Ja</button><button class="fchip" data-f="maybe">Afventer</button><button class="fchip" data-f="no">Nej</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button></div>
+      <div class="filters"><input class="search" id="gSearch" placeholder="Søg navn…" aria-label="Søg"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="yes">Ja</button><button class="fchip" data-f="maybe">Afventer</button><button class="fchip" data-f="no">Nej</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button><button class="fchip" data-f="kids">Børn</button><button class="ghost kidsbtn" data-kids="1"></button></div>
     </div>
     <div class="chips" id="gChips"></div>
     <div class="tblwrap"><table class="tbl" id="gtbl">
@@ -673,7 +691,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 <!-- ============ BORDPLAN ============ -->
 <section class="page wide" id="page-bordplan" hidden>
   <div class="card-head" style="align-items:center;margin-top:18px"><div><h2>Plantegning og bordplan</h2><p class="hint" id="seatHint"></p></div>
-    <div class="filters"><button class="ghost" id="focusBtn" aria-pressed="false" title="Vis kun bordene og navnene – intet kan flyttes ved et uheld">◎ Fokuseret bordplan</button><button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
+    <div class="filters"><button class="ghost kidsbtn" data-kids="1"></button><button class="ghost" id="focusBtn" aria-pressed="false" title="Vis kun bordene og navnene – intet kan flyttes ved et uheld">◎ Fokuseret bordplan</button><button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
   <div class="seatgrid">
     <section class="card pool">
       <div class="card-head"><div><h3>Ikke placeret</h3><p class="hint" id="poolHint"></p></div></div>
@@ -1011,12 +1029,18 @@ function normalize(s){
   s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
   s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'' }));
   s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now() }));
-  s.guests=+s.guests||0; s.guestsAuto = s.guestsAuto!==false; s.budget=+s.budget||0; s.updatedAt=+s.updatedAt||0; s.nameA=s.nameA||'Mie'; s.nameB=s.nameB||'Adam';
+  s.guests=+s.guests||0; s.guestsAuto = s.guestsAuto!==false; s.kidsIn = s.kidsIn!==false; /* børn med i planen? kan slås fra, mens I venter på svar */ s.budget=+s.budget||0; s.updatedAt=+s.updatedAt||0; s.nameA=s.nameA||'Mie'; s.nameB=s.nameB||'Adam';
   return s;
 }
 function localLoad(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&Array.isArray(s.items)) return s; }catch(e){} return null; }
 function localSave(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
-function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=0; state.guests_list.forEach(g=>{ if(g.rsvp!=='no') n++; }); return n; } return +state.guests||0; }
+/* «Med børn / uden børn»: et scenarie, der kun ændrer tal og lister – ingen gæster eller placeringer røres */
+function kidsIn(){ return state.kidsIn!==false; }
+function inPlan(g){ return g.rsvp!=='no' && (kidsIn() || !g.child); }
+function nKids(n){ return `${n} ${n===1?'barn':'børn'}`; }
+function isChildId(id){ const g=state.guests_list.find(x=>x.id===id); return !!(g&&g.child); }
+function outOfPlan(id){ return !kidsIn() && isChildId(id); }
+function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=0; state.guests_list.forEach(g=>{ if(inPlan(g)) n++; }); return n; } return +state.guests||0; }
 const estOf = i => i.perGuest!=null ? Math.round(i.perGuest*guestCount()) : (+i.planned||0);
 const plannedOf = i => (+i.final>0) ? +i.final : estOf(i);
 const ownerName = o => o==='A'?state.nameA : o==='B'?state.nameB : o==='AB'?'Begge' : '';
@@ -1044,9 +1068,14 @@ const svgX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 
 /* ---------- derived ---------- */
 function totals(){ const planned=state.items.reduce((a,i)=>a+plannedOf(i),0), paid=state.items.reduce((a,i)=>a+(+i.paid||0),0), budget=+state.budget||0; return {planned,paid,budget,buffer:budget-planned}; }
-function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0,stay:0,f:0,m:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.rsvp!=='no'&&g.sex) s[g.sex]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; }); return s; }
+function guestStats(){ const s={total:0,yes:0,maybe:0,no:0,child:0,diet:0,stay:0,f:0,m:0}; const skipKids=!kidsIn();
+  state.guests_list.forEach(g=>{ if(g.child&&g.rsvp!=='no') s.child++; // børn på listen tælles altid her, så vi kan vise «+ n børn»
+    if(skipKids&&g.child) return; // uden for planen lige nu
+    s.total++; s[g.rsvp]++; if(g.rsvp!=='no'&&g.sex) s[g.sex]++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; });
+  return s; }
 function seated(){ const m=new Map(); seatTables().forEach(t=>t.seatMap.forEach((id,i)=>{ if(id) m.set(id,{table:t,seat:i}); })); return m; }
-function seatedGuests(){ let n=0; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B') n++; })); return n; }
+function seatedGuests(){ let n=0; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B'&&!outOfPlan(id)) n++; })); return n; }
+function seatedAt(t){ return t.seatMap.filter(id=>id&&!outOfPlan(id)).length; } // besatte pladser, der tæller med i den aktuelle plan
 function totalSeats(t){ return t.lounge ? 0 : (t.type==='long' ? t.seats*2 + (t.ends?2:0) : t.seats); }
 function seatTables(){ return state.tables.filter(t=>!t.lounge); }
 function guestName(id){ if(id==='A') return state.nameA; if(id==='B') return state.nameB; return state.guests_list.find(g=>g.id===id)?.name||''; }
@@ -1081,6 +1110,7 @@ function renderHeader(){
   document.querySelectorAll('#bFilters .fchip[data-f="B"],#page-tidsplan .fchip[data-f="B"]').forEach(b=>b.textContent=state.nameB);
   document.querySelectorAll('#page-gaester .fchip[data-f="A"],#poolFilters .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA+'s');
   document.querySelectorAll('#page-gaester .fchip[data-f="B"],#poolFilters .fchip[data-f="B"]').forEach(b=>b.textContent=state.nameB+'s');
+  renderKidsBtn();
 }
 
 /* ---------- OVERBLIK ---------- */
@@ -1092,7 +1122,7 @@ function renderOverblik(){
   const over=t.buffer<0;
   $('tiles').innerHTML = `
     <a class="tile" href="#budget"><div class="l">Budget</div><div class="v tab">${kr(t.planned)}</div><div class="s">${t.budget>0?`${pct(t.planned,t.budget)} af rammen på ${kr(t.budget)}`:'Ingen ramme sat'} · ${over?'<span style="color:var(--crit)">overskredet</span>':`buffer ${kr(t.buffer)}`}</div><div class="mini"><span style="width:${Math.min(100,t.budget?t.planned/t.budget*100:0)}%${over?';background:var(--crit)':''}"></span></div></a>
-    <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${gs.child} børn`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
+    <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${nKids(gs.child)}${kidsIn()?'':' (ikke regnet med)'}`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
     <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${seatTables().length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,seatedGuests()/gs.yes*100):0}%"></span></div></a>
     <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
@@ -1140,7 +1170,7 @@ function syncGuestField(t){
   const gs=guestStats();
   $('perGuest').textContent = n>0?`${kr(t.planned/n)} pr. gæst`:'sæt antal';
   if(state.guestsAuto&&!state.guests_list.length) $('perGuest').textContent += ' · gæstelisten er tom, så tallet bruges';
-  else if(auto) $('perGuest').textContent += ` · ${gs.yes} ja + ${gs.maybe} afventer`;
+  else if(auto) $('perGuest').textContent += ` · ${gs.yes} ja + ${gs.maybe} afventer${kidsIn()?'':` (uden ${gs.child} børn)`}`;
 }
 function donutData(){
   const sorted=state.items.map(i=>({...i,p:plannedOf(i)})).filter(i=>i.p>0).sort((a,b)=>b.p-a.p);
@@ -1217,6 +1247,7 @@ function refreshBudgetLight(){
 function guestRows(){
   const q=ui.gSearch.toLowerCase();
   let list=state.guests_list.filter(g=>{ if(q&&!(g.name+' '+g.rel+' '+g.note).toLowerCase().includes(q)) return false;
+    if(ui.gFilter==='kids') return !!g.child;
     if(['yes','maybe','no'].includes(ui.gFilter)) return g.rsvp===ui.gFilter; if(ui.gFilter==='A'||ui.gFilter==='B') return g.side===ui.gFilter||g.side==='AB'; return true; });
   const order={yes:0,maybe:1,no:2};
   const byName=(a,b)=>a.name.localeCompare(b.name,'da'); const so={A:0,B:1,AB:2}, sx={f:0,m:1,'':2};
@@ -1225,9 +1256,9 @@ function guestRows(){
 }
 function renderGuests(){
   const gs=guestStats();
-  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
+  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill${kidsIn()?'':' st-maybe'}"><b>${gs.child}</b> ${gs.child===1?'barn':'børn'}${kidsIn()?'':' – ikke regnet med'}</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
   const list=guestRows();
-  $('grows').innerHTML=list.map(g=>`<tr data-id="${g.id}">
+  $('grows').innerHTML=list.map(g=>`<tr data-id="${g.id}"${!kidsIn()&&g.child?' class="excl" title="Barn – regnes ikke med, mens planen er uden børn"':''}>
     <td class="c-name" data-l="Navn"><input data-f="name" value="${esc(g.name)}" placeholder="Navn" aria-label="Navn"></td>
     <td data-l="Side"><select class="sel" data-f="side" aria-label="Side">${opts(['A','B','AB'],g.side,sideName)}</select></td>
     <td data-l="Køn"><select class="sel" data-f="sex" aria-label="Køn">${opts(['','f','m'],g.sex,x=>x==='f'?'Kvinde':x==='m'?'Mand':'–')}</select></td>
@@ -1267,14 +1298,16 @@ function tableBox(t,g){ // ydre mål inkl. rotation (langborde kan ligge vandret
 }
 function renderSeating(){
   const st=seated(); const gs=guestStats();
+  const kidsChip=$('poolFilters').querySelector('[data-f="kids"]'); // «Børn» giver ikke mening, når planen er uden børn
+  if(kidsChip){ kidsChip.hidden=!kidsIn(); if(!kidsIn()&&ui.pFilter==='kids'){ ui.pFilter='all'; $('poolFilters').querySelectorAll('.fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); } }
   const pool=[...(st.has('A')||ui.pFilter==='kids'||ui.pFilter==='B'?[]:[{id:'A',name:state.nameA,side:'A',couple:true}]),...(st.has('B')||ui.pFilter==='kids'||ui.pFilter==='A'?[]:[{id:'B',name:state.nameB,side:'B',couple:true}]),
-    ...state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||(ui.pFilter==='kids'?g.child:(g.side===ui.pFilter||g.side==='AB')))).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
+    ...state.guests_list.filter(g=>inPlan(g)&&!st.has(g.id)&&(ui.pFilter==='all'||(ui.pFilter==='kids'?g.child:(g.side===ui.pFilter||g.side==='AB')))).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
   $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}${g.sex?' sex-'+g.sex:g.couple?(g.id==='A'?' sex-f':' sex-m'):''}" draggable="true" data-g="${g.id}" title="${g.couple?'Brudeparret':esc(sideName(g.side))+(g.rel?' · '+esc(g.rel):'')}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.couple?' <span class="tag">brudepar</span>':''}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
   const selSeated = ui.selGuest && st.get(ui.selGuest);
   $('poolHint').textContent = ui.selGuest ? `Klik på en plads til ${guestName(ui.selGuest)}` : `${pool.length} mangler plads.`;
   $('poolAction').innerHTML = selSeated ? `<button class="ghost" id="unseatSel">Tag ${esc(shortName(guestName(ui.selGuest)))} væk fra ${esc(selSeated.table.name)}</button>` : ui.selGuest ? `<button class="ghost" id="clearSel">Fortryd valg</button>` : '';
   const cap=state.tables.reduce((a,t)=>a+totalSeats(t),0); const nL=state.tables.filter(t=>t.lounge).length;
-  $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${seatTables().length} borde${nL?` (+ ${nL} loungeborde, tæller ikke)`:''}`;
+  $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${seatTables().length} borde${nL?` (+ ${nL} loungeborde, tæller ikke)`:''}${!kidsIn()&&gs.child?` · ${nKids(gs.child)} er ikke regnet med`:''}`;
   renderTsel(); drawPlan(); renderTlists(); renderVersions();
   $('addZone').innerHTML='<option value="">+ Område…</option>'+Object.keys(ZONES).map(k=>`<option value="${k}">${ZONES[k]}</option>`).join('');
 }
@@ -1283,7 +1316,7 @@ function selObj(){ if(!ui.sel) return null; return collOf(ui.sel.kind).find(x=>x
 function renderTsel(){
   const o=selObj(); const el=$('tsel'); if(!o){ el.hidden=true; el.innerHTML=''; return; }
   el.hidden=false;
-  if(ui.sel.kind==='table'){ const t=o; const used=t.seatMap.filter(Boolean).length;
+  if(ui.sel.kind==='table'){ const t=o; const used=seatedAt(t);
     el.innerHTML=`<span style="color:var(--muted)">Bord</span><input class="n" data-tf="name" value="${esc(t.name)}" aria-label="Bordnavn"><select data-tf="type"><option value="long"${t.type==='long'?' selected':''}>Langbord</option><option value="round"${t.type==='round'?' selected':''}>Rundt bord</option></select>
     <label>${t.type==='long'?'Pladser pr. side':'Pladser'} <input class="num tab" data-tf="seats" inputmode="numeric" value="${t.seats}"></label>
     ${t.type==='long'?`<label><input type="checkbox" data-tf="ends" ${t.ends?'checked':''}> Bordender</label>`:''}
@@ -1327,21 +1360,21 @@ function drawPlan(){
       const lbl=t.type==='round'?`<text class="tname" x="${g.cx}" y="${g.cy+4}" text-anchor="middle">${esc(t.name)}</text>`:`<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="4">${esc(t.name)}</text>`;
       return `<g class="tb lounge${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${lbl}</g>`; }
     const body = t.type==='round' ? `<circle class="body" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>` : `<rect class="body" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
-    const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`
-      : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-1">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`;
+    const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${seatedAt(t)}/${totalSeats(t)}</text>`
+      : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-1">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${seatedAt(t)}/${totalSeats(t)}</text>`;
     const rotT = t.type==='long'&&t.rot ? ` rotate(90 ${g.w/2} ${g.h/2})` : '';
     const seats=g.seats.map(sd=>{ const id=t.seatMap[sd.i]; const nm=id?guestName(id):''; const gg=id&&id!=='A'&&id!=='B'?state.guests_list.find(x=>x.id===id):null;
-      const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', id?'sex-'+(guestSex(id)||'x'):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
+      const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', id?'sex-'+(guestSex(id)||'x'):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', id&&outOfPlan(id)?'excl':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
       const tr=sd.rot!=null?` transform="rotate(${sd.rot.toFixed(1)} ${sd.tx} ${sd.ty})" dy="4"`:''; const txt=id?esc(sd.inside?shortName(nm,16):shortName(nm)):(sd.i+1);
-      return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle class="hit" cx="${sd.x}" cy="${sd.y}" r="${SEAT.R+9}" fill="transparent" stroke="none"/><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text class="${sd.inside?'in':''}" x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}"${tr}>${txt}</text></g>`; }).join('');
+      return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm)+(outOfPlan(id)?' – barn, regnes ikke med lige nu':''):'Ledig plads'}</title><circle class="hit" cx="${sd.x}" cy="${sd.y}" r="${SEAT.R+9}" fill="transparent" stroke="none"/><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text class="${sd.inside?'in':''}" x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}"${tr}>${txt}</text></g>`; }).join('');
     return `<g class="tb${sel?' sel':''}${rotT?' rot':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})${rotT}">${body}${label}${seats}</g>`; });
   svg.innerHTML = defs + rooms + zones + doors + parts.join('') + (!tabs.length&&(F||!state.rooms.length) ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">${F?'Ingen borde i bordplanen endnu – afslut fokus for at tilføje borde.':'Tilføj et rum, et langbord eller et rundt bord for at komme i gang.'}</text>` : '');
   $('zoomPct').textContent=Math.round(ui.zoom*100)+' %';
   if(!ui.zoomed){ const cw=$('canvaswrap').clientWidth; if(cw>0){ ui.zoomed=true; if(W*ui.zoom>cw-2){ ui.zoom=Math.max(.3,(cw-2)/W); svg.setAttribute('width',Math.round(W*ui.zoom)); svg.setAttribute('height',Math.round(H*ui.zoom)); $('zoomPct').textContent=Math.round(ui.zoom*100)+' %'; } } }
 }
 function renderTlists(){
-  $('tlists').innerHTML = seatTables().map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
-    return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
+  $('tlists').innerHTML = seatTables().map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li${outOfPlan(id)?' class="excl"':''}>${esc(guestName(id))}${outOfPlan(id)?' <small>barn – ikke talt med</small>':''}</li>`:'').filter(Boolean).join('');
+    return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${seatedAt(t)}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
 }
 function planData(){ return JSON.parse(JSON.stringify({tables:state.tables})); } // versioner gemmer kun bordene (inkl. loungeborde) og placeringerne – rum, områder og døre er fælles for alle versioner
 function versionStats(d){ const seated=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.seatMap||[]).filter(x=>x&&x!=='A'&&x!=='B').length),0); const cap=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.type==='long'?t.seats*2+(t.ends?2:0):t.seats)),0); return {seated,cap,tables:(d.tables||[]).filter(t=>!t.lounge).length}; }
@@ -1370,27 +1403,30 @@ function dietList(){
   const lines=[]; const gs=guestStats();
   const adults=state.guests_list.filter(g=>g.rsvp==='yes'&&!g.child).length, kids=state.guests_list.filter(g=>g.rsvp==='yes'&&g.child).length;
   const madults=state.guests_list.filter(g=>g.rsvp==='maybe'&&!g.child).length, mkids=state.guests_list.filter(g=>g.rsvp==='maybe'&&g.child).length;
+  const wk=kidsIn(); // «uden børn»-scenariet slår også igennem på kokkens liste
   lines.push(`${state.nameA} & ${state.nameB} – ${state.date?fmtLong(state.date):''}`);
-  lines.push(`Kuverter (ja): ${adults+2} voksne (inkl. brudeparret), ${kids} børn` + (madults+mkids?`  ·  afventer: ${madults} voksne, ${mkids} børn`:''));
-  lines.push(`Børnemenuer: ${kids}${mkids?` (+ ${mkids} afventer)`:''}`);
-  lines.push(`Natmad: ca. ${adults+2+kids} personer${madults+mkids?` (+ ${madults+mkids} afventer)`:''}`);
+  if(!wk) lines.push(`OBS: planen regner lige nu UDEN børn${gs.child?` – ${nKids(gs.child)} på gæstelisten er ikke talt med`:''}.`);
+  lines.push(`Kuverter (ja): ${adults+2} voksne (inkl. brudeparret)${wk?`, ${kids} børn`:''}` + (madults+(wk?mkids:0)?`  ·  afventer: ${madults} voksne${wk&&mkids?`, ${nKids(mkids)}`:''}`:''));
+  lines.push(`Børnemenuer: ${wk?`${kids}${mkids?` (+ ${mkids} afventer)`:''}`:'0 – børn er ikke med i planen'}`);
+  lines.push(`Natmad: ca. ${adults+2+(wk?kids:0)} personer${madults+(wk?mkids:0)?` (+ ${madults+(wk?mkids:0)} afventer)`:''}`);
   lines.push('');
-  const diets=state.guests_list.filter(g=>g.rsvp!=='no'&&g.diet.trim());
+  const diets=state.guests_list.filter(g=>inPlan(g)&&g.diet.trim());
   lines.push(`Særlige hensyn (${diets.length}):`);
   if(!diets.length) lines.push('  ingen');
   const byDiet=new Map(); diets.forEach(g=>{ const k=g.diet.trim(); if(!byDiet.has(k)) byDiet.set(k,[]); byDiet.get(k).push(g.name+(g.rsvp==='maybe'?' (afventer)':'')); });
   [...byDiet.entries()].forEach(([k,arr])=>lines.push(`  ${k}: ${arr.join(', ')}`));
   lines.push('');
   lines.push('Pr. bord:');
-  seatTables().forEach(t=>{ const ids=t.seatMap.filter(Boolean); const gl=ids.map(id=>id==='A'||id==='B'?{name:guestName(id),child:false,diet:''}:state.guests_list.find(g=>g.id===id)).filter(Boolean);
-    const k=gl.filter(g=>g.child).length; const d=gl.filter(g=>g.diet&&g.diet.trim()).map(g=>`${g.name} (${g.diet})`);
-    lines.push(`  ${t.name}: ${gl.length} personer${k?`, heraf ${k} børn`:''}${d.length?` – ${d.join(', ')}`:''}`); });
-  const unplaced=state.guests_list.filter(g=>g.rsvp==='yes'&&!seated().has(g.id)).length; if(unplaced) lines.push(`  (ikke placeret endnu: ${unplaced})`);
+  seatTables().forEach(t=>{ const ids=t.seatMap.filter(Boolean); const all=ids.map(id=>id==='A'||id==='B'?{name:guestName(id),child:false,diet:''}:state.guests_list.find(g=>g.id===id)).filter(Boolean);
+    const gl=all.filter(g=>wk||!g.child); const k=gl.filter(g=>g.child).length; const out=all.length-gl.length;
+    const d=gl.filter(g=>g.diet&&g.diet.trim()).map(g=>`${g.name} (${g.diet})`);
+    lines.push(`  ${t.name}: ${gl.length} personer${k?`, heraf ${nKids(k)}`:''}${out?`, + ${nKids(out)} der ikke er talt med`:''}${d.length?` – ${d.join(', ')}`:''}`); });
+  const unplaced=state.guests_list.filter(g=>g.rsvp==='yes'&&inPlan(g)&&!seated().has(g.id)).length; if(unplaced) lines.push(`  (ikke placeret endnu: ${unplaced})`);
   return lines.join('\n');
 }
 function showDiet(){ $('dietText').value=dietList(); $('dietModal').classList.add('show'); }
 function printCards(){
-  const cards=[]; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id) cards.push(`<div class="card1"><b>${esc(guestName(id))}</b><span>${esc(t.name)}</span></div>`); }));
+  const cards=[]; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id&&!outOfPlan(id)) cards.push(`<div class="card1"><b>${esc(guestName(id))}</b><span>${esc(t.name)}</span></div>`); }));
   if(!cards.length){ toast('Ingen er placeret endnu'); return; }
   const sz=$('cardSize').value; $('cards').innerHTML=cards.join(''); document.body.classList.add('print-cards'); if(sz!=='3') document.body.classList.add('cards-'+sz); window.print(); setTimeout(()=>{ document.body.classList.remove('print-cards','cards-2','cards-fold'); },500);
 }
@@ -1542,7 +1578,7 @@ $('guestsAuto').addEventListener('change',e=>{ const n=guestCount(); state.guest
 /* ---------- events: guests ---------- */
 bindEdits($('grows'), ()=>state.guests_list, (g,f,el,row)=>{ if(f==='rsvp'){ el.className='sel rsvp st-'+g.rsvp; if(g.rsvp==='no') unseat(g.id); } if(f==='name'&&!g.sex){ const gs=guessSex(g.name); if(gs){ g.sex=gs; const sel=row.querySelector('[data-f="sex"]'); if(sel) sel.value=gs; } } return 'none'; });
 $('grows').addEventListener('input',e=>{ const f=e.target.dataset.f; if(['rsvp','child','diet','sex','stay'].includes(f)) renderGuests_chipsOnly(); });
-function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
+function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill${kidsIn()?'':' st-maybe'}"><b>${gs.child}</b> ${gs.child===1?'barn':'børn'}${kidsIn()?'':' – ikke regnet med'}</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.f}</b> kvinder · <b>${gs.m}</b> mænd</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
 $('grows').addEventListener('click',e=>{ const row=e.target.closest('tr[data-id]'); if(row&&e.target.closest('[data-del]')){ const g=state.guests_list.find(x=>x.id===row.dataset.id); unseat(g.id); delWithUndo(()=>state.guests_list,g.id,g.name); } });
 $('gAdd').addEventListener('click',()=>{ const g={id:uid(),name:'',side:'AB',rel:'',rsvp:'maybe',child:false,diet:'',sex:'',note:''}; state.guests_list.push(g); ui.gFilter='all'; ui.gSearch=''; $('gSearch').value=''; document.querySelectorAll('#page-gaester .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); commit(); const tr=$('grows').querySelector(`tr[data-id="${g.id}"]`); tr.querySelector('[data-f="name"]').focus(); tr.scrollIntoView({block:'nearest'}); });
 $('gBulk').addEventListener('click',()=>{ $('bulkModal').classList.add('show'); setTimeout(()=>$('bulkText').focus(),50); });
@@ -1553,6 +1589,14 @@ $('bulkForm').addEventListener('submit',e=>{ e.preventDefault(); const lines=$('
 $('gSearch').addEventListener('input',e=>{ ui.gSearch=e.target.value; renderGuests(); });
 bindFilters($('page-gaester').querySelector('.filters'),'gFilter',renderGuests);
 bindSort($('gtbl').querySelector('thead'),'gSort','gDir',{name:1,rsvp:1,side:1,sex:1,rel:1},renderGuests);
+
+/* ---------- med / uden børn ---------- */
+function renderKidsBtn(){ const on=kidsIn();
+  document.querySelectorAll('[data-kids]').forEach(b=>{ b.textContent=on?'Med børn':'Uden børn'; b.classList.toggle('on',!on); b.setAttribute('aria-pressed',on?'false':'true');
+    b.title=on?'Tallene regner med børn – tryk for at se gæsteliste, budget og bordplan uden dem':'Tallene regner uden børn – tryk for at tage dem med igen'; }); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-kids]'); if(!b) return;
+  state.kidsIn=!kidsIn(); commit('full', kidsIn()?'børn regnes med':'planen regnes uden børn');
+  toast(kidsIn()?'Børn er med i tallene igen':'Tal og bordplan vises nu uden børn – ingen gæster er flyttet'); });
 
 /* ---------- events: seating ---------- */
 $('pool').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; ui.selGuest=ui.selGuest===b.dataset.g?null:b.dataset.g; renderSeating(); });
@@ -1795,7 +1839,22 @@ $('clean').addEventListener('click',()=>{ if(!confirm('Gør klar til jeres egne 
   commit('full','ryddede eksempeldata'); toast('Klar til jeres egne data'); });
 $('reset').addEventListener('click',()=>{ if(confirm('Nulstil ALT til eksempeldata? Jeres egne tal, gæster, noter og opgaver overskrives – også for den anden, hvis I deler.')){ state=normalize(makeSample()); commit(); toast('Nulstillet'); } });
 const root=document.documentElement; try{ const th=localStorage.getItem(KEY+'.theme'); if(th) root.dataset.theme=th; }catch(e){}
-$('theme').addEventListener('click',()=>{ const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches; root.dataset.theme=dark?'light':'dark'; try{ localStorage.setItem(KEY+'.theme',root.dataset.theme); }catch(e){} });
+/* tre temaer: lyst → rosa → mørkt. Uden et valg følger siden systemet (lyst/mørkt) */
+const THEMES=['light','rose','dark'];
+const THEME_NAME={light:'Lyst tema', rose:'Rosa tema', dark:'Mørkt tema'};
+const THEME_META={light:'#2f5d5a', rose:'#a8406a', dark:'#121514'};
+const THEME_ICON={
+  light:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/>',
+  rose:'<path d="M12 20.3s-7.3-4.4-7.3-9.4A4.1 4.1 0 0 1 12 8.2a4.1 4.1 0 0 1 7.3 2.7c0 5-7.3 9.4-7.3 9.4z"/>',
+  dark:'<path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A5.5 5.5 0 0 1 12.4 3.1C12.3 3 12.1 3 12 3z"/>'};
+function currentTheme(){ return THEMES.includes(root.dataset.theme) ? root.dataset.theme : (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); }
+function renderThemeBtn(){ const t=currentTheme(), b=$('theme');
+  b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${THEME_ICON[t]}</svg>`;
+  b.title=`${THEME_NAME[t]} – tryk for at skifte`; b.setAttribute('aria-label',b.title); 
+  const meta=document.querySelector('meta[name=theme-color]'); if(meta) meta.content=THEME_META[t]; }
+$('theme').addEventListener('click',()=>{ const t=THEMES[(THEMES.indexOf(currentTheme())+1)%THEMES.length];
+  root.dataset.theme=t; try{ localStorage.setItem(KEY+'.theme',t); }catch(e){} renderThemeBtn(); toast(THEME_NAME[t]); });
+renderThemeBtn();
 let toastT, toastUndo=null;
 function toast(msg,undo){ const t=$('toast'); $('toastText').textContent=msg; toastUndo=undo||null; $('toastBtn').hidden=!undo; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),undo?7000:2200); }
 $('toastBtn').addEventListener('click',()=>{ if(toastUndo) toastUndo(); toastUndo=null; $('toast').classList.remove('show'); });
@@ -1806,7 +1865,7 @@ const COLLS=['items','guests_list','tables','rooms','zones','doors','wishes','pl
 function mergeStates(local, remote){
   const out=structuredClone(remote); const tomb={...(remote.tomb||{}),...(local.tomb||{})}; out.tomb=tomb;
   const newerRemote=(+remote.updatedAt||0)>=(+local.updatedAt||0);
-  ['nameA','nameB','date','guests','budget'].forEach(k=>{ out[k]=newerRemote?remote[k]:local[k]; });
+  ['nameA','nameB','date','guests','budget','kidsIn'].forEach(k=>{ out[k]=newerRemote?remote[k]:local[k]; });
   COLLS.forEach(k=>{ const L=local[k]||[], R=remote[k]||[]; const Lm=new Map(L.map(x=>[x.id,x])), Rm=new Map(R.map(x=>[x.id,x])); const res=[];
     R.forEach(r=>{ const l=Lm.get(r.id); if(l){ res.push((+l.u||0)>(+r.u||0)?l:r); } else { const t=tomb[r.id]; if(!(t&&t>(+r.u||0))) res.push(r); } });
     L.forEach(l=>{ if(!Rm.has(l.id)){ const t=tomb[l.id]; if(!(t&&t>(+l.u||0))) res.push(l); } });
