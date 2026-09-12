@@ -17,10 +17,11 @@
  *  - Gæster   : læsbar kopi af gæstelisten inkl. bord
  *  - Opgaver  : tidsplanens opgaver og dagens program
  *  - Noter    : noterne
+ *  - Praktisk : steder, leverandører, taler/indslag og gaver
  *  - Historik : én række pr. ændring af totalerne (pris/betalt/buffer over tid)
  */
 const ACCESS_CODE = 'SKIFT-MIG';
-const API_VERSION = 2;
+const API_VERSION = 3;
 
 function doGet() { return out({ ok: true, v: API_VERSION }); }
 
@@ -40,7 +41,7 @@ function doPost(e) {
       // Sidste skriver vinder – men en ældre klient må ikke overskrive nyere data.
       if (current && (current.updatedAt || 0) > (inc.updatedAt || 0)) return out({ ok: true, stale: true, state: current, v: API_VERSION });
       writeState(inc);
-      try { mirrorItems(inc); mirrorGuests(inc); mirrorTasks(inc); mirrorNotes(inc); } catch (err) { /* spejling må aldrig blokere et gem */ }
+      try { mirrorItems(inc); mirrorGuests(inc); mirrorTasks(inc); mirrorNotes(inc); mirrorMore(inc); } catch (err) { /* spejling må aldrig blokere et gem */ }
       logHistory(inc);
       return out({ ok: true, state: inc, v: API_VERSION });
     }
@@ -104,9 +105,9 @@ function mirrorItems(s) {
 
 function mirrorGuests(s) {
   const seat = {};
-  (s.tables || []).forEach(t => (t.guests || []).forEach(id => { seat[id] = t.name; }));
-  const rows = [['Navn', 'Side', 'Relation', 'Svar', 'Barn', 'Kost / allergi', 'Bord', 'Note']];
-  (s.guests_list || []).forEach(g => rows.push([g.name, sideName(g.side, s), g.rel || '', RSVP[g.rsvp] || g.rsvp, g.child ? 'Ja' : '', g.diet || '', seat[g.id] || '', g.note || '']));
+  (s.tables || []).forEach(t => (t.seatMap || t.guests || []).forEach((id, i) => { if (id) seat[id] = t.name + (t.seatMap ? ' (plads ' + (i + 1) + ')' : ''); }));
+  const rows = [['Navn', 'Side', 'Relation', 'Svar', 'Barn', 'Overnatning', 'Kost / allergi', 'Bord', 'Note']];
+  (s.guests_list || []).forEach(g => rows.push([g.name, sideName(g.side, s), g.rel || '', RSVP[g.rsvp] || g.rsvp, g.child ? 'Ja' : '', g.stay ? 'Ja' : '', g.diet || '', seat[g.id] || '', g.note || '']));
   const yes = (s.guests_list || []).filter(g => g.rsvp === 'yes').length;
   rows.push([]);
   rows.push(['Inviteret', (s.guests_list || []).length]);
@@ -130,6 +131,19 @@ function mirrorNotes(s) {
   const rows = [['Titel', 'Hvem', 'Fastgjort', 'Opdateret', 'Indhold']];
   (s.notes || []).forEach(n => rows.push([n.title, ownerName(n.who, s), n.pin ? 'Ja' : '', new Date(n.updated || 0), n.body || '']));
   writeRows('Noter', rows);
+}
+
+function mirrorMore(s) {
+  const rows = [['Steder'], ['Navn', 'Rolle', 'Adresse', 'Tid', 'Kontakt', 'Telefon', 'Note']];
+  (s.places || []).forEach(p => rows.push([p.name, p.role, p.address, p.time, p.contact, p.phone, p.note]));
+  rows.push([]); rows.push(['Leverandører']); rows.push(['Navn', 'Kategori', 'Status', 'Kontakt', 'Telefon', 'E-mail', 'Aftalt', 'Mangler', 'Note']);
+  const VS = { idea: 'Ikke kontaktet', contacted: 'I dialog', booked: 'Booket' };
+  (s.vendors || []).forEach(v => rows.push([v.name, v.cat, VS[v.status] || v.status, v.contact, v.phone, v.email, v.agreed, v.missing, v.note]));
+  rows.push([]); rows.push(['Taler og indslag']); rows.push(['Hvem', 'Hvad', 'Hvornår', 'Minutter', 'Aftalt', 'Note']);
+  (s.speeches || []).forEach(x => rows.push([x.who, x.what, x.when, x.minutes, x.done ? 'Ja' : '', x.note]));
+  rows.push([]); rows.push(['Gaver']); rows.push(['Fra', 'Gave', 'Takkekort sendt', 'Note']);
+  (s.gifts || []).forEach(g => rows.push([g.from, g.gift, g.thanked ? 'Ja' : '', g.note]));
+  writeRows('Praktisk', rows);
 }
 
 function logHistory(s) {

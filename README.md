@@ -22,7 +22,7 @@ Sæt en lille Google Apps Script-server op, så I begge ser og retter det samme 
 
 Herefter:
 - Ændringer gemmes på serveren ~1 sekund efter I retter noget, og hentes hver 30. sekund samt hver gang siden får fokus.
-- Arket får fanerne **State** (rå JSON), **Poster**, **Gæster**, **Opgaver**, **Noter** (læsbare kopier) og **Historik** (budgettotaler over tid).
+- Arket får fanerne **State** (rå JSON), **Poster**, **Gæster**, **Opgaver**, **Noter**, **Praktisk** (læsbare kopier) og **Historik** (budgettotaler over tid).
 - Retter du i `Code.gs` senere: Deploy → Manage deployments → ✏️ → *New version* – så beholder URL'en sig.
 
 `localStorage` fungerer stadig som cache, så siden åbner med det samme og virker offline.
@@ -34,9 +34,14 @@ Herefter:
 - **Overblik** – nedtælling, status på budget/gæster/bordplan/tidsplan, næste opgaver og seneste noter
 - **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet
 - **Gæster** – navn, side, relation, svar (ja/afventer/nej), barn, kost/allergi; filtre, søgning, "tilføj flere ad gangen"
-- **Bordplan** – borde med antal pladser; placér gæster ved klik eller træk-og-slip; advarsel når et bord er overfyldt
+- **Bordplan** – tegn rummet: langborde (pladser på begge sider, evt. bordender) og runde borde, træk dem rundt; navnene sidder på pladserne; klik eller træk gæster på plads; print bordplan/bordkort; kost-liste til kokken
 - **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")
 - **Program** – selve dagen time for time; punkter før kl. 06 regnes som natten efter og ligger sidst
+- **Steder** – kirke, fest og overnatning med adresse, tid, kontakt, aftaler; kort- og rutelinks; liste over gæster der overnatter
+- **Leverandører** – fotograf, DJ, blomster… med status (ikke kontaktet / i dialog / booket), kontakt, aftalt og mangler
+- **Taler & indslag** – toastmasterens køreseddel, fotoliste til fotografen, sange til DJ'en
+- **Gaver** – hvem gav hvad, og om takkekortet er sendt
 - **Noter** – fritekstnoter med fastgørelse, forfatter og søgning
+- **Hvad er nyt** – efter login vælger man "Hvem er du?"; Overblik viser de seneste ændringer med navn
 
 Alt gemmes automatisk; sletning kan fortrydes; JSON-eksport/-import; lys/mørk tema; fungerer på mobil.

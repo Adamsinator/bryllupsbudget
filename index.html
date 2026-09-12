@@ -250,9 +250,53 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .slot input.desc{width:100%;border:1px solid transparent;background:transparent;border-radius:5px;padding:2px 7px;font-size:12.5px;color:var(--muted)}
 .slot input:hover{border-color:var(--hair)} .slot input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
 
-/* ---- seating ---- */
+/* ---- seating (SVG) ---- */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px;align-items:start}
+.seatbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.seatbar .sep{width:1px;height:22px;background:var(--hair);margin:0 4px}
+.tsel{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--accent-soft);border-radius:8px;padding:8px 12px;margin-top:10px;font-size:13px}
+.tsel input,.tsel select{border:1px solid var(--hair);background:var(--surface);border-radius:6px;padding:4px 8px;font-size:13px}
+.tsel input.n{width:130px} .tsel input.num{width:52px;text-align:center}
+.tsel label{display:inline-flex;gap:5px;align-items:center;color:var(--ink-2)}
+.canvaswrap{margin-top:12px;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);overflow:auto;position:relative;background-image:radial-gradient(var(--hair) 1px,transparent 1px);background-size:20px 20px}
+.canvaswrap svg{display:block;font-family:Karla,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
+.tb .body{fill:var(--surface-2);stroke:var(--ink-2);stroke-width:1.5;cursor:grab}
+.tb.sel .body{stroke:var(--accent);stroke-width:2.5}
+.tb .tname{font-family:Fraunces,Georgia,serif;font-size:13px;fill:var(--ink);pointer-events:none}
+.tb .tcount{font-size:10px;fill:var(--muted);pointer-events:none}
+.seat{cursor:pointer}
+.seat circle{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+.seat.occ circle{stroke:var(--accent);fill:var(--accent-soft)}
+.seat.occ.side-A circle{stroke:var(--s5)} .seat.occ.side-B circle{stroke:var(--s1)}
+.seat.couple circle{fill:var(--accent);stroke:var(--accent)}
+.seat.maybe circle{stroke-dasharray:3 2}
+.seat.sel circle{stroke:var(--crit);stroke-width:2.5}
+.seat:hover circle{stroke-width:2.5}
+.seat text{font-size:11.5px;fill:var(--ink);pointer-events:none}
+.seat.couple text{font-weight:700}
+.seat.empty text{fill:var(--muted);font-size:10px}
+.seat.target circle{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:3 2}
+.seat.drop circle{fill:var(--accent);stroke:var(--accent)}
+.tlists{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+.tlist{background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:13px}
+.tlist h3{font-size:15px;margin-bottom:4px}
+.tlist ol{margin:0;padding-left:18px;color:var(--ink-2)}
+.tlist .e{color:var(--muted);font-style:italic}
+.cards{display:none}
+@media print{
+  .top,.nav,.foot,.seatbar,.tsel,.pool,.card-head .filters,.addbtn,.iconbtn,.del,.themebtn,.toast,.tip{display:none!important}
+  body{background:#fff;color:#000} .wrap{max-width:none;padding:0}
+  .card,.canvaswrap{border:0;box-shadow:none;background:#fff;overflow:visible}
+  body.print-cards .page,body.print-cards .wrap{display:none!important}
+  body.print-cards .cards{display:grid!important;grid-template-columns:repeat(3,1fr);gap:10mm;padding:10mm}
+  .cards .card1{border:1px solid #999;border-radius:6px;height:50mm;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;text-align:center;break-inside:avoid}
+  .cards .card1 b{font-size:22px;font-weight:400} .cards .card1 span{font-family:Karla,sans-serif;font-size:12px;color:#555;margin-top:6px}
+  .seatgrid{grid-template-columns:1fr}
+}
 .seatgrid{display:grid;grid-template-columns:260px 1fr;gap:18px;margin-top:18px;align-items:start}
+.seatgrid>*{min-width:0}
 .pool{position:sticky;top:12px}
+.pool .names{max-height:52vh}
 .pool .names{display:flex;flex-direction:column;gap:4px;margin-top:10px;max-height:60vh;overflow:auto}
 .gchip{display:flex;align-items:center;gap:8px;border:1px solid var(--hair);background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13.5px;cursor:grab;text-align:left;width:100%}
 .gchip:hover{border-color:var(--accent)}
@@ -277,6 +321,30 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .seat .side{width:7px;height:7px;border-radius:50%}
 .tbc .ph{font-size:12.5px;color:var(--muted);padding:8px 0;width:100%;text-align:center;border:1px dashed var(--hair);border-radius:6px}
 .tbc.full .fill{color:var(--crit);font-weight:700}
+
+/* ---- generic entity cards (steder, leverandører) ---- */
+.ecards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:14px}
+.ecard{background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.ecard .h{display:flex;align-items:center;gap:6px}
+.ecard .h input.t{flex:1;min-width:0;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 6px;font-family:Fraunces,Georgia,serif;font-size:18px}
+.ecard .role{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:0}
+.ecard .f{display:grid;grid-template-columns:96px 1fr;gap:4px 8px;align-items:center;font-size:13.5px}
+.ecard .f label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.ecard .f input,.ecard .f select,.ecard textarea{width:100%;border:1px solid transparent;background:transparent;border-radius:5px;padding:4px 6px;min-width:0}
+.ecard textarea{resize:none;min-height:44px;font-size:13.5px;line-height:1.45;color:var(--ink-2);field-sizing:content}
+.ecard input:hover,.ecard select:hover,.ecard textarea:hover{border-color:var(--hair)}
+.ecard input:focus,.ecard select:focus,.ecard textarea:focus{outline:none;border-color:var(--accent)}
+.ecard .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.ecard .links a{font-size:12.5px;text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:3px 10px;color:var(--ink-2)}
+.ecard .links a:hover{border-color:var(--accent);color:var(--accent)}
+.ecard.booked{border-color:var(--good)} .ecard.contacted{border-color:#fab219}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+@media (max-width:900px){ .split,.grid3{grid-template-columns:1fr} }
+.changes li .d{width:auto;min-width:64px}
+.who-btns{display:flex;gap:10px;justify-content:center}
+.who-btns button{flex:1;padding:14px;border-radius:10px;border:1px solid var(--hair);background:var(--surface-2);font-family:Fraunces,Georgia,serif;font-size:20px}
+.who-btns button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.whochip{cursor:pointer;border:0;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;letter-spacing:.02em;text-transform:none}
 
 /* ---- notes ---- */
 .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
@@ -369,7 +437,7 @@ body.locked .wrap{display:none}
 
 <header class="top">
   <div>
-    <p class="eyebrow">Bryllupsplanlægning <span class="sync" id="sync"><i></i><span id="syncText">Gemt lokalt</span></span></p>
+    <p class="eyebrow">Bryllupsplanlægning <span class="sync" id="sync"><i></i><span id="syncText">Gemt lokalt</span></span> <button class="whochip" id="whoChip" title="Skift hvem der er logget ind"></button></p>
     <h1><span contenteditable="true" spellcheck="false" id="nameA">Mie</span> <span class="amp">&amp;</span> <span contenteditable="true" spellcheck="false" id="nameB">Adam</span></h1>
   </div>
   <div class="meta">
@@ -386,6 +454,10 @@ body.locked .wrap{display:none}
   <a href="#bordplan" data-p="bordplan">Bordplan <span class="c" id="nSeat"></span></a>
   <a href="#tidsplan" data-p="tidsplan">Tidsplan <span class="c" id="nTasks"></span></a>
   <a href="#program" data-p="program">Program <span class="c" id="nProg"></span></a>
+  <a href="#steder" data-p="steder">Steder</a>
+  <a href="#leverandorer" data-p="leverandorer">Leverandører <span class="c" id="nVend"></span></a>
+  <a href="#indslag" data-p="indslag">Taler &amp; indslag <span class="c" id="nSpeech"></span></a>
+  <a href="#gaver" data-p="gaver">Gaver <span class="c" id="nGifts"></span></a>
   <a href="#noter" data-p="noter">Noter <span class="c" id="nNotes"></span></a>
 </nav>
 
@@ -395,7 +467,8 @@ body.locked .wrap{display:none}
     <div class="count"><div class="n"><span id="ovDays">–</span><small>dage</small></div><div class="d" id="ovDate"></div></div>
     <div class="tiles" id="tiles"></div>
   </div>
-  <div class="grid2">
+  <div class="grid3">
+    <section class="card"><div class="card-head"><div><h2>Seneste ændringer</h2><p class="hint">Hvad I hver især har rettet.</p></div></div><ul class="list changes" id="ovChanges"></ul></section>
     <section class="card"><div class="card-head"><div><h2>Næste opgaver</h2><p class="hint">Fra tidsplanen – det der ligger først for.</p></div><a href="#tidsplan" class="linkbtn">Se alle</a></div><ul class="list" id="ovTasks"></ul></section>
     <section class="card"><div class="card-head"><div><h2>Seneste noter</h2><p class="hint">Fastgjorte noter først.</p></div><a href="#noter" class="linkbtn">Se alle</a></div><ul class="list" id="ovNotes"></ul></section>
   </div>
@@ -449,9 +522,9 @@ body.locked .wrap{display:none}
     </div>
     <div class="chips" id="gChips"></div>
     <div class="tblwrap"><table class="tbl" id="gtbl">
-      <thead><tr><th class="sort on" data-s="name">Navn</th><th>Side</th><th>Relation</th><th class="sort" data-s="rsvp">Svar</th><th class="c" style="width:52px">Barn</th><th>Kost / allergi</th><th>Note</th><th style="width:30px"></th></tr></thead>
+      <thead><tr><th class="sort on" data-s="name">Navn</th><th>Side</th><th>Relation</th><th class="sort" data-s="rsvp">Svar</th><th class="c" style="width:52px">Barn</th><th class="c" style="width:52px">Overnat.</th><th>Kost / allergi</th><th>Note</th><th style="width:30px"></th></tr></thead>
       <tbody id="grows"></tbody>
-      <tfoot><tr class="addrow"><td colspan="8"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="addbtn" id="gAdd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tilføj gæst</button><button class="addbtn" id="gBulk">Tilføj flere ad gangen</button></div></td></tr></tfoot>
+      <tfoot><tr class="addrow"><td colspan="9"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="addbtn" id="gAdd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Tilføj gæst</button><button class="addbtn" id="gBulk">Tilføj flere ad gangen</button><button class="addbtn" id="gDiet">Kost-liste til kokken</button></div></td></tr></tfoot>
     </table></div>
     <datalist id="relations"><option value="Familie"><option value="Venner"><option value="Kolleger"><option value="Studiekammerater"><option value="Naboer"><option value="Barndomsvenner"></datalist>
   </section>
@@ -461,13 +534,22 @@ body.locked .wrap{display:none}
 <section class="page" id="page-bordplan" hidden>
   <div class="seatgrid">
     <section class="card pool">
-      <div class="card-head"><div><h2>Ikke placeret</h2><p class="hint" id="poolHint">Klik på en gæst og derefter på et bord – eller træk.</p></div></div>
+      <div class="card-head"><div><h2>Ikke placeret</h2><p class="hint" id="poolHint"></p></div></div>
       <div class="filters" style="margin-top:10px"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="A">Mies</button><button class="fchip" data-f="B">Adams</button></div>
       <div class="names" id="pool"></div>
+      <div id="poolAction" style="margin-top:10px"></div>
     </section>
     <div>
-      <div class="card-head" style="align-items:center"><div><h2>Borde</h2><p class="hint" id="seatHint"></p></div><button class="addbtn" id="tAdd">+ Tilføj bord</button></div>
-      <div class="tables" id="tables" style="margin-top:12px"></div>
+      <div class="card-head" style="align-items:center"><div><h2>Bordplan</h2><p class="hint" id="seatHint"></p></div></div>
+      <div class="seatbar">
+        <button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
+        <span class="sep"></span>
+        <button class="ghost" id="printPlan">Print bordplan</button><button class="ghost" id="printCards">Print bordkort</button><button class="ghost" id="dietBtn">Kost-liste</button>
+      </div>
+      <div class="tsel" id="tsel" hidden></div>
+      <div class="canvaswrap" id="canvaswrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <p class="hint" style="margin-top:8px">Træk bordene rundt for at tegne rummet. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu.</p>
+      <div class="tlists" id="tlists"></div>
     </div>
   </div>
 </section>
@@ -489,6 +571,48 @@ body.locked .wrap{display:none}
   <section class="card" style="margin-top:20px">
     <div class="card-head"><div><h2>Dagens program</h2><p class="hint" id="progHint">Sådan skal selve dagen forløbe. Punkter efter midnat hører til natten – de ligger sidst.</p></div><button class="addbtn" id="slotAdd">+ Tilføj punkt</button></div>
     <div class="program" id="program"></div>
+  </section>
+</section>
+
+<!-- ============ STEDER ============ -->
+<section class="page" id="page-steder" hidden>
+  <div class="card-head" style="margin-top:20px;align-items:center"><div><h2>Steder</h2><p class="hint">Kirke, fest og overnatning – adresser, aftaler og ruter.</p></div><div class="filters"><a class="ghost" id="routeLink" href="#" target="_blank" rel="noopener" style="text-decoration:none">Rute kirke → fest</a><button class="ghost" id="copyAddr">Kopiér adresser</button><button class="primary" id="placeAdd">+ Tilføj sted</button></div></div>
+  <div class="ecards" id="places"></div>
+  <section class="card" style="margin-top:18px"><div class="card-head"><div><h2>Overnatning</h2><p class="hint">Gæster med hak i "Overnat." på gæstelisten.</p></div></div><div id="stayList" style="margin-top:10px;font-size:13.5px"></div></section>
+</section>
+
+<!-- ============ LEVERANDØRER ============ -->
+<section class="page" id="page-leverandorer" hidden>
+  <div class="card-head" style="margin-top:20px;align-items:center"><div><h2>Leverandører</h2><p class="hint">Hvem I har fat i, hvad der er aftalt, og hvad der mangler.</p></div><div class="filters"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="idea">Ikke kontaktet</button><button class="fchip" data-f="contacted">I dialog</button><button class="fchip" data-f="booked">Booket</button><button class="primary" id="vendorAdd">+ Tilføj leverandør</button></div></div>
+  <div class="chips" id="vChips"></div>
+  <div class="ecards" id="vendors"></div>
+</section>
+
+<!-- ============ TALER & INDSLAG ============ -->
+<section class="page" id="page-indslag" hidden>
+  <section class="card" style="margin-top:20px">
+    <div class="card-head"><div><h2>Taler og indslag</h2><p class="hint">Toastmasterens køreseddel – hvem, hvornår og hvor længe.</p></div><button class="addbtn" id="speechAdd">+ Tilføj tale/indslag</button></div>
+    <p class="hint" id="speechSum" style="margin-top:8px"></p>
+    <div class="tblwrap"><table class="tbl" id="stbl"><thead><tr><th>Hvem</th><th>Hvad</th><th>Hvornår</th><th class="r" style="width:70px">Minutter</th><th>Note</th><th class="c" style="width:52px">Aftalt</th><th style="width:30px"></th></tr></thead><tbody id="speeches"></tbody></table></div>
+  </section>
+  <div class="split">
+    <section class="card">
+      <div class="card-head"><div><h2>Fotoliste</h2><p class="hint">Billeder fotografen skal have – fx ved kirken.</p></div><button class="addbtn" id="photoAdd">+ Tilføj</button></div>
+      <div id="photos" style="margin-top:10px"></div>
+    </section>
+    <section class="card">
+      <div class="card-head"><div><h2>Sange til DJ'en</h2><p class="hint">Første dans, must-plays og no-gos.</p></div><button class="addbtn" id="songAdd">+ Tilføj sang</button></div>
+      <div class="tblwrap"><table class="tbl" id="songtbl"><thead><tr><th>Sang</th><th>Kunstner</th><th>Type</th><th style="width:30px"></th></tr></thead><tbody id="songs"></tbody></table></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============ GAVER ============ -->
+<section class="page" id="page-gaver" hidden>
+  <section class="card" style="margin-top:20px">
+    <div class="card-head"><div><h2>Gaver og takkekort</h2><p class="hint">Hvem gav hvad – og om takkekortet er sendt.</p></div><div class="filters"><button class="fchip on" data-f="all">Alle</button><button class="fchip" data-f="open">Mangler takkekort</button><button class="addbtn" id="giftAdd">+ Tilføj gave</button></div></div>
+    <div class="chips" id="giftChips"></div>
+    <div class="tblwrap"><table class="tbl" id="gifttbl"><thead><tr><th>Fra</th><th>Gave</th><th>Note</th><th class="c" style="width:90px">Takkekort sendt</th><th style="width:30px"></th></tr></thead><tbody id="gifts"></tbody></table></div>
   </section>
 </section>
 
@@ -517,6 +641,13 @@ body.locked .wrap{display:none}
   <input id="codeInput" type="password" autocomplete="current-password" placeholder="Adgangskode" required autofocus><div class="err" id="codeErr"></div>
   <div class="row"><button type="submit" class="primary">Åbn</button></div></form>
 </div>
+<div class="modal" id="whoModal" role="dialog" aria-modal="true">
+  <div class="box" style="text-align:center"><h2>Hvem er du?</h2><p>Så kan I se, hvem der har rettet hvad.</p><div class="who-btns"><button id="whoA">Mie</button><button id="whoB">Adam</button></div></div>
+</div>
+<div class="modal" id="dietModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:520px"><h2>Kost-liste til kokken</h2><p>Kuverter, børn og særlige hensyn – klar til at sende.</p><textarea id="dietText" readonly style="min-height:260px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px"></textarea><div class="row"><button type="button" class="ghost" id="dietClose">Luk</button><button type="button" class="primary" id="dietCopy">Kopiér</button></div></div>
+</div>
+<div class="cards" id="cards"></div>
 <div class="modal" id="bulkModal" role="dialog" aria-modal="true">
   <form class="box" id="bulkForm"><h2>Tilføj flere gæster</h2><p>Ét navn pr. linje. Skriv evt. side efter komma: <em>Louise Berg, Mie</em></p>
   <textarea id="bulkText" placeholder="Anna Holm, Mie&#10;Peter Holm, Mie&#10;Jonas Vinter, Adam"></textarea>
@@ -543,11 +674,13 @@ function makeSample(){
     g('Sofie Lund','AB','Venner','yes'), g('Mads Lund','AB','Venner','yes'), g('Alma Lund','AB','Venner','yes',true), g('Karen Friis','AB','Naboer','maybe'),
   ];
   const byName = n => guests.find(x=>x.name===n).id;
+  const T1=Array(28).fill(null), T2=Array(28).fill(null);
+  T1[6]='A'; T1[7]='B'; T1[4]=byName('Hanne Vestergaard'); T1[5]=byName('Jørgen Vestergaard'); T1[8]=byName('Bente Kjær'); T1[9]=byName('Ole Kjær');
+  T1[20]=byName('Signe Holm'); T1[21]=byName('Mikkel Holm'); T1[22]=byName('Ida Bruun');
+  T2[0]=byName('Jonas Vinter'); T2[1]=byName('Line Vinter'); T2[14]=byName('Sofie Lund'); T2[15]=byName('Mads Lund'); T2[16]=byName('Alma Lund');
   const tables = [
-    {id:uid(), name:'Hovedbord', seats:8, guests:['Hanne Vestergaard','Jørgen Vestergaard','Bente Kjær','Ole Kjær'].map(byName)},
-    {id:uid(), name:'Bord 1', seats:8, guests:['Signe Holm','Mikkel Holm','Ida Bruun','Sofie Lund','Mads Lund','Alma Lund'].map(byName)},
-    {id:uid(), name:'Bord 2', seats:8, guests:['Jonas Vinter','Line Vinter'].map(byName)},
-    {id:uid(), name:'Bord 3', seats:8, guests:[]},
+    {id:uid(), name:'Langbord 1', type:'long', x:160, y:60, seats:14, ends:false, seatMap:T1},
+    {id:uid(), name:'Langbord 2', type:'long', x:480, y:60, seats:14, ends:false, seatMap:T2},
   ];
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
@@ -565,6 +698,28 @@ function makeSample(){
     s('17:30','Gæsterne finder deres pladser','Toastmaster byder velkommen'), s('18:00','Middag','Taler undervejs – brudens far, gommen, toastmaster'),
     s('21:30','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('02:00','Tak for i aften',''),
   ];
+  const places = [
+    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'13:00', contact:'', phone:'', url:'', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
+    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 14:00', contact:'', phone:'', url:'', note:'Velkomstdrink, middag og fest. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
+    {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
+  ];
+  const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
+  const vendors = [
+    v('', 'Fotograf', 'idea', '', 'Indhent 2–3 tilbud, se porteføljer'), v('', 'DJ / band', 'idea', '', 'Skal kunne spille brudevals'),
+    v('', 'Blomster', 'idea', '', 'Brudebuket, knaphulsblomst, borde, kirke'), v('', 'Bryllupskage', 'idea'), v('', 'Frisør & makeup', 'idea', '', 'Prøve i maj'),
+    v('Odd Fellow Palæet', 'Mad & lokale', 'contacted', 'Dato holdt', 'Endelig menu + prøvesmagning'), v('', 'Natmad (pølsevogn)', 'idea'),
+  ];
+  const sp = (who, what, when, minutes, note='') => ({id:uid(), who, what, when, minutes, note, done:false});
+  const speeches = [
+    sp('Toastmaster', 'Velkomst og praktisk', 'Inden forretten', 5), sp('Mies far', 'Tale', 'Under forretten', 10, 'Traditionelt den første tale'),
+    sp('Adam', 'Gommens tale til bruden', 'Under hovedretten', 10), sp('Forlover', 'Tale', 'Efter hovedretten', 8), sp('Venner', 'Sang / indslag', 'Før desserten', 10, 'Toastmaster samler indslag'),
+  ];
+  const ph = text => ({id:uid(), text, done:false});
+  const photos = ['Brudeparret alene ved kirken', 'Med Mies forældre', 'Med Adams forældre', 'Begge familier samlet', 'Med søskende', 'Med forlover og brudepige', 'Alle gæster foran kirken', 'Ringene'].map(ph);
+  const songs = [
+    {id:uid(), title:'', artist:'', kind:'Første dans', note:''}, {id:uid(), title:'', artist:'', kind:'Ind i kirken', note:''}, {id:uid(), title:'', artist:'', kind:'Ud af kirken', note:''},
+  ];
+  const gifts = [];
   const n = (title, body, who, pin=false) => ({id:uid(), title, body, who, pin, updated:Date.now()});
   const notes = [
     n('Idéer til lokalet','Æresport ved indgangen\nLyskæder over langbordene\nSkilt med "Mie & Adam" ved indkørslen', 'A', true),
@@ -579,7 +734,7 @@ function makeSample(){
     i('Blomster & dekoration',7000,0,'A','Brudebuket, borde, æresport'), i('Invitationer & tryk',2500,2500,'A'), i('Bryllupskage',3500,0,'A'),
     i('Frisør & makeup',3500,0,'A','Prøve + selve dagen'), i('Transport',3000,0,'B','Bil til kirken, bus til gæster'),
   ];
-  return { v:3, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, tasks, program, notes };
+  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
 }
 const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til forældre','Kirke & præst','Rådhus','Børnepasning','Lyd & lys','Bordkort & menukort','Uforudset'];
 
@@ -587,14 +742,34 @@ const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til for�
 function uid(){ return Math.random().toString(36).slice(2,9); }
 let state = normalize(localLoad() || makeSample());
 let page = 'overblik';
-const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, tFilter:'open', nSearch:'' };
+const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, selTable:null, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
 
 function normalize(s){
-  s.v = 3;
+  s.v = 4;
   s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'' }));
-  s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, diet:g.diet||'', note:g.note||'' }));
+  s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', note:g.note||'' }));
   const gids = new Set(s.guests_list.map(g=>g.id));
-  s.tables = (s.tables||[]).map(t=>({ id:t.id||uid(), name:t.name||'Bord', seats:Math.max(1,+t.seats||8), guests:(t.guests||[]).filter(id=>gids.has(id)) }));
+  gids.add('A'); gids.add('B');
+  s.tables = (s.tables||[]).map((t,k)=>{
+    const type = t.type==='round'?'round':'long';
+    let seats = Math.max(1, +t.seats||8), ends = !!t.ends, seatMap;
+    if(Array.isArray(t.seatMap)){ seatMap = t.seatMap.slice(); }
+    else { /* v3: liste af gæster → langbord, halvdelen pr. side */ seats = type==='long'?Math.max(2,Math.ceil(seats/2)):seats; seatMap=[]; (t.guests||[]).forEach(id=>seatMap.push(id)); }
+    const total = type==='long' ? seats*2 + (ends?2:0) : seats;
+    seatMap.length = total; for(let i=0;i<total;i++){ if(!seatMap[i]||!gids.has(seatMap[i])) seatMap[i]=null; }
+    // samme gæst må kun sidde ét sted
+    const seen=new Set(); for(let i=0;i<total;i++){ if(seatMap[i]){ if(seen.has(seatMap[i])) seatMap[i]=null; else seen.add(seatMap[i]); } }
+    return { id:t.id||uid(), name:t.name||'Bord', type, x:isFinite(+t.x)?+t.x:160+k*320, y:isFinite(+t.y)?+t.y:60, seats, ends, seatMap };
+  });
+  { const seen=new Set(); s.tables.forEach(t=>t.seatMap.forEach((id,i)=>{ if(id){ if(seen.has(id)) t.seatMap[i]=null; else seen.add(id); } })); }
+  const ROLES=['Vielse','Fest','Overnatning','Andet'];
+  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', note:x.note||'' }));
+  s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
+  s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
+  s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done }));
+  s.songs = (s.songs||[]).map(x=>({ id:x.id||uid(), title:x.title||'', artist:x.artist||'', kind:x.kind||'Must-play', note:x.note||'' }));
+  s.gifts = (s.gifts||[]).map(x=>({ id:x.id||uid(), from:x.from||'', gift:x.gift||'', note:x.note||'', thanked:!!x.thanked }));
+  s.log = (s.log||[]).filter(x=>x&&x.t).slice(-60);
   s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
   s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'' }));
   s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now() }));
@@ -629,8 +804,14 @@ const svgX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 
 /* ---------- derived ---------- */
 function totals(){ const planned=state.items.reduce((a,i)=>a+plannedOf(i),0), paid=state.items.reduce((a,i)=>a+(+i.paid||0),0), budget=+state.budget||0; return {planned,paid,budget,buffer:budget-planned}; }
-function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; }); return s; }
-function seated(){ const m=new Map(); state.tables.forEach(t=>t.guests.forEach(id=>m.set(id,t.id))); return m; }
+function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0,stay:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; }); return s; }
+function seated(){ const m=new Map(); state.tables.forEach(t=>t.seatMap.forEach((id,i)=>{ if(id) m.set(id,{table:t,seat:i}); })); return m; }
+function seatedGuests(){ let n=0; state.tables.forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B') n++; })); return n; }
+function totalSeats(t){ return t.type==='long' ? t.seats*2 + (t.ends?2:0) : t.seats; }
+function guestName(id){ if(id==='A') return state.nameA; if(id==='B') return state.nameB; return state.guests_list.find(g=>g.id===id)?.name||''; }
+function guestSide(id){ if(id==='A') return 'A'; if(id==='B') return 'B'; return state.guests_list.find(g=>g.id===id)?.side||'AB'; }
+function shortName(n){ n=(n||'').trim(); if(n.length<=14) return n; const p=n.split(/\s+/); return p.length>1 ? `${p[0]} ${p[p.length-1][0]}.` : n.slice(0,13)+'…'; }
+let WHO=''; try{ WHO=sessionStorage.getItem('bryllup.who')||''; }catch(e){}
 function taskStats(){ const total=state.tasks.length, done=state.tasks.filter(t=>t.done).length; return {total,done}; }
 
 /* ---------- header / nav ---------- */
@@ -643,10 +824,14 @@ function renderHeader(){
   const t=totals(), gs=guestStats(), ts=taskStats(), st=seated();
   $('nBudget').textContent = t.budget>0?pct(t.planned,t.budget):'';
   $('nGuests').textContent = gs.yes+'/'+gs.total;
-  $('nSeat').textContent = `${st.size}/${gs.yes}`;
+  $('nSeat').textContent = `${seatedGuests()}/${gs.yes}`;
   $('nTasks').textContent = `${ts.total-ts.done} åbne`;
   $('nNotes').textContent = state.notes.length;
   $('nProg').textContent = state.program.length;
+  $('nVend').textContent = state.vendors.filter(v=>v.status==='booked').length+'/'+state.vendors.length;
+  $('nSpeech').textContent = state.speeches.length;
+  $('nGifts').textContent = state.gifts.length ? `${state.gifts.filter(g=>!g.thanked).length} mangler` : '';
+  $('whoChip').textContent = WHO ? ownerName(WHO) : 'Hvem er du?';
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===page));
   document.title = `${state.nameA} & ${state.nameB}`;
   document.querySelectorAll('#bFilters .fchip[data-f="A"],#page-tidsplan .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA);
@@ -665,11 +850,15 @@ function renderOverblik(){
   $('tiles').innerHTML = `
     <a class="tile" href="#budget"><div class="l">Budget</div><div class="v tab">${kr(t.planned)}</div><div class="s">${t.budget>0?`${pct(t.planned,t.budget)} af rammen på ${kr(t.budget)}`:'Ingen ramme sat'} · ${over?'<span style="color:var(--crit)">overskredet</span>':`buffer ${kr(t.buffer)}`}</div><div class="mini"><span style="width:${Math.min(100,t.budget?t.planned/t.budget*100:0)}%${over?';background:var(--crit)':''}"></span></div></a>
     <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${gs.child} børn`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
-    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${st.size} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${state.tables.length} borde · ${state.tables.reduce((a,x)=>a+x.seats,0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,st.size/gs.yes*100):0}%"></span></div></a>
+    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${state.tables.length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,seatedGuests()/gs.yes*100):0}%"></span></div></a>
     <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
     return `<li class="${cls}"><span class="d"><b>${x.due?fmtDate(x.due):'–'}</b>${d==null?'':rel(d)}</span><span class="n">${esc(x.title)}${x.owner?`<span class="tag">${esc(ownerName(x.owner))}</span>`:''}</span><span></span></li>`; }).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Alle opgaver er klaret 🎉</span><span></span></li>';
+  const PAGE_NAMES={overblik:'Overblik',budget:'Budget',gaester:'Gæster',bordplan:'Bordplan',tidsplan:'Tidsplan',program:'Program',steder:'Steder',leverandorer:'Leverandører',indslag:'Taler & indslag',gaver:'Gaver',noter:'Noter'};
+  const log=[...state.log].reverse().slice(0,8);
+  $('ovChanges').innerHTML = log.map(l=>`<li><span class="d"><b>${esc(ownerName(l.who)||'?')}</b>${ago(l.t)}</span><span class="n"><a href="#${l.page}" style="text-decoration:none;color:inherit">${esc(PAGE_NAMES[l.page]||l.page)}</a>${l.label?`<small>${esc(l.label)}</small>`:''}</span><span></span></li>`).join('')
+    || '<li><span></span><span class="n" style="color:var(--muted)">Ingen ændringer endnu.</span><span></span></li>';
   const notes = [...state.notes].sort((a,b)=>(b.pin-a.pin)||(b.updated-a.updated)).slice(0,4);
   $('ovNotes').innerHTML = notes.map(n=>`<li><span class="d"><b>${n.pin?'📌':''}</b>${esc(ownerName(n.who))}</span><span class="n">${esc(n.title||'(uden titel)')}<small>${esc(n.body.split('\n')[0].slice(0,90))}</small></span><span></span></li>`).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Ingen noter endnu.</span><span></span></li>';
 }
@@ -778,7 +967,7 @@ function guestRows(){
 }
 function renderGuests(){
   const gs=guestStats();
-  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
+  $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`;
   const list=guestRows();
   $('grows').innerHTML=list.map(g=>`<tr data-id="${g.id}">
     <td class="c-name" data-l="Navn"><input data-f="name" value="${esc(g.name)}" placeholder="Navn" aria-label="Navn"></td>
@@ -786,26 +975,110 @@ function renderGuests(){
     <td data-l="Relation"><input data-f="rel" list="relations" value="${esc(g.rel)}" placeholder="Familie, venner…" aria-label="Relation"></td>
     <td data-l="Svar"><select class="sel rsvp st-${g.rsvp}" data-f="rsvp" aria-label="Svar">${opts(Object.keys(RSVP),g.rsvp,o=>RSVP[o])}</select></td>
     <td class="c" data-l="Barn"><input type="checkbox" data-f="child" data-t="bool" ${g.child?'checked':''} aria-label="Barn"></td>
+    <td class="c" data-l="Overnatning"><input type="checkbox" data-f="stay" data-t="bool" ${g.stay?'checked':''} aria-label="Overnatning"></td>
     <td data-l="Kost / allergi"><input data-f="diet" value="${esc(g.diet)}" placeholder="Vegetar, glutenfri…" aria-label="Kost"></td>
     <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(g.note)}" placeholder="Note" aria-label="Note"></td>
     <td class="c-del"><button class="del" data-del="1" aria-label="Slet ${esc(g.name)}">${svgX}</button></td></tr>`).join('')
-    || `<tr><td colspan="8"><div class="empty">${state.guests_list.length?'Ingen gæster matcher.':'Ingen gæster endnu – tilføj dem herunder.'}</div></td></tr>`;
+    || `<tr><td colspan="9"><div class="empty">${state.guests_list.length?'Ingen gæster matcher.':'Ingen gæster endnu – tilføj dem herunder.'}</div></td></tr>`;
   document.querySelectorAll('#gtbl th.sort').forEach(th=>th.classList.toggle('on',th.dataset.s===ui.gSort));
 }
 
 /* ---------- BORDPLAN ---------- */
+const SEAT={SH:30,W:76,R:14};
+function tableGeom(t){
+  const seats=[];
+  if(t.type==='round'){
+    const n=t.seats, R=Math.max(44, 10+n*7.5), cx=R, cy=R;
+    for(let i=0;i<n;i++){ const a=-Math.PI/2+i*2*Math.PI/n, c=Math.cos(a), sn=Math.sin(a);
+      seats.push({i, x:cx+(R+SEAT.R+4)*c, y:cy+(R+SEAT.R+4)*sn, tx:cx+(R+SEAT.R+4+SEAT.R+6)*c, ty:cy+(R+SEAT.R+4+SEAT.R+6)*sn+4, anchor:c>0.3?'start':c<-0.3?'end':'middle'}); }
+    return {w:2*R, h:2*R, cx, cy, R, seats, pad:{l:110,r:110,t:40,b:40}};
+  }
+  const per=t.seats, H=per*SEAT.SH+16, W=SEAT.W; let i=0;
+  for(let k=0;k<per;k++){ const y=8+SEAT.SH*(k+.5); seats.push({i:i++, x:-SEAT.R-6, y, tx:-SEAT.R*2-12, ty:y+4, anchor:'end'}); }
+  for(let k=0;k<per;k++){ const y=8+SEAT.SH*(k+.5); seats.push({i:i++, x:W+SEAT.R+6, y, tx:W+SEAT.R*2+12, ty:y+4, anchor:'start'}); }
+  if(t.ends){ seats.push({i:i++, x:W/2, y:-SEAT.R-6, tx:W/2, ty:-SEAT.R*2-12, anchor:'middle'}); seats.push({i:i++, x:W/2, y:H+SEAT.R+6, tx:W/2, ty:H+SEAT.R*2+20, anchor:'middle'}); }
+  return {w:W, h:H, seats, pad:{l:130,r:130,t:t.ends?50:20,b:t.ends?60:20}};
+}
 function renderSeating(){
   const st=seated(); const gs=guestStats();
-  const pool=state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||g.side===ui.pFilter||g.side==='AB')).sort((a,b)=>a.name.localeCompare(b.name,'da'));
-  $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}" draggable="true" data-g="${g.id}" title="${esc(sideName(g.side))}${g.rel?' · '+esc(g.rel):''}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
-  $('poolHint').textContent = ui.selGuest ? `Vælg et bord til ${esc(state.guests_list.find(g=>g.id===ui.selGuest)?.name||'')}` : `${pool.length} mangler plads. Klik på en gæst og derefter på et bord – eller træk.`;
-  const cap=state.tables.reduce((a,t)=>a+t.seats,0);
-  $('seatHint').textContent=`${st.size} placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser i alt`;
-  $('tables').innerHTML=state.tables.map(t=>{ const full=t.guests.length>t.seats;
-    return `<div class="tbc${full?' full':''}" data-id="${t.id}">
-    <div class="h"><input class="n" data-f="name" value="${esc(t.name)}" aria-label="Bordnavn"><span class="cap"><input data-f="seats" inputmode="numeric" value="${t.seats}" aria-label="Antal pladser"> pl. · <span class="fill tab">${t.guests.length}/${t.seats}</span></span><button class="iconbtn" data-tdel="1" title="Slet bord" aria-label="Slet bord">${svgX}</button></div>
-    <div class="seats">${t.guests.map(id=>{ const g=state.guests_list.find(x=>x.id===id); return g?`<span class="seat" data-unseat="${id}" title="Klik for at fjerne fra bordet"><span class="side side-${g.side}"></span>${esc(g.name)}${g.rsvp==='maybe'?' ?':''}</span>`:''; }).join('')||`<span class="ph">${ui.selGuest?'Klik for at placere her':'Tomt bord'}</span>`}</div></div>`; }).join('')
-    ||'<p class="empty">Ingen borde endnu – tilføj det første.</p>';
+  const pool=[...(st.has('A')?[]:[{id:'A',name:state.nameA,side:'A',couple:true}]),...(st.has('B')?[]:[{id:'B',name:state.nameB,side:'B',couple:true}]),
+    ...state.guests_list.filter(g=>g.rsvp!=='no'&&!st.has(g.id)&&(ui.pFilter==='all'||g.side===ui.pFilter||g.side==='AB')).sort((a,b)=>a.name.localeCompare(b.name,'da'))];
+  $('pool').innerHTML=pool.map(g=>`<button class="gchip${ui.selGuest===g.id?' sel':''}" draggable="true" data-g="${g.id}" title="${g.couple?'Brudeparret':esc(sideName(g.side))+(g.rel?' · '+esc(g.rel):'')}"><span class="side side-${g.side}"></span>${esc(g.name)}${g.couple?' <span class="tag">brudepar</span>':''}${g.child?' <span class="tag">barn</span>':''}${g.rsvp==='maybe'?'<span class="q" title="Har ikke svaret endnu">?</span>':''}</button>`).join('')||'<p class="empty">Alle er placeret 🎉</p>';
+  const selSeated = ui.selGuest && st.get(ui.selGuest);
+  $('poolHint').textContent = ui.selGuest ? `Klik på en plads til ${guestName(ui.selGuest)}` : `${pool.length} mangler plads.`;
+  $('poolAction').innerHTML = selSeated ? `<button class="ghost" id="unseatSel">Tag ${esc(shortName(guestName(ui.selGuest)))} væk fra ${esc(selSeated.table.name)}</button>` : ui.selGuest ? `<button class="ghost" id="clearSel">Fortryd valg</button>` : '';
+  const cap=state.tables.reduce((a,t)=>a+totalSeats(t),0);
+  $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${state.tables.length} borde`;
+  renderTsel(); drawPlan(); renderTlists();
+}
+function renderTsel(){
+  const t=state.tables.find(x=>x.id===ui.selTable); const el=$('tsel'); if(!t){ el.hidden=true; el.innerHTML=''; return; }
+  el.hidden=false; const used=t.seatMap.filter(Boolean).length;
+  el.innerHTML=`<input class="n" data-tf="name" value="${esc(t.name)}" aria-label="Bordnavn"><select data-tf="type"><option value="long"${t.type==='long'?' selected':''}>Langbord</option><option value="round"${t.type==='round'?' selected':''}>Rundt bord</option></select>
+    <label>${t.type==='long'?'Pladser pr. side':'Pladser'} <input class="num tab" data-tf="seats" inputmode="numeric" value="${t.seats}"></label>
+    ${t.type==='long'?`<label><input type="checkbox" data-tf="ends" ${t.ends?'checked':''}> Bordender</label>`:''}
+    <span style="color:var(--muted)">${used}/${totalSeats(t)} besat</span>
+    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet bord</button><button class="ghost" data-tclose="1">Luk</button>`;
+}
+function drawPlan(){
+  const svg=$('plan'); const st=seated();
+  let minX=Infinity,minY=Infinity,maxX=0,maxY=0;
+  const geos=state.tables.map(t=>{ const g=tableGeom(t); minX=Math.min(minX,t.x-g.pad.l); minY=Math.min(minY,t.y-g.pad.t); maxX=Math.max(maxX,t.x+g.w+g.pad.r); maxY=Math.max(maxY,t.y+g.h+g.pad.b); return g; });
+  if(!state.tables.length){ minX=0;minY=0;maxX=600;maxY=240; }
+  const ox=Math.min(0,minX), oy=Math.min(0,minY); const W=Math.max(640,maxX-ox+20), H=Math.max(260,maxY-oy+20);
+  svg.setAttribute('viewBox',`${ox} ${oy} ${W} ${H}`); svg.setAttribute('width',W); svg.setAttribute('height',H);
+  const parts=state.tables.map((t,k)=>{ const g=geos[k]; const sel=t.id===ui.selTable;
+    const body = t.type==='round' ? `<circle class="body" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>` : `<rect class="body" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
+    const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`
+      : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-2">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`;
+    const seats=g.seats.map(sd=>{ const id=t.seatMap[sd.i]; const nm=id?guestName(id):''; const gg=id&&id!=='A'&&id!=='B'?state.guests_list.find(x=>x.id===id):null;
+      const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
+      return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}">${id?esc(shortName(nm)):(sd.i+1)}</text></g>`; }).join('');
+    return `<g class="tb${sel?' sel':''}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${label}${seats}</g>`; });
+  svg.innerHTML = parts.join('') || `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et langbord eller et rundt bord for at komme i gang.</text>`;
+}
+function renderTlists(){
+  $('tlists').innerHTML = state.tables.map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
+    return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
+}
+function unseat(id){ state.tables.forEach(t=>{ t.seatMap=t.seatMap.map(x=>x===id?null:x); }); }
+function placeAt(gid, tid, seat){
+  const t=state.tables.find(x=>x.id===tid); if(!t) return;
+  const prev=seated().get(gid); const occupant=t.seatMap[seat];
+  unseat(gid);
+  if(occupant && occupant!==gid){ unseat(occupant); if(prev) prev.table.seatMap[prev.seat]=occupant; }
+  t.seatMap[seat]=gid; ui.selGuest=null; commit('full', `${guestName(gid)} → ${t.name}`);
+}
+function addTable(type){
+  const right=state.tables.reduce((a,t)=>Math.max(a,t.x+tableGeom(t).w+tableGeom(t).pad.r),20);
+  const t={id:uid(), name:type==='round'?`Bord ${state.tables.length+1}`:`Langbord ${state.tables.filter(x=>x.type==='long').length+1}`, type, x:right+140, y:60, seats:type==='round'?8:6, ends:false, seatMap:[]};
+  t.seatMap=Array(totalSeats(t)).fill(null); state.tables.push(t); ui.selTable=t.id; commit('full', t.name);
+}
+function dietList(){
+  const lines=[]; const gs=guestStats();
+  const adults=state.guests_list.filter(g=>g.rsvp==='yes'&&!g.child).length, kids=state.guests_list.filter(g=>g.rsvp==='yes'&&g.child).length;
+  const madults=state.guests_list.filter(g=>g.rsvp==='maybe'&&!g.child).length, mkids=state.guests_list.filter(g=>g.rsvp==='maybe'&&g.child).length;
+  lines.push(`${state.nameA} & ${state.nameB} – ${state.date?fmtLong(state.date):''}`);
+  lines.push(`Kuverter (ja): ${adults+2} voksne (inkl. brudeparret), ${kids} børn` + (madults+mkids?`  ·  afventer: ${madults} voksne, ${mkids} børn`:''));
+  lines.push('');
+  const diets=state.guests_list.filter(g=>g.rsvp!=='no'&&g.diet.trim());
+  lines.push(`Særlige hensyn (${diets.length}):`);
+  if(!diets.length) lines.push('  ingen');
+  const byDiet=new Map(); diets.forEach(g=>{ const k=g.diet.trim(); if(!byDiet.has(k)) byDiet.set(k,[]); byDiet.get(k).push(g.name+(g.rsvp==='maybe'?' (afventer)':'')); });
+  [...byDiet.entries()].forEach(([k,arr])=>lines.push(`  ${k}: ${arr.join(', ')}`));
+  lines.push('');
+  lines.push('Pr. bord:');
+  state.tables.forEach(t=>{ const ids=t.seatMap.filter(Boolean); const gl=ids.map(id=>id==='A'||id==='B'?{name:guestName(id),child:false,diet:''}:state.guests_list.find(g=>g.id===id)).filter(Boolean);
+    const k=gl.filter(g=>g.child).length; const d=gl.filter(g=>g.diet&&g.diet.trim()).map(g=>`${g.name} (${g.diet})`);
+    lines.push(`  ${t.name}: ${gl.length} personer${k?`, heraf ${k} børn`:''}${d.length?` – ${d.join(', ')}`:''}`); });
+  const unplaced=state.guests_list.filter(g=>g.rsvp==='yes'&&!seated().has(g.id)).length; if(unplaced) lines.push(`  (ikke placeret endnu: ${unplaced})`);
+  return lines.join('\n');
+}
+function showDiet(){ $('dietText').value=dietList(); $('dietModal').classList.add('show'); }
+function printCards(){
+  const cards=[]; state.tables.forEach(t=>t.seatMap.forEach(id=>{ if(id) cards.push(`<div class="card1"><b>${esc(guestName(id))}</b><span>${esc(t.name)}</span></div>`); }));
+  if(!cards.length){ toast('Ingen er placeret endnu'); return; }
+  $('cards').innerHTML=cards.join(''); document.body.classList.add('print-cards'); window.print(); setTimeout(()=>document.body.classList.remove('print-cards'),500);
 }
 
 /* ---------- TIDSPLAN ---------- */
@@ -829,6 +1102,62 @@ function renderProgram(){
 }
 function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=state.date.split('-').map(Number); const n=(wy-y)*12+(wm-m); return n>0?`${n} mdr. før`:n===0?'bryllupsmåneden':`${-n} mdr. efter`; }
 
+/* ---------- STEDER ---------- */
+const ROLES=['Vielse','Fest','Overnatning','Andet'];
+const mapsUrl = pl => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((pl.name+', '+pl.address).trim())}`;
+function renderPlaces(){
+  const order={Vielse:0,Fest:1,Overnatning:2,Andet:3};
+  const list=[...state.places].sort((a,b)=>order[a.role]-order[b.role]);
+  $('places').innerHTML=list.map(pl=>`<div class="ecard" data-id="${pl.id}">
+    <div class="h"><input class="t" data-f="name" value="${esc(pl.name)}" placeholder="Navn på sted" aria-label="Navn"><select class="role sel" data-f="role" aria-label="Rolle">${opts(ROLES,pl.role,x=>x)}</select><button class="iconbtn" data-del="1" aria-label="Slet sted">${svgX}</button></div>
+    <div class="f"><label>Adresse</label><input data-f="address" value="${esc(pl.address)}" placeholder="Vej, postnr. by"><label>Tid</label><input data-f="time" value="${esc(pl.time)}" placeholder="13:00 / fra 14:00"><label>Kontakt</label><input data-f="contact" value="${esc(pl.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(pl.phone)}" placeholder="12 34 56 78"><label>Link</label><input data-f="url" value="${esc(pl.url)}" placeholder="https://…"></div>
+    <textarea data-f="note" placeholder="Aftaler, praktisk, spørgsmål…">${esc(pl.note)}</textarea>
+    <div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a>${pl.url?`<a href="${esc(pl.url)}" target="_blank" rel="noopener">Hjemmeside</a>`:''}${pl.phone?`<a href="tel:${esc(pl.phone.replace(/\s/g,''))}">Ring</a>`:''}</div></div>`).join('')
+    ||'<p class="empty">Ingen steder endnu.</p>';
+  const church=state.places.find(x=>x.role==='Vielse'), party=state.places.find(x=>x.role==='Fest');
+  const rl=$('routeLink'); if(church&&party){ rl.hidden=false; rl.href=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}`; } else rl.hidden=true;
+  const stay=state.guests_list.filter(g=>g.stay&&g.rsvp!=='no');
+  $('stayList').innerHTML = stay.length ? `<b>${stay.length}</b> skal overnatte: ${stay.map(g=>esc(g.name)+(g.rsvp==='maybe'?' <span class="tag">afventer</span>':'')).join(', ')}` : '<span style="color:var(--muted)">Ingen har hak i overnatning endnu.</span>';
+}
+
+/* ---------- LEVERANDØRER ---------- */
+const VSTATUS={idea:'Ikke kontaktet',contacted:'I dialog',booked:'Booket'};
+function renderVendors(){
+  const c={idea:0,contacted:0,booked:0}; state.vendors.forEach(v=>c[v.status]++);
+  $('vChips').innerHTML=`<span class="stpill"><b>${state.vendors.length}</b> leverandører</span><span class="stpill st-yes"><b>${c.booked}</b> booket</span><span class="stpill st-maybe"><b>${c.contacted}</b> i dialog</span><span class="stpill"><b>${c.idea}</b> ikke kontaktet</span>`;
+  const list=state.vendors.filter(v=>ui.vFilter==='all'||v.status===ui.vFilter);
+  $('vendors').innerHTML=list.map(v=>`<div class="ecard ${v.status}" data-id="${v.id}">
+    <div class="h"><input class="t" data-f="name" value="${esc(v.name)}" placeholder="${esc(v.cat||'Leverandør')}" aria-label="Navn"><select class="role sel st-${v.status==='booked'?'yes':v.status==='contacted'?'maybe':'idea'}" data-f="status" aria-label="Status">${opts(Object.keys(VSTATUS),v.status,x=>VSTATUS[x])}</select><button class="iconbtn" data-del="1" aria-label="Slet leverandør">${svgX}</button></div>
+    <div class="f"><label>Kategori</label><input data-f="cat" value="${esc(v.cat)}" placeholder="Fotograf, DJ, blomster…"><label>Kontakt</label><input data-f="contact" value="${esc(v.contact)}" placeholder="Navn"><label>Telefon</label><input data-f="phone" value="${esc(v.phone)}" placeholder="12 34 56 78"><label>E-mail</label><input data-f="email" value="${esc(v.email)}" placeholder="navn@firma.dk"><label>Aftalt</label><input data-f="agreed" value="${esc(v.agreed)}" placeholder="Hvad er på plads?"><label>Mangler</label><input data-f="missing" value="${esc(v.missing)}" placeholder="Hvad udestår?"></div>
+    <textarea data-f="note" placeholder="Priser, tilbud, noter…">${esc(v.note)}</textarea>
+    <div class="links">${v.phone?`<a href="tel:${esc(v.phone.replace(/\s/g,''))}">Ring</a>`:''}${v.email?`<a href="mailto:${esc(v.email)}">Skriv</a>`:''}</div></div>`).join('')
+    ||`<p class="empty">${state.vendors.length?'Ingen matcher filteret.':'Ingen leverandører endnu.'}</p>`;
+}
+
+/* ---------- TALER & INDSLAG ---------- */
+function renderIndslag(){
+  const tot=state.speeches.reduce((a,x)=>a+(+x.minutes||0),0);
+  $('speechSum').textContent=`${state.speeches.length} indslag · ca. ${tot} minutter i alt · ${state.speeches.filter(x=>x.done).length} aftalt`;
+  $('speeches').innerHTML=state.speeches.map(x=>`<tr data-id="${x.id}">
+    <td class="c-name" data-l="Hvem"><input data-f="who" value="${esc(x.who)}" placeholder="Hvem"></td><td data-l="Hvad"><input data-f="what" value="${esc(x.what)}" placeholder="Tale, sang, leg…"></td>
+    <td data-l="Hvornår"><input data-f="when" value="${esc(x.when)}" placeholder="Under forretten"></td><td class="r" data-l="Minutter"><input class="money tab" data-f="minutes" inputmode="numeric" value="${x.minutes||''}" style="width:64px"></td>
+    <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(x.note)}" placeholder="Note"></td><td class="c" data-l="Aftalt"><input type="checkbox" data-f="done" data-t="bool" ${x.done?'checked':''}></td>
+    <td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')||'<tr><td colspan="7"><div class="empty">Ingen indslag endnu.</div></td></tr>';
+  $('photos').innerHTML=state.photos.map(x=>`<div class="task${x.done?' done':''}" data-id="${x.id}" style="grid-template-columns:22px 1fr 28px"><input type="checkbox" data-f="done" data-t="bool" ${x.done?'checked':''}><input class="t" data-f="text" value="${esc(x.text)}" placeholder="Hvem skal med på billedet?"><button class="iconbtn" data-del="1" aria-label="Slet">${svgX}</button></div>`).join('')||'<p class="empty">Ingen billeder på listen.</p>';
+  const KINDS=['Første dans','Ind i kirken','Ud af kirken','Must-play','Brudevals','Sidste sang','Spil IKKE'];
+  $('songs').innerHTML=state.songs.map(x=>`<tr data-id="${x.id}"><td class="c-name" data-l="Sang"><input data-f="title" value="${esc(x.title)}" placeholder="Titel"></td><td data-l="Kunstner"><input data-f="artist" value="${esc(x.artist)}" placeholder="Kunstner"></td><td data-l="Type"><select class="sel" data-f="kind">${opts(KINDS.includes(x.kind)?KINDS:[x.kind,...KINDS],x.kind,k=>k)}</select></td><td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')||'<tr><td colspan="4"><div class="empty">Ingen sange endnu.</div></td></tr>';
+}
+
+/* ---------- GAVER ---------- */
+function renderGifts(){
+  const open=state.gifts.filter(g=>!g.thanked).length;
+  $('giftChips').innerHTML=`<span class="stpill"><b>${state.gifts.length}</b> gaver</span><span class="stpill st-yes"><b>${state.gifts.length-open}</b> takkekort sendt</span><span class="stpill ${open?'st-maybe':''}"><b>${open}</b> mangler</span>`;
+  const list=state.gifts.filter(g=>ui.giftFilter==='all'||!g.thanked);
+  $('gifts').innerHTML=list.map(g=>`<tr data-id="${g.id}"><td class="c-name" data-l="Fra"><input data-f="from" list="guestnames" value="${esc(g.from)}" placeholder="Hvem"></td><td data-l="Gave"><input data-f="gift" value="${esc(g.gift)}" placeholder="Hvad"></td><td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(g.note)}" placeholder="Note"></td><td class="c" data-l="Takkekort sendt"><input type="checkbox" data-f="thanked" data-t="bool" ${g.thanked?'checked':''}></td><td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')
+    ||`<tr><td colspan="5"><div class="empty">${state.gifts.length?'Alle takkekort er sendt 💌':'Ingen gaver registreret endnu.'}</div></td></tr>`;
+  let dl=$('guestnames'); if(!dl){ dl=document.createElement('datalist'); dl.id='guestnames'; document.body.appendChild(dl); } dl.innerHTML=state.guests_list.map(g=>`<option value="${esc(g.name)}">`).join('');
+}
+
 /* ---------- NOTER ---------- */
 function renderNotes(){
   const q=ui.nSearch.toLowerCase();
@@ -836,25 +1165,29 @@ function renderNotes(){
   $('notes').innerHTML=list.map(n=>`<div class="note${n.pin?' pin':''}" data-id="${n.id}"><div class="h"><input class="t" data-f="title" value="${esc(n.title)}" placeholder="Titel" aria-label="Titel"><button class="pgbtn pinbtn${n.pin?' on':''}" data-pin="1" title="${n.pin?'Løsn':'Fastgør'}" aria-pressed="${n.pin}"><svg viewBox="0 0 24 24" fill="${n.pin?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3-1-6z"/><path d="M12 15v6"/></svg></button><button class="iconbtn" data-del="1" aria-label="Slet note">${svgX}</button></div><textarea data-f="body" placeholder="Skriv her…" aria-label="Note">${esc(n.body)}</textarea><div class="f"><select data-f="who" aria-label="Hvem">${opts(OWNERS,n.who,o=>o?ownerName(o):'– hvem –')}</select><span>·</span><span>${fmtStamp(n.updated)}</span></div></div>`).join('')
     ||`<p class="empty">${state.notes.length?'Ingen noter matcher.':'Ingen noter endnu – lav den første.'}</p>`;
 }
+function ago(ms){ const m=Math.round((Date.now()-ms)/60000); if(m<1) return 'lige nu'; if(m<60) return `${m} min siden`; const h=Math.round(m/60); if(h<24) return `${h} t. siden`; const d=Math.round(h/24); return d===1?'i går':`${d} dage siden`; }
 function fmtStamp(ms){ const d=new Date(ms); return `${d.getDate()}. ${MONTHS[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
 /* ---------- orchestration ---------- */
-const PAGES={overblik:renderOverblik,budget:renderBudget,gaester:renderGuests,bordplan:renderSeating,tidsplan:renderTasks,program:renderProgram,noter:renderNotes};
+const PAGES={overblik:renderOverblik,budget:renderBudget,gaester:renderGuests,bordplan:renderSeating,tidsplan:renderTasks,program:renderProgram,steder:renderPlaces,leverandorer:renderVendors,indslag:renderIndslag,gaver:renderGifts,noter:renderNotes};
 function render(){ renderHeader(); PAGES[page](); }
-function route(){ const h=(location.hash||'#overblik').slice(1); page=PAGES[h]?h:'overblik'; document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+page); ui.selGuest=null; render(); window.scrollTo({top:0}); }
+function route(){ const h=(location.hash||'#overblik').slice(1); page=PAGES[h]?h:'overblik'; document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+page); ui.selGuest=null; ui.selTable=null; render(); window.scrollTo({top:0}); }
 window.addEventListener('hashchange',route);
-function commit(mode){ state.updatedAt=Date.now(); localSave(); if(mode==='light'&&page==='budget') refreshBudgetLight(); else if(mode==='none'){} else render(); renderHeader(); Sync.push(); }
+function logChange(label){ const now=Date.now(); const last=state.log[state.log.length-1]; label=(label||'').trim().slice(0,60);
+  if(last && last.who===WHO && last.page===page && last.label===label && now-last.t<10*60000){ last.t=now; return; }
+  state.log.push({t:now, who:WHO, page, label}); if(state.log.length>60) state.log.splice(0, state.log.length-60); }
+function commit(mode, label){ state.updatedAt=Date.now(); logChange(label); localSave(); if(mode==='light'&&page==='budget') refreshBudgetLight(); else if(mode==='none'){} else render(); renderHeader(); Sync.push(); }
 
 /* generic editable-collection binding: input events on [data-f] inside [data-id] rows */
 function bindEdits(container, coll, onField){
   container.addEventListener('input',e=>{ const row=e.target.closest('[data-id]'); const f=e.target.dataset.f; if(!row||!f) return; const item=coll().find(x=>x.id===row.dataset.id); if(!item) return;
     const t=e.target.dataset.t; const v = t==='bool'?e.target.checked : e.target.classList.contains('money')||f==='seats'?parseNum(e.target.value) : e.target.value;
     item[f]=v; if(item.updated!==undefined) item.updated=Date.now();
-    const mode = onField ? onField(item,f,e.target,row) : 'light'; commit(mode); });
+    const mode = onField ? onField(item,f,e.target,row) : 'light'; commit(mode, item.name||item.title||item.text||item.who||item.from||item.time||''); });
   container.addEventListener('blur',e=>{ if(e.target.classList.contains('money')) e.target.value=knum(parseNum(e.target.value)); },true);
   container.addEventListener('focus',e=>{ if(e.target.classList.contains('money')) e.target.select(); },true);
 }
-function delWithUndo(coll, id, label){ const arr=coll(); const idx=arr.findIndex(x=>x.id===id); if(idx<0) return; const [it]=arr.splice(idx,1); commit(); toast(`«${label||'Element'}» slettet`,()=>{ coll().splice(Math.min(idx,coll().length),0,it); commit(); }); }
+function delWithUndo(coll, id, label){ const arr=coll(); const idx=arr.findIndex(x=>x.id===id); if(idx<0) return; const [it]=arr.splice(idx,1); commit('full',`${label||'element'} slettet`); toast(`«${label||'Element'}» slettet`,()=>{ coll().splice(Math.min(idx,coll().length),0,it); commit('full',`${label||'element'} gendannet`); }); }
 function bindFilters(container, key, after){ container.addEventListener('click',e=>{ const b=e.target.closest('.fchip'); if(!b) return; ui[key]=b.dataset.f; container.querySelectorAll('.fchip').forEach(c=>c.classList.toggle('on',c===b)); after(); }); }
 function bindSort(thead, keyS, keyD, defaults, after){ thead.addEventListener('click',e=>{ const th=e.target.closest('th.sort'); if(!th) return; if(ui[keyS]===th.dataset.s) ui[keyD]*=-1; else { ui[keyS]=th.dataset.s; ui[keyD]=defaults[ui[keyS]]||1; } after(); }); }
 
@@ -881,7 +1214,7 @@ $('guestsFromList').addEventListener('click',e=>{ state.guests=+e.target.dataset
 /* ---------- events: guests ---------- */
 bindEdits($('grows'), ()=>state.guests_list, (g,f,el)=>{ if(f==='rsvp') el.className='sel rsvp st-'+g.rsvp; return 'none'; });
 $('grows').addEventListener('input',e=>{ const f=e.target.dataset.f; if(f==='rsvp'||f==='child'||f==='diet') { renderGuests_chipsOnly(); } });
-function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
+function renderGuests_chipsOnly(){ const gs=guestStats(); $('gChips').innerHTML=`<span class="stpill"><b>${gs.total}</b> inviteret</span><span class="stpill st-yes"><b>${gs.yes}</b> ja</span><span class="stpill st-maybe"><b>${gs.maybe}</b> afventer</span><span class="stpill st-no"><b>${gs.no}</b> nej</span><span class="stpill"><b>${gs.child}</b> børn</span><span class="stpill"><b>${gs.stay}</b> overnatter</span><span class="stpill"><b>${gs.diet}</b> særlig kost</span>`; }
 $('grows').addEventListener('click',e=>{ const row=e.target.closest('tr[data-id]'); if(row&&e.target.closest('[data-del]')){ const g=state.guests_list.find(x=>x.id===row.dataset.id); delWithUndo(()=>state.guests_list,g.id,g.name); } });
 $('gAdd').addEventListener('click',()=>{ const g={id:uid(),name:'',side:'AB',rel:'',rsvp:'maybe',child:false,diet:'',note:''}; state.guests_list.push(g); ui.gFilter='all'; ui.gSearch=''; $('gSearch').value=''; document.querySelectorAll('#page-gaester .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); commit(); const tr=$('grows').querySelector(`tr[data-id="${g.id}"]`); tr.querySelector('[data-f="name"]').focus(); tr.scrollIntoView({block:'nearest'}); });
 $('gBulk').addEventListener('click',()=>{ $('bulkModal').classList.add('show'); setTimeout(()=>$('bulkText').focus(),50); });
@@ -895,27 +1228,46 @@ bindSort($('gtbl').querySelector('thead'),'gSort','gDir',{name:1,rsvp:1},renderG
 
 /* ---------- events: seating ---------- */
 $('pool').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; ui.selGuest=ui.selGuest===b.dataset.g?null:b.dataset.g; renderSeating(); });
+$('poolAction').addEventListener('click',e=>{ if(e.target.id==='unseatSel'){ const id=ui.selGuest; unseat(id); ui.selGuest=null; commit('full',`${guestName(id)} taget væk`); } if(e.target.id==='clearSel'){ ui.selGuest=null; renderSeating(); } });
 bindFilters($('page-bordplan').querySelector('.filters'),'pFilter',renderSeating);
-function place(gid,tid){ state.tables.forEach(t=>{ t.guests=t.guests.filter(x=>x!==gid); }); const t=state.tables.find(x=>x.id===tid); if(t){ t.guests.push(gid); } ui.selGuest=null; commit(); }
-bindEdits($('tables'), ()=>state.tables, (t,f,el)=>{ if(f==='seats'){ t.seats=Math.max(1,t.seats||1); el.closest('.tbc').querySelector('.fill').textContent=`${t.guests.length}/${t.seats}`; el.closest('.tbc').classList.toggle('full',t.guests.length>t.seats); } return 'none'; });
-$('tables').addEventListener('click',e=>{
-  const card=e.target.closest('.tbc'); if(!card) return; const t=state.tables.find(x=>x.id===card.dataset.id);
-  if(e.target.closest('[data-tdel]')){ if(t.guests.length&&!confirm(`Slet «${t.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; delWithUndo(()=>state.tables,t.id,t.name); return; }
-  const un=e.target.closest('[data-unseat]'); if(un){ t.guests=t.guests.filter(x=>x!==un.dataset.unseat); commit(); return; }
-  if(ui.selGuest && !e.target.closest('input,button')) place(ui.selGuest,t.id);
-});
-$('tAdd').addEventListener('click',()=>{ state.tables.push({id:uid(),name:`Bord ${state.tables.length}`,seats:8,guests:[]}); commit(); });
-/* drag & drop */
+$('addLong').addEventListener('click',()=>addTable('long'));
+$('addRound').addEventListener('click',()=>addTable('round'));
+$('printPlan').addEventListener('click',()=>window.print());
+$('printCards').addEventListener('click',printCards);
+$('dietBtn').addEventListener('click',showDiet);
+$('gDiet').addEventListener('click',showDiet);
+$('dietClose').addEventListener('click',()=>$('dietModal').classList.remove('show'));
+$('dietCopy').addEventListener('click',()=>{ navigator.clipboard?.writeText($('dietText').value).then(()=>toast('Kopieret')).catch(()=>{ $('dietText').select(); toast('Markeret – tryk Cmd/Ctrl+C'); }); });
+/* table settings bar */
+$('tsel').addEventListener('input',e=>{ const t=state.tables.find(x=>x.id===ui.selTable); const f=e.target.dataset.tf; if(!t||!f) return;
+  if(f==='name') t.name=e.target.value;
+  else if(f==='seats'){ t.seats=Math.max(1,Math.min(40,parseNum(e.target.value)||1)); const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
+  else if(f==='ends'){ t.ends=e.target.checked; const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
+  else if(f==='type'){ t.type=e.target.value; if(t.type==='round'){ t.seats=Math.max(3,t.seats*2); t.ends=false; } else { t.seats=Math.max(2,Math.ceil(t.seats/2)); } const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
+  state.updatedAt=Date.now(); localSave(); logChange(t.name); if(f==='name'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
+$('tsel').addEventListener('click',e=>{ const t=state.tables.find(x=>x.id===ui.selTable); if(!t) return;
+  if(e.target.closest('[data-tclose]')){ ui.selTable=null; renderSeating(); }
+  if(e.target.closest('[data-tdel]')){ if(t.seatMap.some(Boolean)&&!confirm(`Slet «${t.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; ui.selTable=null; delWithUndo(()=>state.tables,t.id,t.name); } });
+/* canvas: seat clicks + table drag */
+const plan=$('plan'); let drag=null;
+function svgPoint(ev){ const pt=plan.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; return pt.matrixTransform(plan.getScreenCTM().inverse()); }
+plan.addEventListener('pointerdown',e=>{ const tb=e.target.closest('.tb'); if(!tb||e.target.closest('.seat')) return; const t=state.tables.find(x=>x.id===tb.dataset.table); const p=svgPoint(e);
+  drag={t, el:tb, dx:p.x-t.x, dy:p.y-t.y, moved:false, sx:e.clientX, sy:e.clientY}; plan.setPointerCapture(e.pointerId); });
+plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true; const p=svgPoint(e);
+  drag.t.x=Math.round((p.x-drag.dx)/10)*10; drag.t.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${drag.t.x} ${drag.t.y})`); });
+plan.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null; try{ plan.releasePointerCapture(e.pointerId); }catch(x){}
+  if(d.moved){ d.t.x=Math.max(0,d.t.x); d.t.y=Math.max(0,d.t.y); commit('full', `${d.t.name} flyttet`); } else { ui.selTable = ui.selTable===d.t.id?null:d.t.id; renderSeating(); } });
+plan.addEventListener('click',e=>{ const seat=e.target.closest('.seat'); if(!seat) return; const tid=seat.dataset.table, i=+seat.dataset.seat; const t=state.tables.find(x=>x.id===tid); const id=t.seatMap[i];
+  if(ui.selGuest){ placeAt(ui.selGuest,tid,i); return; }
+  if(id){ ui.selGuest=id; renderSeating(); } });
+/* drag & drop from pool onto seats (desktop) */
 let dragId=null;
 $('pool').addEventListener('dragstart',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; dragId=b.dataset.g; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',dragId); });
-$('tables').addEventListener('dragstart',e=>{ const s=e.target.closest('[data-unseat]'); if(!s) return; dragId=s.dataset.unseat; e.dataTransfer.effectAllowed='move'; });
-$('tables').addEventListener('dragover',e=>{ const c=e.target.closest('.tbc'); if(!c||!dragId) return; e.preventDefault(); c.classList.add('drop'); });
-$('tables').addEventListener('dragleave',e=>{ const c=e.target.closest('.tbc'); if(c) c.classList.remove('drop'); });
-$('tables').addEventListener('drop',e=>{ const c=e.target.closest('.tbc'); if(!c||!dragId) return; e.preventDefault(); place(dragId,c.dataset.id); dragId=null; });
+plan.addEventListener('dragover',e=>{ const seat=e.target.closest('.seat'); plan.querySelectorAll('.seat.drop').forEach(x=>x.classList.remove('drop')); if(!seat||!dragId) return; e.preventDefault(); seat.classList.add('drop'); });
+plan.addEventListener('dragleave',e=>{ const seat=e.target.closest('.seat'); if(seat) seat.classList.remove('drop'); });
+plan.addEventListener('drop',e=>{ const seat=e.target.closest('.seat'); if(!seat||!dragId) return; e.preventDefault(); const id=dragId; dragId=null; placeAt(id, seat.dataset.table, +seat.dataset.seat); });
 $('pool').addEventListener('dragover',e=>{ if(dragId) e.preventDefault(); });
-$('pool').addEventListener('drop',e=>{ if(!dragId) return; e.preventDefault(); state.tables.forEach(t=>{ t.guests=t.guests.filter(x=>x!==dragId); }); dragId=null; commit(); });
-document.querySelectorAll('.seat').forEach(s=>s.draggable=true);
-new MutationObserver(()=>$('tables').querySelectorAll('.seat').forEach(s=>s.draggable=true)).observe($('tables'),{childList:true,subtree:true});
+$('pool').addEventListener('drop',e=>{ if(!dragId) return; e.preventDefault(); const id=dragId; dragId=null; unseat(id); commit('full',`${guestName(id)} taget væk`); });
 
 /* ---------- events: tasks & program ---------- */
 bindEdits($('taskGroups'), ()=>state.tasks, (t,f,el,row)=>{ if(f==='done'){ row.classList.toggle('done',t.done); const ts=taskStats(); $('taskPct').textContent=`${ts.done} af ${ts.total} klaret`; $('taskBar').style.width=(ts.total?ts.done/ts.total*100:0)+'%'; if(ui.tFilter==='open'){ setTimeout(()=>{ if(t.done) renderTasks(); },600); } return 'none'; } if(f==='due'||f==='owner') return 'none'; return 'none'; });
@@ -927,6 +1279,39 @@ bindEdits($('program'), ()=>state.program, ()=>'none');
 $('program').addEventListener('change',e=>{ if(e.target.dataset.f==='time') renderProgram(); });
 $('program').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const p=state.program.find(x=>x.id===row.dataset.id); delWithUndo(()=>state.program,p.id,p.title||p.time); } });
 $('slotAdd').addEventListener('click',()=>{ const last=[...state.program].sort((a,b)=>progMinutes(a.time)-progMinutes(b.time)).pop(); const p={id:uid(),time:last?last.time:'12:00',title:'',desc:''}; state.program.push(p); commit(); const row=$('program').querySelector(`[data-id="${p.id}"]`); row.querySelector('.time').focus(); row.scrollIntoView({block:'nearest'}); });
+
+/* ---------- events: steder / leverandører / indslag / gaver ---------- */
+bindEdits($('places'), ()=>state.places, (pl,f)=>{ if(f==='role'||f==='url'||f==='phone'||f==='address'||f==='name') return 'full'; return 'none'; });
+$('places').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.places.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.places,x.id,x.name||'Sted'); } });
+$('placeAdd').addEventListener('click',()=>{ const x={id:uid(),name:'',role:'Andet',address:'',time:'',contact:'',phone:'',url:'',note:''}; state.places.push(x); commit('full','nyt sted'); $('places').querySelector(`[data-id="${x.id}"] .t`).focus(); });
+$('copyAddr').addEventListener('click',()=>{ const txt=state.places.filter(p=>p.role!=='Andet'||p.name).map(p=>`${p.role}: ${p.name}${p.address?', '+p.address:''}${p.time?' – '+p.time:''}`).join('\n'); navigator.clipboard?.writeText(txt).then(()=>toast('Adresser kopieret')).catch(()=>toast('Kunne ikke kopiere')); });
+
+bindEdits($('vendors'), ()=>state.vendors, (v,f,el)=>{ if(f==='status'){ el.className='role sel st-'+(v.status==='booked'?'yes':v.status==='contacted'?'maybe':'idea'); el.closest('.ecard').className='ecard '+v.status; renderVendors_chips(); } return 'none'; });
+function renderVendors_chips(){ const c={idea:0,contacted:0,booked:0}; state.vendors.forEach(v=>c[v.status]++); $('vChips').innerHTML=`<span class="stpill"><b>${state.vendors.length}</b> leverandører</span><span class="stpill st-yes"><b>${c.booked}</b> booket</span><span class="stpill st-maybe"><b>${c.contacted}</b> i dialog</span><span class="stpill"><b>${c.idea}</b> ikke kontaktet</span>`; }
+$('vendors').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.vendors.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.vendors,x.id,x.name||x.cat||'Leverandør'); } });
+$('vendorAdd').addEventListener('click',()=>{ ui.vFilter='all'; document.querySelectorAll('#page-leverandorer .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); const x={id:uid(),name:'',cat:'',status:'idea',contact:'',phone:'',email:'',agreed:'',missing:'',note:''}; state.vendors.push(x); commit('full','ny leverandør'); $('vendors').querySelector(`[data-id="${x.id}"] .t`).focus(); });
+bindFilters($('page-leverandorer').querySelector('.filters'),'vFilter',renderVendors);
+
+bindEdits($('speeches'), ()=>state.speeches, (x,f,el,row)=>{ if(f==='minutes'||f==='done'){ const tot=state.speeches.reduce((a,y)=>a+(+y.minutes||0),0); $('speechSum').textContent=`${state.speeches.length} indslag · ca. ${tot} minutter i alt · ${state.speeches.filter(y=>y.done).length} aftalt`; } return 'none'; });
+$('speeches').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.speeches.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.speeches,x.id,x.who||x.what||'Indslag'); } });
+$('speechAdd').addEventListener('click',()=>{ const x={id:uid(),who:'',what:'',when:'',minutes:5,note:'',done:false}; state.speeches.push(x); commit('full','nyt indslag'); $('speeches').querySelector(`[data-id="${x.id}"] input`).focus(); });
+bindEdits($('photos'), ()=>state.photos, (x,f,el,row)=>{ if(f==='done') row.classList.toggle('done',x.done); return 'none'; });
+$('photos').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.photos.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.photos,x.id,x.text||'Billede'); } });
+$('photoAdd').addEventListener('click',()=>{ const x={id:uid(),text:'',done:false}; state.photos.push(x); commit('full','nyt billede på listen'); $('photos').querySelector(`[data-id="${x.id}"] .t`).focus(); });
+bindEdits($('songs'), ()=>state.songs, ()=>'none');
+$('songs').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.songs.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.songs,x.id,x.title||'Sang'); } });
+$('songAdd').addEventListener('click',()=>{ const x={id:uid(),title:'',artist:'',kind:'Must-play',note:''}; state.songs.push(x); commit('full','ny sang'); $('songs').querySelector(`[data-id="${x.id}"] input`).focus(); });
+
+bindEdits($('gifts'), ()=>state.gifts, (g,f)=>{ if(f==='thanked'){ const open=state.gifts.filter(x=>!x.thanked).length; $('giftChips').innerHTML=`<span class="stpill"><b>${state.gifts.length}</b> gaver</span><span class="stpill st-yes"><b>${state.gifts.length-open}</b> takkekort sendt</span><span class="stpill ${open?'st-maybe':''}"><b>${open}</b> mangler</span>`; } return 'none'; });
+$('gifts').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.gifts.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.gifts,x.id,x.from||x.gift||'Gave'); } });
+$('giftAdd').addEventListener('click',()=>{ ui.giftFilter='all'; document.querySelectorAll('#page-gaver .fchip').forEach(c=>c.classList.toggle('on',c.dataset.f==='all')); const x={id:uid(),from:'',gift:'',note:'',thanked:false}; state.gifts.push(x); commit('full','ny gave'); $('gifts').querySelector(`[data-id="${x.id}"] input`).focus(); });
+bindFilters($('page-gaver').querySelector('.filters'),'giftFilter',renderGifts);
+
+/* ---------- who am I ---------- */
+function askWho(){ $('whoA').textContent=state.nameA; $('whoB').textContent=state.nameB; $('whoModal').classList.add('show'); }
+function setWho(w){ WHO=w; try{ sessionStorage.setItem('bryllup.who',w); }catch(e){} $('whoModal').classList.remove('show'); renderHeader(); }
+$('whoA').addEventListener('click',()=>setWho('A')); $('whoB').addEventListener('click',()=>setWho('B'));
+$('whoChip').addEventListener('click',askWho);
 
 /* ---------- events: notes ---------- */
 bindEdits($('notes'), ()=>state.notes, (n,f,el,row)=>{ row.querySelector('.f span:last-child').textContent=fmtStamp(n.updated); return 'none'; });
@@ -970,7 +1355,7 @@ const Sync=(()=>{
   function unlock(){ document.body.classList.remove('locked'); $('codeModal').classList.remove('show'); }
   const askCode = lock;
   $('codeForm').addEventListener('submit',async e=>{ e.preventDefault(); code=$('codeInput').value.trim(); $('codeErr').textContent='';
-    try{ const j=await api({action:'get'}); unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik';
+    try{ const j=await api({action:'get'}); unlock(); $('codeInput').value=''; if(location.hash&&location.hash!=='#overblik') location.hash='#overblik'; if(!WHO) askWho();
       if(j.state&&j.state.items&&j.state.items.length) apply(j.state); else pushNow(); status('ok','Synkroniseret'); toast('Forbundet – I deler nu planlægningen'); }
     catch(err){ code=''; $('codeErr').textContent=err.code==='bad-code'?'Forkert adgangskode.':'Kunne ikke nå serveren. Prøv igen.'; } });
   $('logout').addEventListener('click',()=>{ if(!confirm('Log ud på denne enhed? Data ligger sikkert i arket og hentes igen, når I logger ind.')) return;
@@ -978,9 +1363,9 @@ const Sync=(()=>{
   async function init(){
     if(window.claude&&typeof claude.use==='function'){ try{ const db=await claude.use('db'); if(db){ mode='db'; dbDoc=db.doc('bryllup/main'); status('saving','Forbinder…');
       dbDoc.onSnapshot(snap=>{ if(snap.exists) apply(snap.data()); else if(!snap.metadata.fromCache) pushNow(); if(!pending) status('ok','Synkroniseret'); },()=>status('error','Delt lagring utilgængelig'));
-      $('footText').textContent='Alt deles live mellem alle, der har siden åben.'; return; } }catch(e){} }
+      $('footText').textContent='Alt deles live mellem alle, der har siden åben.'; if(!WHO) askWho(); return; } }catch(e){} }
     if(CFG.API_URL){ mode='api'; $('logout').hidden=false; document.body.classList.add('locked'); $('footText').textContent='Alt deles via jeres fælles server – I ser det samme.'; lock(); setInterval(()=>{ if(!document.hidden) pull(); },30000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(); }); return; }
-    status('','Gemt lokalt');
+    status('','Gemt lokalt'); if(!WHO) askWho();
   }
   return {push,init};
 })();
