@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 23:13">
+<meta name="build" content="2026-09-13 00:06">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -243,6 +243,11 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .list .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .list .n small{display:block;color:var(--muted);font-size:12px;white-space:normal}
 .list li.late .d b{color:var(--crit)} .list li.soon .d b{color:var(--warn-text)}
+/* gemte bordplaner: navnet kan være langt, så rækken ombrydes i stedet for at lade teksterne løbe ind i hinanden */
+.list.verlist li{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;padding:10px 0}
+.list.verlist .d{flex:1 1 190px;width:auto;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.list.verlist .n{flex:0 1 auto;min-width:0;white-space:normal;overflow:visible;color:var(--muted);font-size:12.5px}
+.list.verlist .btns{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
 
 /* ---- tasks / timeline ---- */
 .progress{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink-2);margin-top:12px}
@@ -715,7 +720,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
       <div class="card vercard" style="margin-top:14px;padding:14px 16px">
         <div class="card-head"><div><h3>Gemte bordplaner</h3><p class="hint">En version gemmer bordene (også loungeborde) og hvem der sidder hvor. Rum, områder og døre er fælles for alle versioner. Prøv fx 2 langborde i én version og 4 i en anden.</p></div>
           <div class="filters"><button class="ghost" id="verSave">Gem som version…</button><button class="ghost" id="verNew">Ny tom bordplan</button></div></div>
-        <div id="verList" class="list" style="margin-top:6px"></div>
+        <div id="verList" class="list verlist" style="margin-top:6px"></div>
       </div>
       <p class="hint focusonly" style="margin-top:8px">Fokuseret bordplan: kun bordene, pladserne og navnene vises – rum, områder og døre er skjult, og intet kan flyttes ved et uheld. Klik på en gæst og derefter på en plads. Træk på tegningen for at rulle, knib for at zoome. Tryk «◎ Afslut fokus» øverst for at redigere plantegningen igen.</p>
       <p class="hint planhint" style="margin-top:8px">Træk rum, døre, områder og borde på plads; træk i hjørnet for at ændre størrelse (1 m = 50 px). Læg en dør oven på en væg, så laver den hul i den. Loungeborde (hak i bjælken) tæller ikke med i bordplanen. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu. Træk på tomt gulv for at rulle, knib for at zoome.</p>
@@ -1380,8 +1385,8 @@ function planData(){ return JSON.parse(JSON.stringify({tables:state.tables})); }
 function versionStats(d){ const seated=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.seatMap||[]).filter(x=>x&&x!=='A'&&x!=='B').length),0); const cap=(d.tables||[]).reduce((a,t)=>a+(t.lounge?0:(t.type==='long'?t.seats*2+(t.ends?2:0):t.seats)),0); return {seated,cap,tables:(d.tables||[]).filter(t=>!t.lounge).length}; }
 function renderVersions(){
   const list=[...state.planVersions].sort((a,b)=>b.t-a.t);
-  $('verList').innerHTML = list.map(v=>{ const st=versionStats(v.data); return `<li data-id="${v.id}"><span class="d"><b>${esc(v.name)}</b>${fmtStamp(v.t)}${v.who?' · '+esc(ownerName(v.who)):''}</span><span class="n">${st.seated} placeret · ${st.cap} pladser · ${st.tables} borde</span><span style="display:flex;gap:6px"><button class="ghost" data-vload="1">Hent</button><button class="ghost" data-vrename="1">Omdøb</button><button class="iconbtn" data-vdel="1" aria-label="Slet version">${svgX}</button></span></li>`; }).join('')
-    || '<li><span></span><span class="n" style="color:var(--muted)">Ingen gemte versioner endnu – tryk «Gem som version…» for at gemme den nuværende.</span><span></span></li>';
+  $('verList').innerHTML = list.map(v=>{ const st=versionStats(v.data); return `<li data-id="${v.id}"><span class="d"><b>${esc(v.name)}</b>${fmtStamp(v.t)}${v.who?' · '+esc(ownerName(v.who)):''}</span><span class="n">${st.seated} placeret · ${st.cap} pladser · ${st.tables} borde</span><span class="btns"><button class="ghost" data-vload="1">Hent</button><button class="ghost" data-vrename="1">Omdøb</button><button class="iconbtn" data-vdel="1" aria-label="Slet version">${svgX}</button></span></li>`; }).join('')
+    || '<li><span class="n">Ingen gemte versioner endnu – tryk «Gem som version…» for at gemme den nuværende.</span></li>';
 }
 function unseat(id){ state.tables.forEach(t=>{ if(t.seatMap.includes(id)){ t.seatMap=t.seatMap.map(x=>x===id?null:x); t.u=Date.now(); } }); }
 function placeAt(gid, tid, seat){
