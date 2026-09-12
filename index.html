@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:27">
+<meta name="build" content="2026-09-12 18:33">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -858,6 +858,9 @@ const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name
 
 function normalize(s){
   s.v = 4;
+  // Data gemt af ældre versioner mangler nyere afsnit (steder, leverandører, plantegning…): udfyld dem fra skabelonen
+  { const need=['places','vendors','speeches','photos','songs','rooms','zones','tasks','program','gifts','notes'].filter(k=>!Array.isArray(s[k]));
+    if(need.length){ const seed=makeSample(); need.forEach(k=>{ s[k]=seed[k]; }); } }
   s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'' }));
   s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', note:g.note||'' }));
   const gids = new Set(s.guests_list.map(g=>g.id));
