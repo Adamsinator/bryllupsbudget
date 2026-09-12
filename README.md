@@ -27,6 +27,8 @@ Herefter:
 
 `localStorage` fungerer stadig som cache, så siden åbner med det samme og virker offline.
 
+**Cache-gotcha:** Pages serverer `config.js` med 10 minutters cache. Script-tagget i `index.html` har derfor `config.js?v=N` – **bump N i samme commit**, hver gang `config.js` ændres.
+
 ## Undersider
 
 - **Overblik** – nedtælling, status på budget/gæster/bordplan/tidsplan, næste opgaver og seneste noter
