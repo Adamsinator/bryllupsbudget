@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:57">
+<meta name="build" content="2026-09-12 19:02">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -789,7 +789,7 @@ function makeSample(){
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
     t('Book lokale','2027-06-01','AB',true), t('Aftal dato med kirke/rådhus','2027-06-15','AB',true), t('Fastlæg budget og gæsteantal','2027-07-01','AB',true),
-    t('Find sted til receptionen (14–14:30, tæt på Slotskirken)','2027-08-15','AB'), t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
+    t('Find sted til receptionen (14:30–17:30, tæt på Slotskirken)','2027-08-15','AB'), t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
     t('Vælg og bestil brudekjole','2027-11-01','A'), t('Prøvesmagning hos kokken','2028-01-15','B'), t('Vælg toastmaster','2028-01-31','AB'),
     t('Send invitationer','2028-03-01','A'), t('Bestil ringe','2028-03-15','AB'), t('Køb jakkesæt','2028-04-01','B'),
     t('Bestil blomster','2028-04-15','A'), t('Svarfrist for gæsterne','2028-05-01','AB'), t('Bestil bryllupskage','2028-05-01','A'),
@@ -798,14 +798,14 @@ function makeSample(){
   ];
   const s = (time,title,desc='') => ({id:uid(), time, title, desc});
   const program = [
-    s('13:00','Vielse i Frederiksborg Slotskirke','Gæsterne møder 12:30'), s('14:00','Reception','14:00–14:30 – sted i Hillerød mangler. Champagne og kransekage'), s('14:30','Fotografering','Brudeparret med fotografen – gæsterne har fri til kl. 18'),
+    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – sted i Hillerød mangler. Champagne og kransekage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
     s('18:00','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
-    s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('02:00','Tak for i aften',''),
+    s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('03:00','Tak for i aften','Festen slutter'),
   ];
   const places = [
-    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13:00', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:00–14:30', contact:'', phone:'', url:'', photo:'', note:'Reception lige efter vielsen – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
-    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 18:00 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
+    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13–14', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
+    {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'', photo:'', note:'Reception 14:30–17:30 – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
+    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 18–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
   ];
   const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
@@ -901,6 +901,25 @@ function normalize(s){
     if(s.program.length===10 && s.program.every(p=>oldTitles.includes(p.title))) s.program=seed.program;
     if(!s.tasks.some(t=>/reception/i.test(t.title))) s.tasks.push(seed.tasks.find(t=>/reception/i.test(t.title)));
     s.dayV2=true; }
+  if(!s.dayV3){ const seed=makeSample();
+    // sørg for at kirken og Palæet findes som Vielse/Fest – også hvis de blev oprettet manuelt med en anden rolle
+    const byName=(re)=>s.places.find(x=>re.test(x.name||''));
+    let kirke=s.places.find(x=>x.role==='Vielse')||byName(/frederiksborg/i); if(kirke){ kirke.role='Vielse'; if(!kirke.name) kirke.name='Frederiksborg Slotskirke'; if(!kirke.address) kirke.address='Frederiksborg Slot, 3400 Hillerød'; } else { kirke=seed.places.find(x=>x.role==='Vielse'); s.places.unshift(kirke); }
+    let fest=s.places.find(x=>x.role==='Fest')||byName(/odd ?fellow/i); if(fest){ fest.role='Fest'; if(!fest.name) fest.name='Odd Fellow Palæet'; if(!fest.address) fest.address='Milnersvej, 3400 Hillerød'; } else { fest=seed.places.find(x=>x.role==='Fest'); s.places.push(fest); }
+    let recep=s.places.find(x=>x.role==='Reception'); if(!recep){ recep=seed.places.find(x=>x.role==='Reception'); s.places.splice(s.places.indexOf(fest),0,recep); }
+    // tider: vielse 13–14, reception 14:30–17:30, fest 18–03
+    if(!kirke.time||/^(kl\. )?13:00$/.test(kirke.time)) kirke.time='kl. 13–14';
+    if(!recep.time||recep.time==='14:00–14:30') recep.time='14:30–17:30';
+    if(!fest.time||/^(fra 14:00|fra 18:00 – maden 18:30)$/.test(fest.time)) fest.time='kl. 18–03 – maden 18:30';
+    if(/^Reception lige efter vielsen/.test(recep.note||'')) recep.note=seed.places.find(x=>x.role==='Reception').note;
+    if(/^Middag og fest\. Gæsterne ankommer/.test(fest.note||'')) fest.note=seed.places.find(x=>x.role==='Fest').note;
+    (s.program||[]).forEach(p=>{ if(p.title==='Reception'&&p.time==='14:00'){ p.time='14:30'; p.desc='14:30–17:30 – sted i Hillerød mangler. Champagne og kransekage'; }
+      if(p.title==='Fotografering'&&p.time==='14:30'){ p.time='15:00'; p.desc='Brudeparret med fotografen under receptionen'; }
+      if(p.title==='Vielse i Frederiksborg Slotskirke'&&p.desc==='Gæsterne møder 12:30') p.desc='13–14 – gæsterne møder 12:30';
+      if(p.title==='Tak for i aften'&&p.time==='02:00'){ p.time='03:00'; p.desc='Festen slutter'; } });
+    if(!(s.program||[]).some(p=>/lykønskninger/i.test(p.title))&&(s.program||[]).some(p=>p.title==='Reception')) s.program.push({id:uid(),time:'14:00',title:'Ris og lykønskninger ved kirken',desc:''});
+    (s.tasks||[]).forEach(t=>{ if(t.title==='Find sted til receptionen (14–14:30, tæt på Slotskirken)') t.title='Find sted til receptionen (14:30–17:30, tæt på Slotskirken)'; });
+    s.dayV3=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
