@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 18:44">
+<meta name="build" content="2026-09-12 18:49">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -375,7 +375,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 /* ---- venues on overview ---- */
 .venueline{font-size:13.5px;color:var(--ink-2);margin:8px 0 0}
 .venueline .arrow{color:var(--accent);margin:0 6px}
-.venues{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:18px}
+.venues{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:stretch;margin-top:18px}
 .venue{display:block;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:16px 18px;min-width:0}
 .venue .ph,.ecard .ph{margin:-16px -18px 12px;height:170px;overflow:hidden;border-radius:var(--r) var(--r) 0 0}
 .ecard .ph{margin:-14px -16px 10px;height:150px}
@@ -510,7 +510,7 @@ body.locked .wrap{display:none}
 @media (min-width:700px) and (max-width:900px){
   .tiles{grid-template-columns:1fr 1fr 1fr 1fr}
   .grid3{grid-template-columns:1fr 1fr} .grid3 .card:first-child{grid-column:1/-1}
-  .venues{grid-template-columns:1fr auto 1fr}
+  .venues{grid-template-columns:1fr auto 1fr auto 1fr}
   .who{grid-template-columns:1fr 1fr}
   .seatgrid{grid-template-columns:1fr}
   .pool .names{max-height:180px}
@@ -672,7 +672,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 
 <!-- ============ STEDER ============ -->
 <section class="page" id="page-steder" hidden>
-  <div class="card-head" style="margin-top:20px;align-items:center"><div><h2>Steder</h2><p class="hint">Kirke, fest og overnatning – adresser, aftaler og ruter.</p></div><div class="filters"><a class="ghost" id="routeLink" href="#" target="_blank" rel="noopener" style="text-decoration:none">Rute kirke → fest</a><button class="ghost" id="copyAddr">Kopiér adresser</button><button class="primary" id="placeAdd">+ Tilføj sted</button></div></div>
+  <div class="card-head" style="margin-top:20px;align-items:center"><div><h2>Steder</h2><p class="hint">Kirke, reception, fest og overnatning – adresser, aftaler og ruter.</p></div><div class="filters"><a class="ghost" id="routeLink" href="#" target="_blank" rel="noopener" style="text-decoration:none">Rute kirke → fest</a><button class="ghost" id="copyAddr">Kopiér adresser</button><button class="primary" id="placeAdd">+ Tilføj sted</button></div></div>
   <div class="ecards" id="places"></div>
   <section class="card" style="margin-top:18px"><div class="card-head"><div><h2>Overnatning</h2><p class="hint">Gæster med hak i "Overnat." på gæstelisten.</p></div></div><div id="stayList" style="margin-top:10px;font-size:13.5px"></div></section>
 </section>
@@ -788,7 +788,7 @@ function makeSample(){
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
     t('Book lokale','2027-06-01','AB',true), t('Aftal dato med kirke/rådhus','2027-06-15','AB',true), t('Fastlæg budget og gæsteantal','2027-07-01','AB',true),
-    t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
+    t('Find sted til receptionen (14–14:30, tæt på Slotskirken)','2027-08-15','AB'), t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
     t('Vælg og bestil brudekjole','2027-11-01','A'), t('Prøvesmagning hos kokken','2028-01-15','B'), t('Vælg toastmaster','2028-01-31','AB'),
     t('Send invitationer','2028-03-01','A'), t('Bestil ringe','2028-03-15','AB'), t('Køb jakkesæt','2028-04-01','B'),
     t('Bestil blomster','2028-04-15','A'), t('Svarfrist for gæsterne','2028-05-01','AB'), t('Bestil bryllupskage','2028-05-01','A'),
@@ -797,13 +797,14 @@ function makeSample(){
   ];
   const s = (time,title,desc='') => ({id:uid(), time, title, desc});
   const program = [
-    s('13:00','Vielse','Kirken – gæsterne møder 12:30'), s('14:00','Velkomstdrink og fotos','Champagne og kransekage ved lokalet'), s('15:30','Fotografering','Brudeparret med fotografen'),
-    s('17:30','Gæsterne finder deres pladser','Toastmaster byder velkommen'), s('18:00','Middag','Taler undervejs – brudens far, gommen, toastmaster'),
-    s('21:30','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('02:00','Tak for i aften',''),
+    s('13:00','Vielse i Frederiksborg Slotskirke','Gæsterne møder 12:30'), s('14:00','Reception','14:00–14:30 – sted i Hillerød mangler. Champagne og kransekage'), s('14:30','Fotografering','Brudeparret med fotografen – gæsterne har fri til kl. 18'),
+    s('18:00','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
+    s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('02:00','Tak for i aften',''),
   ];
   const places = [
-    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'13:00', contact:'', phone:'', url:'', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 14:00', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Velkomstdrink, middag og fest. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
+    {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13:00', contact:'', phone:'', url:'', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
+    {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:00–14:30', contact:'', phone:'', url:'', photo:'', note:'Reception lige efter vielsen – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
+    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'fra 18:00 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Hotel Hillerød', role:'Overnatning', address:'Milnersvej, 3400 Hillerød', time:'', contact:'', phone:'', url:'', note:'Tæt på Palæet – spørg om gruppepris til gæsterne.'},
   ];
   const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
@@ -890,7 +891,16 @@ function normalize(s){
   s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80) }));
   if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
   s.layoutV2=true;
-  const ROLES=['Vielse','Fest','Overnatning','Andet'];
+  if(!s.dayV2){ // dagens forløb: vielse 13, reception 14–14:30 (sted mangler), Palæet fra 18 / mad 18:30
+    const seed=makeSample();
+    const fest=s.places.find(x=>x.role==='Fest'); if(fest&&(fest.time==='fra 14:00'||!fest.time)){ fest.time='fra 18:00 – maden 18:30'; if(/^Velkomstdrink, middag og fest/.test(fest.note||'')) fest.note=seed.places.find(x=>x.role==='Fest').note; }
+    const kirke=s.places.find(x=>x.role==='Vielse'); if(kirke&&kirke.time==='13:00') kirke.time='kl. 13:00';
+    if(!s.places.some(x=>x.role==='Reception')){ const r=seed.places.find(x=>x.role==='Reception'); const i=s.places.findIndex(x=>x.role==='Fest'); s.places.splice(i<0?s.places.length:i,0,r); }
+    const oldTitles=['Vielse','Velkomstdrink og fotos','Fotografering','Gæsterne finder deres pladser','Middag','Kaffe og bryllupskage','Brudevals','Klip i sokker og slips','Natmad','Tak for i aften'];
+    if(s.program.length===10 && s.program.every(p=>oldTitles.includes(p.title))) s.program=seed.program;
+    if(!s.tasks.some(t=>/reception/i.test(t.title))) s.tasks.push(seed.tasks.find(t=>/reception/i.test(t.title)));
+    s.dayV2=true; }
+  const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
   s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
@@ -987,10 +997,11 @@ function renderOverblik(){
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
     return `<li class="${cls}"><span class="d"><b>${x.due?fmtDate(x.due):'–'}</b>${d==null?'':rel(d)}</span><span class="n">${esc(x.title)}${x.owner?`<span class="tag">${esc(ownerName(x.owner))}</span>`:''}</span><span></span></li>`; }).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Alle opgaver er klaret 🎉</span><span></span></li>';
-  const church=state.places.find(x=>x.role==='Vielse'), party=state.places.find(x=>x.role==='Fest');
+  const church=state.places.find(x=>x.role==='Vielse'), recep=state.places.find(x=>x.role==='Reception'), party=state.places.find(x=>x.role==='Fest');
   const vcard=(pl,label)=> pl ? `<div class="venue${photoOf(pl)?' haspic':''}">${photoOf(pl)?`<div class="ph"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}"></div>`:''}<div class="l">${label}${pl.time?` · ${esc(pl.time)}`:''}</div><div class="n">${esc(pl.name)}</div><div class="a">${esc(pl.address)}</div><div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a><a href="#steder">Detaljer</a>${pl.note?`<span style="font-size:12px;color:var(--muted);align-self:center">${esc(pl.note.split('\n')[0].slice(0,70))}</span>`:''}</div></div>` : `<div class="venue"><div class="l">${label}</div><div class="n" style="color:var(--muted)">Ikke valgt endnu</div><div class="a"><a href="#steder">Tilføj under Steder</a></div></div>`;
-  const route = church&&party ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}` : '';
-  $('venues').innerHTML = vcard(church,'Vielse') + `<div class="between"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>${route?`<a href="${route}" target="_blank" rel="noopener" style="font-size:12px">Rute</a>`:''}</div>` + vcard(party,'Fest');
+  const q=pl=>encodeURIComponent(pl.name+', '+pl.address);
+  const arrow=(a,b)=>`<div class="between"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>${a&&b&&!/mangler/i.test(b.name)?`<a href="https://www.google.com/maps/dir/?api=1&origin=${q(a)}&destination=${q(b)}" target="_blank" rel="noopener" style="font-size:12px">Rute</a>`:''}</div>`;
+  $('venues').innerHTML = vcard(church,'Vielse') + arrow(church,recep) + vcard(recep,'Reception') + arrow(recep,party) + vcard(party,'Middag og fest');
   const PAGE_NAMES={overblik:'Overblik',budget:'Budget',gaester:'Gæster',bordplan:'Bordplan',tidsplan:'Tidsplan',program:'Program',steder:'Steder',leverandorer:'Leverandører',indslag:'Taler & indslag',gaver:'Gaver',noter:'Noter'};
   const log=[...state.log].reverse().slice(0,8);
   $('ovChanges').innerHTML = log.map(l=>`<li><span class="d"><b>${esc(ownerName(l.who)||'?')}</b>${ago(l.t)}</span><span class="n"><a href="#${l.page}" style="text-decoration:none;color:inherit">${esc(PAGE_NAMES[l.page]||l.page)}</a>${l.label?`<small>${esc(l.label)}</small>`:''}</span><span></span></li>`).join('')
@@ -1265,12 +1276,12 @@ function renderProgram(){
 function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=state.date.split('-').map(Number); const n=(wy-y)*12+(wm-m); return n>0?`${n} mdr. før`:n===0?'bryllupsmåneden':`${-n} mdr. efter`; }
 
 /* ---------- STEDER ---------- */
-const ROLES=['Vielse','Fest','Overnatning','Andet'];
+const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
 const PHOTOS = { 'odd fellow': 'odd-fellow-palae.jpg' };
 const photoOf = pl => pl.photo || (Object.entries(PHOTOS).find(([k])=>(pl.name||'').toLowerCase().includes(k))||[])[1] || '';
 const mapsUrl = pl => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((pl.name+', '+pl.address).trim())}`;
 function renderPlaces(){
-  const order={Vielse:0,Fest:1,Overnatning:2,Andet:3};
+  const order={Vielse:0,Reception:1,Fest:2,Overnatning:3,Andet:4};
   const list=[...state.places].sort((a,b)=>order[a.role]-order[b.role]);
   $('places').innerHTML=list.map(pl=>`<div class="ecard" data-id="${pl.id}">
     ${photoOf(pl)?`<div class="ph"><img src="${esc(photoOf(pl))}" alt="${esc(pl.name)}"></div>`:''}
@@ -1280,7 +1291,8 @@ function renderPlaces(){
     <div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a>${pl.url?`<a href="${esc(pl.url)}" target="_blank" rel="noopener">Hjemmeside</a>`:''}${pl.phone?`<a href="tel:${esc(pl.phone.replace(/\s/g,''))}">Ring</a>`:''}</div></div>`).join('')
     ||'<p class="empty">Ingen steder endnu.</p>';
   const church=state.places.find(x=>x.role==='Vielse'), party=state.places.find(x=>x.role==='Fest');
-  const rl=$('routeLink'); if(church&&party){ rl.hidden=false; rl.href=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}`; } else rl.hidden=true;
+  const recep=state.places.find(x=>x.role==='Reception'&&x.name&&!/mangler/i.test(x.name));
+  const rl=$('routeLink'); if(church&&party){ rl.hidden=false; rl.href=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}${recep?`&waypoints=${encodeURIComponent(recep.name+', '+recep.address)}`:''}`; } else rl.hidden=true;
   const stay=state.guests_list.filter(g=>g.stay&&g.rsvp!=='no');
   $('stayList').innerHTML = stay.length ? `<b>${stay.length}</b> skal overnatte: ${stay.map(g=>esc(g.name)+(g.rsvp==='maybe'?' <span class="tag">afventer</span>':'')).join(', ')}` : '<span style="color:var(--muted)">Ingen har hak i overnatning endnu.</span>';
 }
