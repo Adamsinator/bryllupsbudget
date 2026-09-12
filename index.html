@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-12 19:07">
+<meta name="build" content="2026-09-12 19:36">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -281,6 +281,14 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .z-entrance .body{fill:rgba(42,120,214,.18);stroke:var(--s1)} .z-wc .body{fill:rgba(183,188,182,.35);stroke:var(--muted)} .z-kids .body{fill:rgba(237,161,0,.14);stroke:var(--s2)}
 .z-photo .body{fill:rgba(42,120,214,.12);stroke:var(--s1)} .z-buffet .body{fill:rgba(235,104,52,.18);stroke:var(--s2)} .z-other .body{fill:var(--surface-2);stroke:var(--ink-2);stroke-dasharray:5 3}
 .hdl{fill:var(--accent);stroke:var(--surface);stroke-width:1.5;cursor:nwse-resize}
+.door{cursor:grab}
+.door .gap{stroke:var(--surface);stroke-width:6;stroke-linecap:butt}
+.door .leaf{fill:none;stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:3 2}
+.door .jamb{stroke:var(--ink);stroke-width:2}
+.door.sel .jamb,.door.sel .leaf{stroke:var(--accent)}
+.door.sel .hit{stroke:var(--accent);stroke-width:1;stroke-dasharray:3 2}
+.tb .body.lounge{fill:rgba(232,123,164,.14);stroke:var(--ink-2);stroke-dasharray:4 3}
+.tb.lounge .tname{font-size:11px}
 .zoom{display:inline-flex;gap:2px;align-items:center;margin-left:auto}
 .zoom button{border:1px solid var(--hair);background:var(--surface);width:28px;height:28px;border-radius:6px;color:var(--ink-2)}
 .zoom button:hover{border-color:var(--accent);color:var(--accent)}
@@ -637,7 +645,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
     <div>
       <div class="card-head" style="align-items:center"><div><h2>Plantegning og bordplan</h2><p class="hint" id="seatHint"></p></div></div>
       <div class="seatbar">
-        <button class="addbtn" id="addRoom">+ Rum</button><button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
+        <button class="addbtn" id="addRoom">+ Rum</button><button class="addbtn" id="addDoor">+ Dør</button><button class="addbtn" id="addOpen">+ Åbning</button><button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
         <select class="addbtn sel" id="addZone" aria-label="Tilføj område"><option value="">+ Område…</option></select>
         <span class="sep"></span>
         <button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><button class="ghost" id="dietBtn">Kost-liste</button>
@@ -645,7 +653,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
       </div>
       <div class="tsel" id="tsel" hidden></div>
       <div class="canvaswrap" id="canvaswrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg"></svg></div>
-      <p class="hint" style="margin-top:8px">Tegn Palæet: tilføj rum og områder (dansegulv, lounge, bar…), træk dem på plads og træk i hjørnet for at ændre størrelse (1 m = 50 px). Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu.</p>
+      <p class="hint" style="margin-top:8px">Tegn Palæet: tilføj rum, døre/åbninger og områder (dansegulv, lounge, bar…), træk dem på plads og træk i hjørnet for at ændre størrelse (1 m = 50 px). Læg en dør oven på en væg, så laver den hul i den. Loungeborde (hak i bjælken) tæller ikke med i bordplanen. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu.</p>
       <div class="tlists" id="tlists"></div>
     </div>
   </div>
@@ -782,6 +790,8 @@ function makeSample(){
   const tables = [
     {id:uid(), name:'Langbord 1', type:'long', x:170, y:90, seats:16, ends:true, seatMap:T1},
     {id:uid(), name:'Langbord 2', type:'long', x:520, y:90, seats:16, ends:true, seatMap:T2},
+    {id:uid(), name:'Sofabord', type:'round', x:1260, y:150, seats:4, ends:false, seatMap:[null,null,null,null], lounge:true},
+    {id:uid(), name:'Sofabord', type:'round', x:1400, y:330, seats:4, ends:false, seatMap:[null,null,null,null], lounge:true},
   ];
   // Eksempel-plantegning af Odd Fellow Palæet – ret mål og rum, så det passer
   const rooms = sampleRooms();
@@ -839,7 +849,7 @@ function makeSample(){
     i('Blomster & dekoration',7000,0,'A','Brudebuket, borde, æresport'), i('Invitationer & tryk',2500,2500,'A'), i('Bryllupskage',3500,0,'A'),
     i('Frisør & makeup',3500,0,'A','Prøve + selve dagen'), i('Transport',3000,0,'B','Bil til kirken, bus til gæster'),
   ];
-  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, rooms, zones, tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
+  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, rooms, zones, doors:sampleDoors(), tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
 }
 const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til forældre','Kirke & præst','Rådhus','Børnepasning','Lyd & lys','Bordkort & menukort','Uforudset'];
 
@@ -848,6 +858,9 @@ function uid(){ return Math.random().toString(36).slice(2,9); }
 // Standardplan: festsal med de to langborde, tilstødende dansesal (halv længde, samme bredde) og lounge af samme størrelse
 function sampleRooms(){ return [
   {id:uid(), name:'Festsalen', x:20, y:20, w:760, h:900}, {id:uid(), name:'Dansesal', x:800, y:20, w:380, h:900}, {id:uid(), name:'Lounge', x:1200, y:20, w:380, h:900},
+]; }
+function sampleDoors(){ const d=(type,x,y,len,dir,flip=false)=>({id:uid(), type, x, y, len, dir, flip}); return [
+  d('door',380,920,50,'h'), d('open',780,300,120,'v'), d('open',1180,300,120,'v'), d('door',1420,920,50,'h',true),
 ]; }
 function sampleZones(){ const z=(type,label,x,y,w,h)=>({id:uid(), type, label, x, y, w, h}); return [
   z('cake','Kagebord',50,720,110,60), z('gifts','Gavebord',640,720,110,60), z('entrance','Indgang',340,890,120,30),
@@ -879,7 +892,7 @@ function normalize(s){
     seatMap.length = total; for(let i=0;i<total;i++){ if(!seatMap[i]||!gids.has(seatMap[i])) seatMap[i]=null; }
     // samme gæst må kun sidde ét sted
     const seen=new Set(); for(let i=0;i<total;i++){ if(seatMap[i]){ if(seen.has(seatMap[i])) seatMap[i]=null; else seen.add(seatMap[i]); } }
-    return { id:t.id||uid(), name:t.name||'Bord', type, x:isFinite(+t.x)?+t.x:160+k*320, y:isFinite(+t.y)?+t.y:60, seats, ends, seatMap };
+    return { id:t.id||uid(), name:t.name||'Bord', type, x:isFinite(+t.x)?+t.x:160+k*320, y:isFinite(+t.y)?+t.y:60, seats, ends, seatMap, lounge:!!t.lounge, u:+t.u||0 };
   });
   { const seen=new Set(); s.tables.forEach(t=>t.seatMap.forEach((id,i)=>{ if(id){ if(seen.has(id)) t.seatMap[i]=null; else seen.add(id); } })); }
   if(!s.tables16 && s.tables.length===2 && s.tables.every(t=>t.type==='long'&&t.seats===14&&!t.ends&&/^Langbord [12]$/.test(t.name))){
@@ -889,7 +902,8 @@ function normalize(s){
   }
   s.tables16=true;
   s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
-  s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80) }));
+  s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80), u:+r.u||0 }));
+  s.doors = (s.doors||[]).map(d=>({ id:d.id||uid(), type:d.type==='open'?'open':'door', x:+d.x||0, y:+d.y||0, len:Math.max(20,+d.len||50), dir:d.dir==='v'?'v':'h', flip:!!d.flip, u:+d.u||0 }));
   if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
   s.layoutV2=true;
   if(!s.dayV2){ // dagens forløb: vielse 13, reception 14–14:30 (sted mangler), Palæet fra 18 / mad 18:30
@@ -968,9 +982,10 @@ const svgX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 /* ---------- derived ---------- */
 function totals(){ const planned=state.items.reduce((a,i)=>a+plannedOf(i),0), paid=state.items.reduce((a,i)=>a+(+i.paid||0),0), budget=+state.budget||0; return {planned,paid,budget,buffer:budget-planned}; }
 function guestStats(){ const s={total:state.guests_list.length,yes:0,maybe:0,no:0,child:0,diet:0,stay:0}; state.guests_list.forEach(g=>{ s[g.rsvp]++; if(g.child&&g.rsvp!=='no') s.child++; if(g.diet&&g.rsvp!=='no') s.diet++; if(g.stay&&g.rsvp!=='no') s.stay++; }); return s; }
-function seated(){ const m=new Map(); state.tables.forEach(t=>t.seatMap.forEach((id,i)=>{ if(id) m.set(id,{table:t,seat:i}); })); return m; }
-function seatedGuests(){ let n=0; state.tables.forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B') n++; })); return n; }
-function totalSeats(t){ return t.type==='long' ? t.seats*2 + (t.ends?2:0) : t.seats; }
+function seated(){ const m=new Map(); seatTables().forEach(t=>t.seatMap.forEach((id,i)=>{ if(id) m.set(id,{table:t,seat:i}); })); return m; }
+function seatedGuests(){ let n=0; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id&&id!=='A'&&id!=='B') n++; })); return n; }
+function totalSeats(t){ return t.lounge ? 0 : (t.type==='long' ? t.seats*2 + (t.ends?2:0) : t.seats); }
+function seatTables(){ return state.tables.filter(t=>!t.lounge); }
 function guestName(id){ if(id==='A') return state.nameA; if(id==='B') return state.nameB; return state.guests_list.find(g=>g.id===id)?.name||''; }
 function guestSide(id){ if(id==='A') return 'A'; if(id==='B') return 'B'; return state.guests_list.find(g=>g.id===id)?.side||'AB'; }
 function shortName(n){ n=(n||'').trim(); if(n.length<=14) return n; const p=n.split(/\s+/); return p.length>1 ? `${p[0]} ${p[p.length-1][0]}.` : n.slice(0,13)+'…'; }
@@ -1014,7 +1029,7 @@ function renderOverblik(){
   $('tiles').innerHTML = `
     <a class="tile" href="#budget"><div class="l">Budget</div><div class="v tab">${kr(t.planned)}</div><div class="s">${t.budget>0?`${pct(t.planned,t.budget)} af rammen på ${kr(t.budget)}`:'Ingen ramme sat'} · ${over?'<span style="color:var(--crit)">overskredet</span>':`buffer ${kr(t.buffer)}`}</div><div class="mini"><span style="width:${Math.min(100,t.budget?t.planned/t.budget*100:0)}%${over?';background:var(--crit)':''}"></span></div></a>
     <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${gs.child} børn`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
-    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${state.tables.length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,seatedGuests()/gs.yes*100):0}%"></span></div></a>
+    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${seatTables().length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,seatedGuests()/gs.yes*100):0}%"></span></div></a>
     <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
@@ -1164,6 +1179,7 @@ function renderGuests(){
 const SEAT={SH:30,W:76,R:14};
 function tableGeom(t){
   const seats=[];
+  if(t.lounge){ if(t.type==='round'){ const R=Math.max(30,10+t.seats*6); return {w:2*R,h:2*R,cx:R,cy:R,R,seats:[],pad:{l:10,r:10,t:10,b:10}}; } return {w:SEAT.W,h:Math.max(60,t.seats*SEAT.SH*0.6+16),seats:[],pad:{l:10,r:10,t:10,b:10}}; }
   if(t.type==='round'){
     const n=t.seats, R=Math.max(44, 10+n*7.5), cx=R, cy=R;
     for(let i=0;i<n;i++){ const a=-Math.PI/2+i*2*Math.PI/n, c=Math.cos(a), sn=Math.sin(a);
@@ -1184,12 +1200,13 @@ function renderSeating(){
   const selSeated = ui.selGuest && st.get(ui.selGuest);
   $('poolHint').textContent = ui.selGuest ? `Klik på en plads til ${guestName(ui.selGuest)}` : `${pool.length} mangler plads.`;
   $('poolAction').innerHTML = selSeated ? `<button class="ghost" id="unseatSel">Tag ${esc(shortName(guestName(ui.selGuest)))} væk fra ${esc(selSeated.table.name)}</button>` : ui.selGuest ? `<button class="ghost" id="clearSel">Fortryd valg</button>` : '';
-  const cap=state.tables.reduce((a,t)=>a+totalSeats(t),0);
-  $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${state.tables.length} borde`;
+  const cap=state.tables.reduce((a,t)=>a+totalSeats(t),0); const nL=state.tables.filter(t=>t.lounge).length;
+  $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${seatTables().length} borde${nL?` (+ ${nL} loungeborde, tæller ikke)`:''}`;
   renderTsel(); drawPlan(); renderTlists();
   $('addZone').innerHTML='<option value="">+ Område…</option>'+Object.keys(ZONES).map(k=>`<option value="${k}">${ZONES[k]}</option>`).join('');
 }
-function selObj(){ if(!ui.sel) return null; const coll=ui.sel.kind==='table'?state.tables:ui.sel.kind==='room'?state.rooms:state.zones; return coll.find(x=>x.id===ui.sel.id)||null; }
+function collOf(kind){ return kind==='table'?state.tables:kind==='room'?state.rooms:kind==='door'?state.doors:state.zones; }
+function selObj(){ if(!ui.sel) return null; return collOf(ui.sel.kind).find(x=>x.id===ui.sel.id)||null; }
 function renderTsel(){
   const o=selObj(); const el=$('tsel'); if(!o){ el.hidden=true; el.innerHTML=''; return; }
   el.hidden=false;
@@ -1197,11 +1214,17 @@ function renderTsel(){
     el.innerHTML=`<span style="color:var(--muted)">Bord</span><input class="n" data-tf="name" value="${esc(t.name)}" aria-label="Bordnavn"><select data-tf="type"><option value="long"${t.type==='long'?' selected':''}>Langbord</option><option value="round"${t.type==='round'?' selected':''}>Rundt bord</option></select>
     <label>${t.type==='long'?'Pladser pr. side':'Pladser'} <input class="num tab" data-tf="seats" inputmode="numeric" value="${t.seats}"></label>
     ${t.type==='long'?`<label><input type="checkbox" data-tf="ends" ${t.ends?'checked':''}> Bordender</label>`:''}
-    <span style="color:var(--muted)">${used}/${totalSeats(t)} besat</span>
+    <label title="Loungebord til afslapning – ingen faste pladser, tæller ikke med i bordplanen"><input type="checkbox" data-tf="lounge" ${t.lounge?'checked':''}> Loungebord</label>
+    <span style="color:var(--muted)">${t.lounge?'tæller ikke':`${used}/${totalSeats(t)} besat`}</span>
     <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet bord</button><button class="ghost" data-tclose="1">Luk</button>`; }
   else if(ui.sel.kind==='room'){ const r=o;
     el.innerHTML=`<span style="color:var(--muted)">Rum</span><input class="n" data-tf="name" value="${esc(r.name)}" aria-label="Rumnavn"><label>Bredde <input class="num tab" data-tf="w" inputmode="decimal" value="${m(r.w)}"> m</label><label>Dybde <input class="num tab" data-tf="h" inputmode="decimal" value="${m(r.h)}"> m</label>
     <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet rum</button><button class="ghost" data-tclose="1">Luk</button>`; }
+  else if(ui.sel.kind==='door'){ const d=o;
+    el.innerHTML=`<span style="color:var(--muted)">${d.type==='door'?'Dør':'Åbning'}</span><select data-tf="type"><option value="door"${d.type==='door'?' selected':''}>Dør</option><option value="open"${d.type==='open'?' selected':''}>Åbning i væg</option></select>
+    <label>Bredde <input class="num tab" data-tf="len" inputmode="decimal" value="${m(d.len)}"> m</label><select data-tf="dir"><option value="h"${d.dir==='h'?' selected':''}>I vandret væg</option><option value="v"${d.dir==='v'?' selected':''}>I lodret væg</option></select>
+    ${d.type==='door'?`<label><input type="checkbox" data-tf="flip" ${d.flip?'checked':''}> Vend slagretning</label>`:''}
+    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet</button><button class="ghost" data-tclose="1">Luk</button>`; }
   else { const z=o;
     el.innerHTML=`<span style="color:var(--muted)">Område</span><select data-tf="type">${opts(Object.keys(ZONES),z.type,k=>ZONES[k])}</select><input class="n" data-tf="label" value="${esc(z.label)}" placeholder="Navn" aria-label="Navn"><label>Bredde <input class="num tab" data-tf="w" inputmode="decimal" value="${m(z.w)}"> m</label><label>Dybde <input class="num tab" data-tf="h" inputmode="decimal" value="${m(z.h)}"> m</label>
     <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet område</button><button class="ghost" data-tclose="1">Luk</button>`; }
@@ -1210,6 +1233,7 @@ function drawPlan(){
   const svg=$('plan');
   let minX=Infinity,minY=Infinity,maxX=0,maxY=0;
   const geos=state.tables.map(t=>{ const g=tableGeom(t); minX=Math.min(minX,t.x-g.pad.l); minY=Math.min(minY,t.y-g.pad.t); maxX=Math.max(maxX,t.x+g.w+g.pad.r); maxY=Math.max(maxY,t.y+g.h+g.pad.b); return g; });
+  state.doors.forEach(d=>{ minX=Math.min(minX,d.x-10); minY=Math.min(minY,d.y-d.len-10); maxX=Math.max(maxX,d.x+d.len+10); maxY=Math.max(maxY,d.y+d.len+10); });
   [...state.rooms,...state.zones].forEach(r=>{ minX=Math.min(minX,r.x-10); minY=Math.min(minY,r.y-10); maxX=Math.max(maxX,r.x+r.w+10); maxY=Math.max(maxY,r.y+r.h+10); });
   if(!isFinite(minX)){ minX=0;minY=0;maxX=600;maxY=240; }
   const ox=Math.min(0,minX), oy=Math.min(0,minY); const W=Math.max(640,maxX-ox+20), H=Math.max(260,maxY-oy+20);
@@ -1218,7 +1242,13 @@ function drawPlan(){
   const defs=`<defs><pattern id="pDance" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="rgba(74,58,167,.08)"/><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(74,58,167,.35)" stroke-width="2"/></pattern></defs>`;
   const rooms=state.rooms.map(r=>`<g class="room${isSel('room',r.id)?' sel':''}" data-kind="room" data-id="${r.id}" transform="translate(${r.x} ${r.y})"><rect class="body" x="0" y="0" width="${r.w}" height="${r.h}" rx="3"/><text class="rname" x="12" y="24">${esc(r.name)}</text><text class="rdim" x="12" y="38">${m(r.w)} × ${m(r.h)} m</text>${isSel('room',r.id)?`<rect class="hdl" data-kind="room" data-id="${r.id}" x="${r.w-7}" y="${r.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
   const zones=state.zones.map(z=>`<g class="zone z-${z.type}${isSel('zone',z.id)?' sel':''}" data-kind="zone" data-id="${z.id}" transform="translate(${z.x} ${z.y})"><rect class="body" x="0" y="0" width="${z.w}" height="${z.h}"/><text class="zname" x="${z.w/2}" y="${z.h/2+(z.h>40?0:4)}" text-anchor="middle">${esc(z.label||ZONES[z.type])}</text>${z.h>40?`<text class="zdim" x="${z.w/2}" y="${z.h/2+14}" text-anchor="middle">${m(z.w)} × ${m(z.h)} m</text>`:''}${isSel('zone',z.id)?`<rect class="hdl" data-kind="zone" data-id="${z.id}" x="${z.w-7}" y="${z.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
+  const doors=state.doors.map(d=>{ const L=d.len, sel=isSel('door',d.id); const rot=d.dir==='v'?'rotate(90)':''; const fl=d.flip?'scale(1,-1)':'';
+    const leaf = d.type==='door' ? `<path class="leaf" d="M0 0 L0 ${-L} A${L} ${L} 0 0 1 ${L} 0" transform="${fl}"/>` : '';
+    return `<g class="door${sel?' sel':''}" data-kind="door" data-id="${d.id}" transform="translate(${d.x} ${d.y}) ${rot}"><rect class="hit" x="-4" y="${-L-4}" width="${L+8}" height="${2*L+8}" fill="transparent"/><line class="gap" x1="0" y1="0" x2="${L}" y2="0"/>${leaf}<line class="jamb" x1="0" y1="-5" x2="0" y2="5"/><line class="jamb" x1="${L}" y1="-5" x2="${L}" y2="5"/></g>`; }).join('');
   const parts=state.tables.map((t,k)=>{ const g=geos[k]; const sel=isSel('table',t.id);
+    if(t.lounge){ const body=t.type==='round'?`<circle class="body lounge" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>`:`<rect class="body lounge" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
+      const lbl=t.type==='round'?`<text class="tname" x="${g.cx}" y="${g.cy+4}" text-anchor="middle">${esc(t.name)}</text>`:`<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="4">${esc(t.name)}</text>`;
+      return `<g class="tb lounge${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${lbl}</g>`; }
     const body = t.type==='round' ? `<circle class="body" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>` : `<rect class="body" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
     const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`
       : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-2">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`;
@@ -1226,12 +1256,12 @@ function drawPlan(){
       const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
       return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle class="hit" cx="${sd.x}" cy="${sd.y}" r="${SEAT.R+9}" fill="transparent" stroke="none"/><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}">${id?esc(shortName(nm)):(sd.i+1)}</text></g>`; }).join('');
     return `<g class="tb${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${label}${seats}</g>`; });
-  svg.innerHTML = defs + rooms + zones + parts.join('') + (!state.tables.length&&!state.rooms.length ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et rum, et langbord eller et rundt bord for at komme i gang.</text>` : '');
+  svg.innerHTML = defs + rooms + zones + doors + parts.join('') + (!state.tables.length&&!state.rooms.length ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et rum, et langbord eller et rundt bord for at komme i gang.</text>` : '');
   $('zoomPct').textContent=Math.round(ui.zoom*100)+' %';
   if(!ui.zoomed){ const cw=$('canvaswrap').clientWidth; if(cw>0){ ui.zoomed=true; if(W*ui.zoom>cw-2){ ui.zoom=Math.max(.3,(cw-2)/W); svg.setAttribute('width',Math.round(W*ui.zoom)); svg.setAttribute('height',Math.round(H*ui.zoom)); $('zoomPct').textContent=Math.round(ui.zoom*100)+' %'; } } }
 }
 function renderTlists(){
-  $('tlists').innerHTML = state.tables.map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
+  $('tlists').innerHTML = seatTables().map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
     return `<div class="tlist"><h3>${esc(t.name)} <small style="color:var(--muted);font-family:Karla,sans-serif;font-size:12px">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</small></h3>${names?`<ol>${names}</ol>`:'<div class="e">Ingen placeret endnu</div>'}</div>`; }).join('');
 }
 function unseat(id){ state.tables.forEach(t=>{ if(t.seatMap.includes(id)){ t.seatMap=t.seatMap.map(x=>x===id?null:x); t.u=Date.now(); } }); }
@@ -1263,7 +1293,7 @@ function dietList(){
   [...byDiet.entries()].forEach(([k,arr])=>lines.push(`  ${k}: ${arr.join(', ')}`));
   lines.push('');
   lines.push('Pr. bord:');
-  state.tables.forEach(t=>{ const ids=t.seatMap.filter(Boolean); const gl=ids.map(id=>id==='A'||id==='B'?{name:guestName(id),child:false,diet:''}:state.guests_list.find(g=>g.id===id)).filter(Boolean);
+  seatTables().forEach(t=>{ const ids=t.seatMap.filter(Boolean); const gl=ids.map(id=>id==='A'||id==='B'?{name:guestName(id),child:false,diet:''}:state.guests_list.find(g=>g.id===id)).filter(Boolean);
     const k=gl.filter(g=>g.child).length; const d=gl.filter(g=>g.diet&&g.diet.trim()).map(g=>`${g.name} (${g.diet})`);
     lines.push(`  ${t.name}: ${gl.length} personer${k?`, heraf ${k} børn`:''}${d.length?` – ${d.join(', ')}`:''}`); });
   const unplaced=state.guests_list.filter(g=>g.rsvp==='yes'&&!seated().has(g.id)).length; if(unplaced) lines.push(`  (ikke placeret endnu: ${unplaced})`);
@@ -1271,7 +1301,7 @@ function dietList(){
 }
 function showDiet(){ $('dietText').value=dietList(); $('dietModal').classList.add('show'); }
 function printCards(){
-  const cards=[]; state.tables.forEach(t=>t.seatMap.forEach(id=>{ if(id) cards.push(`<div class="card1"><b>${esc(guestName(id))}</b><span>${esc(t.name)}</span></div>`); }));
+  const cards=[]; seatTables().forEach(t=>t.seatMap.forEach(id=>{ if(id) cards.push(`<div class="card1"><b>${esc(guestName(id))}</b><span>${esc(t.name)}</span></div>`); }));
   if(!cards.length){ toast('Ingen er placeret endnu'); return; }
   $('cards').innerHTML=cards.join(''); document.body.classList.add('print-cards'); window.print(); setTimeout(()=>document.body.classList.remove('print-cards'),500);
 }
@@ -1452,20 +1482,28 @@ $('tsel').addEventListener('input',e=>{ const o=selObj(); const f=e.target.datas
     if(f==='name') t.name=e.target.value;
     else if(f==='seats'){ const op=t.seats, oe=t.ends; t.seats=Math.max(1,Math.min(40,parseNum(e.target.value)||1)); fixSeatMap(t,op,oe); }
     else if(f==='ends'){ const op=t.seats, oe=t.ends; t.ends=e.target.checked; fixSeatMap(t,op,oe); }
+    else if(f==='lounge'){ t.lounge=e.target.checked; if(t.lounge){ t.seatMap=t.seatMap.map(()=>null); } }
     else if(f==='type'){ t.type=e.target.value; if(t.type==='round'){ t.seats=Math.max(3,t.seats*2); t.ends=false; } else { t.seats=Math.max(2,Math.ceil(t.seats/2)); } fixSeatMap(t); }
+  } else if(kind==='door'){
+    if(f==='type'||f==='dir') o[f]=e.target.value; else if(f==='flip') o.flip=e.target.checked;
+    else if(f==='len'){ const v=parseFloat(String(e.target.value).replace(',','.')); if(isFinite(v)&&v>0) o.len=Math.max(20,Math.round(v*PXM/10)*10); }
   } else {
     if(f==='name'||f==='label') o[f]=e.target.value;
     else if(f==='type') o.type=e.target.value;
     else if(f==='w'||f==='h'){ const v=parseFloat(String(e.target.value).replace(',','.')); if(isFinite(v)&&v>0) o[f]=Math.max(30,Math.round(v*PXM/10)*10); }
   }
-  o.u=Date.now(); state.updatedAt=Date.now(); localSave(); logChange(o.name||o.label||''); if(f==='name'||f==='label'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
+  o.u=Date.now(); state.updatedAt=Date.now(); localSave(); logChange(o.name||o.label||(kind==='door'?'dør':'')); if(f==='name'||f==='label'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
 $('tsel').addEventListener('click',e=>{ const o=selObj(); if(!o) return; const kind=ui.sel.kind;
   if(e.target.closest('[data-tclose]')){ ui.sel=null; renderSeating(); }
   if(e.target.closest('[data-tdel]')){
     if(kind==='table'){ if(o.seatMap.some(Boolean)&&!confirm(`Slet «${o.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; ui.sel=null; delWithUndo(()=>state.tables,o.id,o.name); }
     else if(kind==='room'){ ui.sel=null; delWithUndo(()=>state.rooms,o.id,o.name); }
+    else if(kind==='door'){ ui.sel=null; delWithUndo(()=>state.doors,o.id,o.type==='door'?'Dør':'Åbning'); }
     else { ui.sel=null; delWithUndo(()=>state.zones,o.id,o.label||ZONES[o.type]); } } });
 $('addRoom').addEventListener('click',addRoom);
+function addDoor(type){ const sel=selObj(); const d={id:uid(), type, x:40, y:40, len:type==='door'?50:120, dir:'h', flip:false}; if(ui.sel&&ui.sel.kind==='room'&&sel){ d.x=sel.x+Math.round(sel.w/2/10)*10-Math.round(d.len/2/10)*10; d.y=sel.y+sel.h; } state.doors.push(d); ui.sel={kind:'door',id:d.id}; commit('full', type==='door'?'dør tilføjet':'åbning tilføjet'); }
+$('addDoor').addEventListener('click',()=>addDoor('door'));
+$('addOpen').addEventListener('click',()=>addDoor('open'));
 $('addZone').addEventListener('change',e=>{ if(e.target.value) addZone(e.target.value); e.target.value=''; });
 function setZoom(z){ ui.zoom=Math.max(.3,Math.min(2.5,z)); drawPlan(); }
 $('canvaswrap').addEventListener('wheel',e=>{ if(!e.ctrlKey) return; e.preventDefault(); setZoom(ui.zoom*(e.deltaY<0?1.1:0.9)); },{passive:false});
@@ -1478,7 +1516,7 @@ $('zoomFit').addEventListener('click',()=>{ const W=+$('plan').dataset.w||640; s
 /* canvas: seat clicks + drag/resize of rooms, zones and tables */
 const plan=$('plan'); let drag=null;
 function svgPoint(ev){ const pt=plan.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; return pt.matrixTransform(plan.getScreenCTM().inverse()); }
-function findObj(kind,id){ return (kind==='table'?state.tables:kind==='room'?state.rooms:state.zones).find(x=>x.id===id); }
+function findObj(kind,id){ return collOf(kind).find(x=>x.id===id); }
 plan.addEventListener('pointerdown',e=>{
   if(e.target.closest('.seat')) return;
   const p=svgPoint(e);
@@ -1488,12 +1526,12 @@ plan.addEventListener('pointerdown',e=>{
 plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true;
   if(drag.mode==='pan'){ const w=$('canvaswrap'); w.scrollLeft=drag.sl-(e.clientX-drag.sx); w.scrollTop=drag.st-(e.clientY-drag.sy); return; }
   const p=svgPoint(e); const o=drag.o;
-  if(drag.mode==='move'){ o.x=Math.round((p.x-drag.dx)/10)*10; o.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${o.x} ${o.y})`); }
+  if(drag.mode==='move'){ o.x=Math.round((p.x-drag.dx)/10)*10; o.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${o.x} ${o.y})`+(drag.kind==='door'&&o.dir==='v'?' rotate(90)':'')); }
   else { o.w=Math.max(30,Math.round((p.x-drag.ox)/10)*10); o.h=Math.max(30,Math.round((p.y-drag.oy)/10)*10); const g=drag.el; const b=g.querySelector('.body'); b.setAttribute('width',o.w); b.setAttribute('height',o.h);
     const h=g.querySelector('.hdl'); h.setAttribute('x',o.w-7); h.setAttribute('y',o.h-7); const d=g.querySelector('.rdim,.zdim'); if(d){ d.textContent=`${m(o.w)} × ${m(o.h)} m`; if(drag.kind==='zone'){ d.setAttribute('x',o.w/2); d.setAttribute('y',o.h/2+14); } } const zn=g.querySelector('.zname'); if(zn){ zn.setAttribute('x',o.w/2); zn.setAttribute('y',o.h/2+(o.h>40?0:4)); } } });
 plan.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null; try{ plan.releasePointerCapture(e.pointerId); }catch(x){}
   if(d.mode==='pan'){ if(!d.moved&&ui.sel){ ui.sel=null; renderSeating(); } return; }
-  const nm=d.o.name||d.o.label||ZONES[d.o.type]||'';
+  const nm=d.o.name||d.o.label||(d.kind==='door'?(d.o.type==='door'?'Dør':'Åbning'):ZONES[d.o.type])||'';
   if(d.moved){ d.o.u=Date.now(); if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
   else { ui.sel = (ui.sel&&ui.sel.kind===d.kind&&ui.sel.id===d.o.id) ? null : {kind:d.kind,id:d.o.id}; renderSeating(); } });
 plan.addEventListener('click',e=>{ const seat=e.target.closest('.seat'); if(!seat) return; const tid=seat.dataset.table, i=+seat.dataset.seat; const t=state.tables.find(x=>x.id===tid); const id=t.seatMap[i];
@@ -1584,7 +1622,7 @@ $('toastBtn').addEventListener('click',()=>{ if(toastUndo) toastUndo(); toastUnd
 
 /* ---------- sync layer: localStorage + (artifact db | Apps Script API) ---------- */
 /* Fletning af to versioner: pr. element vinder den nyeste (u), sletninger huskes som tombstones */
-const COLLS=['items','guests_list','tables','rooms','zones','tasks','program','notes','places','vendors','speeches','photos','songs','gifts'];
+const COLLS=['items','guests_list','tables','rooms','zones','doors','tasks','program','notes','places','vendors','speeches','photos','songs','gifts'];
 function mergeStates(local, remote){
   const out=structuredClone(remote); const tomb={...(remote.tomb||{}),...(local.tomb||{})}; out.tomb=tomb;
   const newerRemote=(+remote.updatedAt||0)>=(+local.updatedAt||0);
