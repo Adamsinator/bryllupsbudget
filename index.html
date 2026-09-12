@@ -847,7 +847,7 @@ function sampleZones(){ const z=(type,label,x,y,w,h)=>({id:uid(), type, label, x
   z('dance','Dansegulv',830,180,320,440), z('dj','DJ',830,680,150,110), z('bar','Bar',1000,680,150,110),
   z('lounge','Lounge – sofaer og hvil',1230,80,320,480), z('buffet','Kaffe og kage',1230,600,320,100), z('other','Garderobe',1230,760,150,80),
 ]; }
-let state = normalize(localLoad() || makeSample());
+let state; try{ state = normalize(localLoad() || makeSample()); }catch(e){ console.error('Kunne ikke læse gemte data – starter fra eksempel', e); try{ localStorage.setItem(KEY+'.broken', localStorage.getItem(KEY)||''); }catch(x){} state = normalize(makeSample()); }
 let page = 'overblik';
 const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
 
@@ -875,10 +875,10 @@ function normalize(s){
     (s.zones||[]).forEach(z=>{ if(z.type==='dance'&&z.y===570) z.y=670; if(z.type==='dj'&&z.y===600) z.y=700; if(z.type==='cake'&&z.y===600) z.y=700; if(z.type==='entrance'&&z.y===780) z.y=880; });
   }
   s.tables16=true;
-  if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
-  s.layoutV2=true;
   s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
   s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80) }));
+  if(!s.layoutV2 && s.rooms.length===3 && s.rooms.map(r=>r.name).join()==='Festsalen,Lille sal,Foyer'){ s.rooms=sampleRooms(); s.zones=sampleZones(); }
+  s.layoutV2=true;
   const ROLES=['Vielse','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
@@ -1595,7 +1595,8 @@ const Sync=(()=>{
   return {push,init};
 })();
 
-route();
+window.addEventListener('error',()=>{ /* hvis noget går galt bag låseskærmen, så vis i det mindste låsen frem for en blank side */ if(document.body.classList.contains('locked')&&!$('codeModal').classList.contains('show')){ $('codeModal').classList.add('show'); $('codeErr').textContent='Der skete en fejl ved indlæsning – prøv at logge ind igen.'; } });
+try{ route(); }catch(e){ console.error(e); }
 Sync.init();
 })();
 </script>
