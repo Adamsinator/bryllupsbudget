@@ -260,6 +260,23 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .tsel label{display:inline-flex;gap:5px;align-items:center;color:var(--ink-2)}
 .canvaswrap{margin-top:12px;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);overflow:auto;position:relative;background-image:radial-gradient(var(--hair) 1px,transparent 1px);background-size:20px 20px}
 .canvaswrap svg{display:block;font-family:Karla,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
+.room .body{fill:var(--surface);stroke:var(--ink-2);stroke-width:2;cursor:grab}
+.room.sel .body{stroke:var(--accent);stroke-width:3}
+.room .rname{font-family:Fraunces,Georgia,serif;font-size:15px;fill:var(--ink);pointer-events:none}
+.room .rdim{font-size:10.5px;fill:var(--muted);pointer-events:none}
+.zone .body{stroke-width:1.5;cursor:grab;rx:6}
+.zone.sel .body{stroke:var(--accent);stroke-width:2.5}
+.zone .zname{font-size:12px;fill:var(--ink);font-weight:700;pointer-events:none}
+.zone .zdim{font-size:10px;fill:var(--ink-2);pointer-events:none}
+.z-dance .body{fill:url(#pDance);stroke:var(--s7)} .z-lounge .body{fill:rgba(232,123,164,.18);stroke:var(--s5)} .z-bar .body{fill:rgba(237,161,0,.2);stroke:var(--s4)}
+.z-dj .body{fill:rgba(74,58,167,.18);stroke:var(--s7)} .z-cake .body{fill:rgba(232,123,164,.25);stroke:var(--s5)} .z-gifts .body{fill:rgba(27,175,122,.18);stroke:var(--s3)}
+.z-entrance .body{fill:rgba(42,120,214,.18);stroke:var(--s1)} .z-wc .body{fill:rgba(183,188,182,.35);stroke:var(--muted)} .z-kids .body{fill:rgba(237,161,0,.14);stroke:var(--s2)}
+.z-photo .body{fill:rgba(42,120,214,.12);stroke:var(--s1)} .z-buffet .body{fill:rgba(235,104,52,.18);stroke:var(--s2)} .z-other .body{fill:var(--surface-2);stroke:var(--ink-2);stroke-dasharray:5 3}
+.hdl{fill:var(--accent);stroke:var(--surface);stroke-width:1.5;cursor:nwse-resize}
+.zoom{display:inline-flex;gap:2px;align-items:center;margin-left:auto}
+.zoom button{border:1px solid var(--hair);background:var(--surface);width:28px;height:28px;border-radius:6px;color:var(--ink-2)}
+.zoom button:hover{border-color:var(--accent);color:var(--accent)}
+.zoom span{font-size:12px;color:var(--muted);width:44px;text-align:center}
 .tb .body{fill:var(--surface-2);stroke:var(--ink-2);stroke-width:1.5;cursor:grab}
 .tb.sel .body{stroke:var(--accent);stroke-width:2.5}
 .tb .tname{font-family:Fraunces,Georgia,serif;font-size:13px;fill:var(--ink);pointer-events:none}
@@ -345,6 +362,21 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .who-btns button{flex:1;padding:14px;border-radius:10px;border:1px solid var(--hair);background:var(--surface-2);font-family:Fraunces,Georgia,serif;font-size:20px}
 .who-btns button:hover{border-color:var(--accent);background:var(--accent-soft)}
 .whochip{cursor:pointer;border:0;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;letter-spacing:.02em;text-transform:none}
+
+/* ---- venues on overview ---- */
+.venueline{font-size:13.5px;color:var(--ink-2);margin:8px 0 0}
+.venueline .arrow{color:var(--accent);margin:0 6px}
+.venues{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:18px}
+.venue{display:block;background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:16px 18px;min-width:0}
+.venue .l{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.venue .n{font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:4px;line-height:1.1}
+.venue .a{font-size:13px;color:var(--ink-2);margin-top:4px}
+.venue .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.venue .links a{font-size:12.5px;text-decoration:none;border:1px solid var(--hair);border-radius:999px;padding:3px 10px;color:var(--ink-2)}
+.venue .links a:hover{border-color:var(--accent);color:var(--accent)}
+.venues .between{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:12px;gap:4px;min-width:70px}
+.venues .between svg{width:28px;height:28px;color:var(--accent)}
+@media (max-width:760px){ .venues{grid-template-columns:1fr} .venues .between{flex-direction:row} .venues .between svg{transform:rotate(90deg)} }
 
 /* ---- notes ---- */
 .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
@@ -439,6 +471,7 @@ body.locked .wrap{display:none}
   <div>
     <p class="eyebrow">Bryllupsplanlægning <span class="sync" id="sync"><i></i><span id="syncText">Gemt lokalt</span></span> <button class="whochip" id="whoChip" title="Skift hvem der er logget ind"></button></p>
     <h1><span contenteditable="true" spellcheck="false" id="nameA">Mie</span> <span class="amp">&amp;</span> <span contenteditable="true" spellcheck="false" id="nameB">Adam</span></h1>
+    <p class="venueline" id="venueLine"></p>
   </div>
   <div class="meta">
     <div class="field"><label for="date">Dato</label><input type="date" id="date"></div>
@@ -467,6 +500,7 @@ body.locked .wrap{display:none}
     <div class="count"><div class="n"><span id="ovDays">–</span><small>dage</small></div><div class="d" id="ovDate"></div></div>
     <div class="tiles" id="tiles"></div>
   </div>
+  <div class="venues" id="venues"></div>
   <div class="grid3">
     <section class="card"><div class="card-head"><div><h2>Seneste ændringer</h2><p class="hint">Hvad I hver især har rettet.</p></div></div><ul class="list changes" id="ovChanges"></ul></section>
     <section class="card"><div class="card-head"><div><h2>Næste opgaver</h2><p class="hint">Fra tidsplanen – det der ligger først for.</p></div><a href="#tidsplan" class="linkbtn">Se alle</a></div><ul class="list" id="ovTasks"></ul></section>
@@ -540,15 +574,17 @@ body.locked .wrap{display:none}
       <div id="poolAction" style="margin-top:10px"></div>
     </section>
     <div>
-      <div class="card-head" style="align-items:center"><div><h2>Bordplan</h2><p class="hint" id="seatHint"></p></div></div>
+      <div class="card-head" style="align-items:center"><div><h2>Plantegning og bordplan</h2><p class="hint" id="seatHint"></p></div></div>
       <div class="seatbar">
-        <button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
+        <button class="addbtn" id="addRoom">+ Rum</button><button class="addbtn" id="addLong">+ Langbord</button><button class="addbtn" id="addRound">+ Rundt bord</button>
+        <select class="addbtn sel" id="addZone" aria-label="Tilføj område"><option value="">+ Område…</option></select>
         <span class="sep"></span>
-        <button class="ghost" id="printPlan">Print bordplan</button><button class="ghost" id="printCards">Print bordkort</button><button class="ghost" id="dietBtn">Kost-liste</button>
+        <button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><button class="ghost" id="dietBtn">Kost-liste</button>
+        <span class="zoom"><button id="zoomOut" title="Zoom ud">−</button><span id="zoomPct">100 %</span><button id="zoomIn" title="Zoom ind">+</button><button id="zoomFit" title="Tilpas bredden" style="width:auto;padding:0 8px;font-size:12px">Tilpas</button></span>
       </div>
       <div class="tsel" id="tsel" hidden></div>
       <div class="canvaswrap" id="canvaswrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg"></svg></div>
-      <p class="hint" style="margin-top:8px">Træk bordene rundt for at tegne rummet. Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu.</p>
+      <p class="hint" style="margin-top:8px">Tegn Palæet: tilføj rum og områder (dansegulv, lounge, bar…), træk dem på plads og træk i hjørnet for at ændre størrelse (1 m = 50 px). Klik på en gæst og derefter på en plads – klik på en optaget plads for at flytte personen. Stiplet ring = har ikke svaret endnu.</p>
       <div class="tlists" id="tlists"></div>
     </div>
   </div>
@@ -661,6 +697,9 @@ const CFG = window.BUDGET_CONFIG || {};
 const SERIES = ['--s1','--s2','--s3','--s4','--s5','--s6','--s7','--s8'];
 const OWNERS = ['', 'A', 'B', 'AB'];
 const RSVP = { maybe:'Afventer', yes:'Ja', no:'Nej' };
+const ZONES = { dance:'Dansegulv', lounge:'Lounge', bar:'Bar', dj:'DJ / scene', buffet:'Buffet / natmad', cake:'Kagebord', gifts:'Gavebord', photo:'Fotohjørne', kids:'Børnehjørne', entrance:'Indgang', wc:'Toiletter', other:'Andet' };
+const PXM = 50; // px pr. meter på plantegningen
+const m = px => (Math.round(px/PXM*10)/10).toString().replace('.',',');
 
 /* ---------- sample data ---------- */
 function makeSample(){
@@ -679,8 +718,17 @@ function makeSample(){
   T1[20]=byName('Signe Holm'); T1[21]=byName('Mikkel Holm'); T1[22]=byName('Ida Bruun');
   T2[0]=byName('Jonas Vinter'); T2[1]=byName('Line Vinter'); T2[14]=byName('Sofie Lund'); T2[15]=byName('Mads Lund'); T2[16]=byName('Alma Lund');
   const tables = [
-    {id:uid(), name:'Langbord 1', type:'long', x:160, y:60, seats:14, ends:false, seatMap:T1},
-    {id:uid(), name:'Langbord 2', type:'long', x:480, y:60, seats:14, ends:false, seatMap:T2},
+    {id:uid(), name:'Langbord 1', type:'long', x:170, y:70, seats:14, ends:false, seatMap:T1},
+    {id:uid(), name:'Langbord 2', type:'long', x:520, y:70, seats:14, ends:false, seatMap:T2},
+  ];
+  // Eksempel-plantegning af Odd Fellow Palæet – ret mål og rum, så det passer
+  const rooms = [
+    {id:uid(), name:'Festsalen', x:20, y:20, w:760, h:800}, {id:uid(), name:'Lille sal', x:800, y:20, w:320, h:400}, {id:uid(), name:'Foyer', x:800, y:440, w:320, h:380},
+  ];
+  const z = (type,label,x,y,w,h) => ({id:uid(), type, label, x, y, w, h});
+  const zones = [
+    z('dance','Dansegulv',200,570,320,210), z('dj','DJ',560,600,120,100), z('cake','Kagebord',50,600,110,60),
+    z('lounge','Lounge',830,70,260,320), z('bar','Bar',830,480,260,80), z('other','Garderobe',830,600,130,70), z('entrance','Indgang',900,780,140,30),
   ];
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
@@ -734,7 +782,7 @@ function makeSample(){
     i('Blomster & dekoration',7000,0,'A','Brudebuket, borde, æresport'), i('Invitationer & tryk',2500,2500,'A'), i('Bryllupskage',3500,0,'A'),
     i('Frisør & makeup',3500,0,'A','Prøve + selve dagen'), i('Transport',3000,0,'B','Bil til kirken, bus til gæster'),
   ];
-  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
+  return { v:4, nameA:'Mie', nameB:'Adam', date:'2028-06-17', guests:60, budget:225000, updatedAt:0, items, guests_list:guests, tables, rooms, zones, tasks, program, notes, places, vendors, speeches, photos, songs, gifts, log:[] };
 }
 const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til forældre','Kirke & præst','Rådhus','Børnepasning','Lyd & lys','Bordkort & menukort','Uforudset'];
 
@@ -742,7 +790,7 @@ const SUGGESTIONS = ['Toastmaster','Bryllupsrejse','Overnatning','Gaver til for�
 function uid(){ return Math.random().toString(36).slice(2,9); }
 let state = normalize(localLoad() || makeSample());
 let page = 'overblik';
-const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, selTable:null, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
+const ui = { bFilter:'all', bSort:'planned', bDir:-1, gFilter:'all', gSort:'name', gDir:1, gSearch:'', pFilter:'all', selGuest:null, sel:null, zoom:1, tFilter:'open', nSearch:'', vFilter:'all', giftFilter:'all' };
 
 function normalize(s){
   s.v = 4;
@@ -762,6 +810,8 @@ function normalize(s){
     return { id:t.id||uid(), name:t.name||'Bord', type, x:isFinite(+t.x)?+t.x:160+k*320, y:isFinite(+t.y)?+t.y:60, seats, ends, seatMap };
   });
   { const seen=new Set(); s.tables.forEach(t=>t.seatMap.forEach((id,i)=>{ if(id){ if(seen.has(id)) t.seatMap[i]=null; else seen.add(id); } })); }
+  s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
+  s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80) }));
   const ROLES=['Vielse','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
@@ -832,6 +882,8 @@ function renderHeader(){
   $('nSpeech').textContent = state.speeches.length;
   $('nGifts').textContent = state.gifts.length ? `${state.gifts.filter(g=>!g.thanked).length} mangler` : '';
   $('whoChip').textContent = WHO ? ownerName(WHO) : 'Hvem er du?';
+  const ch=state.places.find(x=>x.role==='Vielse'), pa=state.places.find(x=>x.role==='Fest');
+  $('venueLine').innerHTML = (ch||pa) ? `${ch?esc(ch.name):''}${ch&&pa?'<span class="arrow">→</span>':''}${pa?esc(pa.name):''}${(pa||ch)?.address?` · ${esc(((pa||ch).address.split(',').pop()||'').trim())}`:''}` : '';
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===page));
   document.title = `${state.nameA} & ${state.nameB}`;
   document.querySelectorAll('#bFilters .fchip[data-f="A"],#page-tidsplan .fchip[data-f="A"]').forEach(b=>b.textContent=state.nameA);
@@ -855,6 +907,10 @@ function renderOverblik(){
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
     return `<li class="${cls}"><span class="d"><b>${x.due?fmtDate(x.due):'–'}</b>${d==null?'':rel(d)}</span><span class="n">${esc(x.title)}${x.owner?`<span class="tag">${esc(ownerName(x.owner))}</span>`:''}</span><span></span></li>`; }).join('') || '<li><span></span><span class="n" style="color:var(--muted)">Alle opgaver er klaret 🎉</span><span></span></li>';
+  const church=state.places.find(x=>x.role==='Vielse'), party=state.places.find(x=>x.role==='Fest');
+  const vcard=(pl,label)=> pl ? `<div class="venue"><div class="l">${label}${pl.time?` · ${esc(pl.time)}`:''}</div><div class="n">${esc(pl.name)}</div><div class="a">${esc(pl.address)}</div><div class="links"><a href="${mapsUrl(pl)}" target="_blank" rel="noopener">Kort</a><a href="#steder">Detaljer</a>${pl.note?`<span style="font-size:12px;color:var(--muted);align-self:center">${esc(pl.note.split('\n')[0].slice(0,70))}</span>`:''}</div></div>` : `<div class="venue"><div class="l">${label}</div><div class="n" style="color:var(--muted)">Ikke valgt endnu</div><div class="a"><a href="#steder">Tilføj under Steder</a></div></div>`;
+  const route = church&&party ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(church.name+', '+church.address)}&destination=${encodeURIComponent(party.name+', '+party.address)}` : '';
+  $('venues').innerHTML = vcard(church,'Vielse') + `<div class="between"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>${route?`<a href="${route}" target="_blank" rel="noopener" style="font-size:12px">Rute</a>`:''}</div>` + vcard(party,'Fest');
   const PAGE_NAMES={overblik:'Overblik',budget:'Budget',gaester:'Gæster',bordplan:'Bordplan',tidsplan:'Tidsplan',program:'Program',steder:'Steder',leverandorer:'Leverandører',indslag:'Taler & indslag',gaver:'Gaver',noter:'Noter'};
   const log=[...state.log].reverse().slice(0,8);
   $('ovChanges').innerHTML = log.map(l=>`<li><span class="d"><b>${esc(ownerName(l.who)||'?')}</b>${ago(l.t)}</span><span class="n"><a href="#${l.page}" style="text-decoration:none;color:inherit">${esc(PAGE_NAMES[l.page]||l.page)}</a>${l.label?`<small>${esc(l.label)}</small>`:''}</span><span></span></li>`).join('')
@@ -1010,32 +1066,47 @@ function renderSeating(){
   const cap=state.tables.reduce((a,t)=>a+totalSeats(t),0);
   $('seatHint').textContent=`${seatedGuests()} gæster placeret af ${gs.yes} med ja (${gs.maybe} afventer) · ${cap} pladser ved ${state.tables.length} borde`;
   renderTsel(); drawPlan(); renderTlists();
+  $('addZone').innerHTML='<option value="">+ Område…</option>'+Object.keys(ZONES).map(k=>`<option value="${k}">${ZONES[k]}</option>`).join('');
 }
+function selObj(){ if(!ui.sel) return null; const coll=ui.sel.kind==='table'?state.tables:ui.sel.kind==='room'?state.rooms:state.zones; return coll.find(x=>x.id===ui.sel.id)||null; }
 function renderTsel(){
-  const t=state.tables.find(x=>x.id===ui.selTable); const el=$('tsel'); if(!t){ el.hidden=true; el.innerHTML=''; return; }
-  el.hidden=false; const used=t.seatMap.filter(Boolean).length;
-  el.innerHTML=`<input class="n" data-tf="name" value="${esc(t.name)}" aria-label="Bordnavn"><select data-tf="type"><option value="long"${t.type==='long'?' selected':''}>Langbord</option><option value="round"${t.type==='round'?' selected':''}>Rundt bord</option></select>
+  const o=selObj(); const el=$('tsel'); if(!o){ el.hidden=true; el.innerHTML=''; return; }
+  el.hidden=false;
+  if(ui.sel.kind==='table'){ const t=o; const used=t.seatMap.filter(Boolean).length;
+    el.innerHTML=`<span style="color:var(--muted)">Bord</span><input class="n" data-tf="name" value="${esc(t.name)}" aria-label="Bordnavn"><select data-tf="type"><option value="long"${t.type==='long'?' selected':''}>Langbord</option><option value="round"${t.type==='round'?' selected':''}>Rundt bord</option></select>
     <label>${t.type==='long'?'Pladser pr. side':'Pladser'} <input class="num tab" data-tf="seats" inputmode="numeric" value="${t.seats}"></label>
     ${t.type==='long'?`<label><input type="checkbox" data-tf="ends" ${t.ends?'checked':''}> Bordender</label>`:''}
     <span style="color:var(--muted)">${used}/${totalSeats(t)} besat</span>
-    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet bord</button><button class="ghost" data-tclose="1">Luk</button>`;
+    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet bord</button><button class="ghost" data-tclose="1">Luk</button>`; }
+  else if(ui.sel.kind==='room'){ const r=o;
+    el.innerHTML=`<span style="color:var(--muted)">Rum</span><input class="n" data-tf="name" value="${esc(r.name)}" aria-label="Rumnavn"><label>Bredde <input class="num tab" data-tf="w" inputmode="decimal" value="${m(r.w)}"> m</label><label>Dybde <input class="num tab" data-tf="h" inputmode="decimal" value="${m(r.h)}"> m</label>
+    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet rum</button><button class="ghost" data-tclose="1">Luk</button>`; }
+  else { const z=o;
+    el.innerHTML=`<span style="color:var(--muted)">Område</span><select data-tf="type">${opts(Object.keys(ZONES),z.type,k=>ZONES[k])}</select><input class="n" data-tf="label" value="${esc(z.label)}" placeholder="Navn" aria-label="Navn"><label>Bredde <input class="num tab" data-tf="w" inputmode="decimal" value="${m(z.w)}"> m</label><label>Dybde <input class="num tab" data-tf="h" inputmode="decimal" value="${m(z.h)}"> m</label>
+    <button class="ghost danger" data-tdel="1" style="margin-left:auto">Slet område</button><button class="ghost" data-tclose="1">Luk</button>`; }
 }
 function drawPlan(){
-  const svg=$('plan'); const st=seated();
+  const svg=$('plan');
   let minX=Infinity,minY=Infinity,maxX=0,maxY=0;
   const geos=state.tables.map(t=>{ const g=tableGeom(t); minX=Math.min(minX,t.x-g.pad.l); minY=Math.min(minY,t.y-g.pad.t); maxX=Math.max(maxX,t.x+g.w+g.pad.r); maxY=Math.max(maxY,t.y+g.h+g.pad.b); return g; });
-  if(!state.tables.length){ minX=0;minY=0;maxX=600;maxY=240; }
+  [...state.rooms,...state.zones].forEach(r=>{ minX=Math.min(minX,r.x-10); minY=Math.min(minY,r.y-10); maxX=Math.max(maxX,r.x+r.w+10); maxY=Math.max(maxY,r.y+r.h+10); });
+  if(!isFinite(minX)){ minX=0;minY=0;maxX=600;maxY=240; }
   const ox=Math.min(0,minX), oy=Math.min(0,minY); const W=Math.max(640,maxX-ox+20), H=Math.max(260,maxY-oy+20);
-  svg.setAttribute('viewBox',`${ox} ${oy} ${W} ${H}`); svg.setAttribute('width',W); svg.setAttribute('height',H);
-  const parts=state.tables.map((t,k)=>{ const g=geos[k]; const sel=t.id===ui.selTable;
+  svg.setAttribute('viewBox',`${ox} ${oy} ${W} ${H}`); svg.setAttribute('width',Math.round(W*ui.zoom)); svg.setAttribute('height',Math.round(H*ui.zoom)); svg.dataset.w=W;
+  const isSel=(k,id)=>ui.sel&&ui.sel.kind===k&&ui.sel.id===id;
+  const defs=`<defs><pattern id="pDance" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="rgba(74,58,167,.08)"/><line x1="0" y1="0" x2="0" y2="12" stroke="rgba(74,58,167,.35)" stroke-width="2"/></pattern></defs>`;
+  const rooms=state.rooms.map(r=>`<g class="room${isSel('room',r.id)?' sel':''}" data-kind="room" data-id="${r.id}" transform="translate(${r.x} ${r.y})"><rect class="body" x="0" y="0" width="${r.w}" height="${r.h}" rx="3"/><text class="rname" x="12" y="24">${esc(r.name)}</text><text class="rdim" x="12" y="38">${m(r.w)} × ${m(r.h)} m</text>${isSel('room',r.id)?`<rect class="hdl" data-kind="room" data-id="${r.id}" x="${r.w-7}" y="${r.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
+  const zones=state.zones.map(z=>`<g class="zone z-${z.type}${isSel('zone',z.id)?' sel':''}" data-kind="zone" data-id="${z.id}" transform="translate(${z.x} ${z.y})"><rect class="body" x="0" y="0" width="${z.w}" height="${z.h}"/><text class="zname" x="${z.w/2}" y="${z.h/2+(z.h>40?0:4)}" text-anchor="middle">${esc(z.label||ZONES[z.type])}</text>${z.h>40?`<text class="zdim" x="${z.w/2}" y="${z.h/2+14}" text-anchor="middle">${m(z.w)} × ${m(z.h)} m</text>`:''}${isSel('zone',z.id)?`<rect class="hdl" data-kind="zone" data-id="${z.id}" x="${z.w-7}" y="${z.h-7}" width="14" height="14" rx="3"/>`:''}</g>`).join('');
+  const parts=state.tables.map((t,k)=>{ const g=geos[k]; const sel=isSel('table',t.id);
     const body = t.type==='round' ? `<circle class="body" cx="${g.cx}" cy="${g.cy}" r="${g.R}"/>` : `<rect class="body" x="0" y="0" width="${g.w}" height="${g.h}" rx="8"/>`;
     const label = t.type==='round' ? `<text class="tname" x="${g.cx}" y="${g.cy-2}" text-anchor="middle">${esc(t.name)}</text><text class="tcount" x="${g.cx}" y="${g.cy+12}" text-anchor="middle">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`
       : `<text class="tname" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="-2">${esc(t.name)}</text><text class="tcount" transform="translate(${g.w/2} ${g.h/2}) rotate(-90)" text-anchor="middle" dy="11">${t.seatMap.filter(Boolean).length}/${totalSeats(t)}</text>`;
     const seats=g.seats.map(sd=>{ const id=t.seatMap[sd.i]; const nm=id?guestName(id):''; const gg=id&&id!=='A'&&id!=='B'?state.guests_list.find(x=>x.id===id):null;
       const cls=['seat', id?'occ':'empty', id?'side-'+guestSide(id):'', (id==='A'||id==='B')?'couple':'', gg&&gg.rsvp==='maybe'?'maybe':'', ui.selGuest&&ui.selGuest===id?'sel':'', ui.selGuest&&!id?'target':''].filter(Boolean).join(' ');
       return `<g class="${cls}" data-seat="${sd.i}" data-table="${t.id}"><title>${id?esc(nm):'Ledig plads'}</title><circle cx="${sd.x}" cy="${sd.y}" r="${SEAT.R}"/><text x="${sd.tx}" y="${sd.ty}" text-anchor="${sd.anchor}">${id?esc(shortName(nm)):(sd.i+1)}</text></g>`; }).join('');
-    return `<g class="tb${sel?' sel':''}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${label}${seats}</g>`; });
-  svg.innerHTML = parts.join('') || `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et langbord eller et rundt bord for at komme i gang.</text>`;
+    return `<g class="tb${sel?' sel':''}" data-kind="table" data-id="${t.id}" data-table="${t.id}" transform="translate(${t.x} ${t.y})">${body}${label}${seats}</g>`; });
+  svg.innerHTML = defs + rooms + zones + parts.join('') + (!state.tables.length&&!state.rooms.length ? `<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="14">Tilføj et rum, et langbord eller et rundt bord for at komme i gang.</text>` : '');
+  $('zoomPct').textContent=Math.round(ui.zoom*100)+' %';
 }
 function renderTlists(){
   $('tlists').innerHTML = state.tables.map(t=>{ const names=t.seatMap.map((id,i)=>id?`<li>${esc(guestName(id))}</li>`:'').filter(Boolean).join('');
@@ -1052,8 +1123,10 @@ function placeAt(gid, tid, seat){
 function addTable(type){
   const right=state.tables.reduce((a,t)=>Math.max(a,t.x+tableGeom(t).w+tableGeom(t).pad.r),20);
   const t={id:uid(), name:type==='round'?`Bord ${state.tables.length+1}`:`Langbord ${state.tables.filter(x=>x.type==='long').length+1}`, type, x:right+140, y:60, seats:type==='round'?8:6, ends:false, seatMap:[]};
-  t.seatMap=Array(totalSeats(t)).fill(null); state.tables.push(t); ui.selTable=t.id; commit('full', t.name);
+  t.seatMap=Array(totalSeats(t)).fill(null); state.tables.push(t); ui.sel={kind:'table',id:t.id}; commit('full', t.name);
 }
+function addRoom(){ const right=[...state.rooms].reduce((a,r)=>Math.max(a,r.x+r.w),0); const r={id:uid(), name:`Rum ${state.rooms.length+1}`, x:right?right+40:20, y:20, w:300, h:300}; state.rooms.push(r); ui.sel={kind:'room',id:r.id}; commit('full', r.name); }
+function addZone(type){ const z={id:uid(), type, label:ZONES[type], x:40, y:40, w:type==='dance'?250:type==='entrance'?120:160, h:type==='dance'?200:type==='entrance'?30:100}; const sel=selObj(); if(ui.sel&&ui.sel.kind==='room'&&sel){ z.x=sel.x+20; z.y=sel.y+50; } state.zones.push(z); ui.sel={kind:'zone',id:z.id}; commit('full', z.label); }
 function dietList(){
   const lines=[]; const gs=guestStats();
   const adults=state.guests_list.filter(g=>g.rsvp==='yes'&&!g.child).length, kids=state.guests_list.filter(g=>g.rsvp==='yes'&&g.child).length;
@@ -1171,7 +1244,7 @@ function fmtStamp(ms){ const d=new Date(ms); return `${d.getDate()}. ${MONTHS[d.
 /* ---------- orchestration ---------- */
 const PAGES={overblik:renderOverblik,budget:renderBudget,gaester:renderGuests,bordplan:renderSeating,tidsplan:renderTasks,program:renderProgram,steder:renderPlaces,leverandorer:renderVendors,indslag:renderIndslag,gaver:renderGifts,noter:renderNotes};
 function render(){ renderHeader(); PAGES[page](); }
-function route(){ const h=(location.hash||'#overblik').slice(1); page=PAGES[h]?h:'overblik'; document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+page); ui.selGuest=null; ui.selTable=null; render(); window.scrollTo({top:0}); }
+function route(){ const h=(location.hash||'#overblik').slice(1); page=PAGES[h]?h:'overblik'; document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+page); ui.selGuest=null; ui.sel=null; render(); window.scrollTo({top:0}); }
 window.addEventListener('hashchange',route);
 function logChange(label){ const now=Date.now(); const last=state.log[state.log.length-1]; label=(label||'').trim().slice(0,60);
   if(last && last.who===WHO && last.page===page && last.label===label && now-last.t<10*60000){ last.t=now; return; }
@@ -1238,25 +1311,49 @@ $('dietBtn').addEventListener('click',showDiet);
 $('gDiet').addEventListener('click',showDiet);
 $('dietClose').addEventListener('click',()=>$('dietModal').classList.remove('show'));
 $('dietCopy').addEventListener('click',()=>{ navigator.clipboard?.writeText($('dietText').value).then(()=>toast('Kopieret')).catch(()=>{ $('dietText').select(); toast('Markeret – tryk Cmd/Ctrl+C'); }); });
-/* table settings bar */
-$('tsel').addEventListener('input',e=>{ const t=state.tables.find(x=>x.id===ui.selTable); const f=e.target.dataset.tf; if(!t||!f) return;
-  if(f==='name') t.name=e.target.value;
-  else if(f==='seats'){ t.seats=Math.max(1,Math.min(40,parseNum(e.target.value)||1)); const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
-  else if(f==='ends'){ t.ends=e.target.checked; const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
-  else if(f==='type'){ t.type=e.target.value; if(t.type==='round'){ t.seats=Math.max(3,t.seats*2); t.ends=false; } else { t.seats=Math.max(2,Math.ceil(t.seats/2)); } const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
-  state.updatedAt=Date.now(); localSave(); logChange(t.name); if(f==='name'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
-$('tsel').addEventListener('click',e=>{ const t=state.tables.find(x=>x.id===ui.selTable); if(!t) return;
-  if(e.target.closest('[data-tclose]')){ ui.selTable=null; renderSeating(); }
-  if(e.target.closest('[data-tdel]')){ if(t.seatMap.some(Boolean)&&!confirm(`Slet «${t.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; ui.selTable=null; delWithUndo(()=>state.tables,t.id,t.name); } });
-/* canvas: seat clicks + table drag */
+/* settings bar (bord / rum / område) */
+function fixSeatMap(t){ const n=totalSeats(t); t.seatMap.length=n; for(let i=0;i<n;i++) if(t.seatMap[i]===undefined) t.seatMap[i]=null; }
+$('tsel').addEventListener('input',e=>{ const o=selObj(); const f=e.target.dataset.tf; if(!o||!f) return; const kind=ui.sel.kind;
+  if(kind==='table'){ const t=o;
+    if(f==='name') t.name=e.target.value;
+    else if(f==='seats'){ t.seats=Math.max(1,Math.min(40,parseNum(e.target.value)||1)); fixSeatMap(t); }
+    else if(f==='ends'){ t.ends=e.target.checked; fixSeatMap(t); }
+    else if(f==='type'){ t.type=e.target.value; if(t.type==='round'){ t.seats=Math.max(3,t.seats*2); t.ends=false; } else { t.seats=Math.max(2,Math.ceil(t.seats/2)); } fixSeatMap(t); }
+  } else {
+    if(f==='name'||f==='label') o[f]=e.target.value;
+    else if(f==='type') o.type=e.target.value;
+    else if(f==='w'||f==='h'){ const v=parseFloat(String(e.target.value).replace(',','.')); if(isFinite(v)&&v>0) o[f]=Math.max(30,Math.round(v*PXM/10)*10); }
+  }
+  state.updatedAt=Date.now(); localSave(); logChange(o.name||o.label||''); if(f==='name'||f==='label'){ drawPlan(); renderTlists(); } else renderSeating(); Sync.push(); });
+$('tsel').addEventListener('click',e=>{ const o=selObj(); if(!o) return; const kind=ui.sel.kind;
+  if(e.target.closest('[data-tclose]')){ ui.sel=null; renderSeating(); }
+  if(e.target.closest('[data-tdel]')){
+    if(kind==='table'){ if(o.seatMap.some(Boolean)&&!confirm(`Slet «${o.name}»? Gæsterne ryger tilbage til «Ikke placeret».`)) return; ui.sel=null; delWithUndo(()=>state.tables,o.id,o.name); }
+    else if(kind==='room'){ ui.sel=null; delWithUndo(()=>state.rooms,o.id,o.name); }
+    else { ui.sel=null; delWithUndo(()=>state.zones,o.id,o.label||ZONES[o.type]); } } });
+$('addRoom').addEventListener('click',addRoom);
+$('addZone').addEventListener('change',e=>{ if(e.target.value) addZone(e.target.value); e.target.value=''; });
+function setZoom(z){ ui.zoom=Math.max(.3,Math.min(2.5,z)); drawPlan(); }
+$('zoomIn').addEventListener('click',()=>setZoom(ui.zoom*1.2)); $('zoomOut').addEventListener('click',()=>setZoom(ui.zoom/1.2));
+$('zoomFit').addEventListener('click',()=>{ const W=+$('plan').dataset.w||640; setZoom(($('canvaswrap').clientWidth-2)/W); });
+/* canvas: seat clicks + drag/resize of rooms, zones and tables */
 const plan=$('plan'); let drag=null;
 function svgPoint(ev){ const pt=plan.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY; return pt.matrixTransform(plan.getScreenCTM().inverse()); }
-plan.addEventListener('pointerdown',e=>{ const tb=e.target.closest('.tb'); if(!tb||e.target.closest('.seat')) return; const t=state.tables.find(x=>x.id===tb.dataset.table); const p=svgPoint(e);
-  drag={t, el:tb, dx:p.x-t.x, dy:p.y-t.y, moved:false, sx:e.clientX, sy:e.clientY}; plan.setPointerCapture(e.pointerId); });
-plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true; const p=svgPoint(e);
-  drag.t.x=Math.round((p.x-drag.dx)/10)*10; drag.t.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${drag.t.x} ${drag.t.y})`); });
+function findObj(kind,id){ return (kind==='table'?state.tables:kind==='room'?state.rooms:state.zones).find(x=>x.id===id); }
+plan.addEventListener('pointerdown',e=>{
+  if(e.target.closest('.seat')) return;
+  const p=svgPoint(e);
+  const hdl=e.target.closest('.hdl'); if(hdl){ const o=findObj(hdl.dataset.kind,hdl.dataset.id); drag={mode:'resize',kind:hdl.dataset.kind,o,el:hdl.closest('[data-kind]'),ox:p.x-o.w,oy:p.y-o.h,moved:false,sx:e.clientX,sy:e.clientY}; plan.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+  const el=e.target.closest('[data-kind]'); if(!el) return; const o=findObj(el.dataset.kind,el.dataset.id); if(!o) return;
+  drag={mode:'move',kind:el.dataset.kind,o,el,dx:p.x-o.x,dy:p.y-o.y,moved:false,sx:e.clientX,sy:e.clientY}; plan.setPointerCapture(e.pointerId); e.preventDefault(); });
+plan.addEventListener('pointermove',e=>{ if(!drag) return; if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<4) return; drag.moved=true; const p=svgPoint(e); const o=drag.o;
+  if(drag.mode==='move'){ o.x=Math.round((p.x-drag.dx)/10)*10; o.y=Math.round((p.y-drag.dy)/10)*10; drag.el.setAttribute('transform',`translate(${o.x} ${o.y})`); }
+  else { o.w=Math.max(30,Math.round((p.x-drag.ox)/10)*10); o.h=Math.max(30,Math.round((p.y-drag.oy)/10)*10); const g=drag.el; const b=g.querySelector('.body'); b.setAttribute('width',o.w); b.setAttribute('height',o.h);
+    const h=g.querySelector('.hdl'); h.setAttribute('x',o.w-7); h.setAttribute('y',o.h-7); const d=g.querySelector('.rdim,.zdim'); if(d){ d.textContent=`${m(o.w)} × ${m(o.h)} m`; if(drag.kind==='zone'){ d.setAttribute('x',o.w/2); d.setAttribute('y',o.h/2+14); } } const zn=g.querySelector('.zname'); if(zn){ zn.setAttribute('x',o.w/2); zn.setAttribute('y',o.h/2+(o.h>40?0:4)); } } });
 plan.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null; try{ plan.releasePointerCapture(e.pointerId); }catch(x){}
-  if(d.moved){ d.t.x=Math.max(0,d.t.x); d.t.y=Math.max(0,d.t.y); commit('full', `${d.t.name} flyttet`); } else { ui.selTable = ui.selTable===d.t.id?null:d.t.id; renderSeating(); } });
+  const nm=d.o.name||d.o.label||ZONES[d.o.type]||'';
+  if(d.moved){ if(d.mode==='move'){ d.o.x=Math.max(0,d.o.x); d.o.y=Math.max(0,d.o.y); } commit('full', d.mode==='move'?`${nm} flyttet`:`${nm} ændret størrelse`); }
+  else { ui.sel = (ui.sel&&ui.sel.kind===d.kind&&ui.sel.id===d.o.id) ? null : {kind:d.kind,id:d.o.id}; renderSeating(); } });
 plan.addEventListener('click',e=>{ const seat=e.target.closest('.seat'); if(!seat) return; const tid=seat.dataset.table, i=+seat.dataset.seat; const t=state.tables.find(x=>x.id===tid); const id=t.seatMap[i];
   if(ui.selGuest){ placeAt(ui.selGuest,tid,i); return; }
   if(id){ ui.selGuest=id; renderSeating(); } });

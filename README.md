@@ -31,10 +31,10 @@ Herefter:
 
 ## Undersider
 
-- **Overblik** – nedtælling, status på budget/gæster/bordplan/tidsplan, næste opgaver og seneste noter
+- **Overblik** – nedtælling, kirke → fest med adresser og rute, status på budget/gæster/bordplan/tidsplan, seneste ændringer, næste opgaver og seneste noter
 - **Budget** – ramme, hvad det koster, hvad der er betalt, buffer; donut over hvad der fylder mest; poster med pris, ✓ betalt, hvem ordner det, note; pris pr. gæst (👥) følger gæsteantallet
 - **Gæster** – navn, side, relation, svar (ja/afventer/nej), barn, kost/allergi; filtre, søgning, "tilføj flere ad gangen"
-- **Bordplan** – tegn rummet: langborde (pladser på begge sider, evt. bordender) og runde borde, træk dem rundt; navnene sidder på pladserne; klik eller træk gæster på plads; print bordplan/bordkort; kost-liste til kokken
+- **Plantegning & bordplan** – tegn festlokalet: rum (med mål i meter, 1 m = 50 px), områder (dansegulv, lounge, bar, DJ, buffet, kagebord…), langborde (pladser på begge sider, evt. bordender) og runde borde; træk alt rundt og træk i hjørnet for at ændre størrelse; zoom; navnene sidder på pladserne; klik eller træk gæster på plads; print plantegning/bordkort; kost-liste til kokken
 - **Tidsplan** – opgaver med deadline og ansvarlig grupperet pr. måned ("9 mdr. før")
 - **Program** – selve dagen time for time; punkter før kl. 06 regnes som natten efter og ligger sidst
 - **Steder** – kirke, fest og overnatning med adresse, tid, kontakt, aftaler; kort- og rutelinks; liste over gæster der overnatter
