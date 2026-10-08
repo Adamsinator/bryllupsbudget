@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-10-08 11:28">
+<meta name="build" content="2026-10-08 11:48">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -1167,7 +1167,7 @@ function renderHeader(){
   const t=totals(), gs=guestStats(), ts=taskStats(), st=seated();
   $('nBudget').textContent = t.budget>0?pct(t.planned,t.budget):'';
   $('nGuests').textContent = gs.yes+'/'+gs.total;
-  $('nSeat').textContent = `${seatedGuests()}/${gs.yes}`;
+  $('nSeat').textContent = `${seatedGuests()}/${gs.yes+gs.maybe}`; // placeret ud af forventede (ja + afventer)
   $('nTasks').textContent = `${ts.total-ts.done} åbne`;
   $('nNotes').textContent = state.notes.length;
   $('nProg').textContent = state.program.length;
@@ -1196,7 +1196,7 @@ function renderOverblik(){
   $('tiles').innerHTML = `
     <a class="tile" href="#budget"><div class="l">Budget</div><div class="v tab">${kr(t.planned)}</div><div class="s">${t.budget>0?`${pct(t.planned,t.budget)} af rammen på ${kr(t.budget)}`:'Ingen ramme sat'} · ${over?'<span style="color:var(--crit)">overskredet</span>':`buffer ${kr(t.buffer)}`}</div><div class="mini"><span style="width:${Math.min(100,t.budget?t.planned/t.budget*100:0)}%${over?';background:var(--crit)':''}"></span></div></a>
     <a class="tile" href="#gaester"><div class="l">Gæster</div><div class="v tab">${gs.yes} <span style="font-size:15px;color:var(--muted)">har sagt ja</span></div><div class="s">${gs.total} inviteret · ${gs.maybe} afventer · ${gs.no} nej${gs.child?` · ${nKids(gs.child)}${kidsIn()?'':' (ikke regnet med)'}`:''}</div><div class="mini"><span style="width:${gs.total?gs.yes/gs.total*100:0}%"></span></div></a>
-    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes} placeret</span></div><div class="s">${seatTables().length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes?Math.min(100,seatedGuests()/gs.yes*100):0}%"></span></div></a>
+    <a class="tile" href="#bordplan"><div class="l">Bordplan</div><div class="v tab">${seatedGuests()} <span style="font-size:15px;color:var(--muted)">af ${gs.yes+gs.maybe} placeret</span></div><div class="s">${seatTables().length} borde · ${state.tables.reduce((a,x)=>a+totalSeats(x),0)} pladser</div><div class="mini"><span style="width:${gs.yes+gs.maybe?Math.min(100,seatedGuests()/(gs.yes+gs.maybe)*100):0}%"></span></div></a>
     <a class="tile" href="#tidsplan"><div class="l">Tidsplan</div><div class="v tab">${ts.done} <span style="font-size:15px;color:var(--muted)">af ${ts.total} opgaver</span></div><div class="s">${ts.total-ts.done} tilbage</div><div class="mini"><span style="width:${ts.total?ts.done/ts.total*100:0}%"></span></div></a>`;
   const open = state.tasks.filter(x=>!x.done).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1).slice(0,6);
   $('ovTasks').innerHTML = open.map(x=>{ const d=x.due?daysUntil(x.due):null; const cls=d==null?'':d<0?'late':d<=14?'soon':'';
