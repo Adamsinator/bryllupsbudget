@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-10-08 10:21">
+<meta name="build" content="2026-10-08 10:32">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -887,13 +887,13 @@ function makeSample(){
   ];
   const s = (time,title,desc='') => ({id:uid(), time, title, desc});
   const program = [
-    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – Café Havehuset i Slotshaven. Champagne og kransekage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
+    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – Café Havehuset, på græsset ved Hesteskodammen. Bobler, sandwichs og bryllupskage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
     s('18:00','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
     s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('03:00','Tak for i aften','Festen slutter'),
   ];
   const places = [
     {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13–14', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Café Havehuset', role:'Reception', address:'Rendelæggerbakken 2, 3400 Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'https://cafehavehuset.dk/selskaber/', photo:'havehuset.jpg', note:'Café Havehuset i Frederiksborg Slotshave, ved nordindgangen til Barokhaven – gåafstand fra Slotskirken. Ca. 250 kr. pr. kuvert (selskabsmenuen på hjemmesiden) – tjek hvad der er med, og om champagne og kransekage er inkluderet. Reception 14:30–17:30.'},
+    {id:uid(), name:'Café Havehuset', role:'Reception', address:'Rendelæggerbakken 2, 3400 Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'https://cafehavehuset.dk/selskaber/', photo:'havehuset.jpg', note:'Bryllupsreception på græsset ved Hesteskodammen, søen bag caféen i Frederiksborg Slotshave – gåafstand fra Slotskirken. 250 kr. pr. person i 2,5 time: bobler, øl, sodavand, kaffe og små sandwichs (200 kr. uden sandwichs). Bryllupskagen medbringer vi selv. Minimum 60 personer. OBS: pakken er 2,5 time, men programmet siger 14:30–17:30 (3 timer) – aftal sluttid. Spørg om plan B, hvis det regner.'},
     {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 18–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Best Western Hotel Hillerød', role:'Overnatning', address:'Milnersvej 41, 3400 Hillerød', time:'', contact:'', phone:'', url:'https://www.hotelhillerod.dk', note:'Lige over for Palæet – spørg om gruppepris og en blok af værelser til gæsterne.'},
   ];
@@ -963,7 +963,7 @@ function normalize(s){
     if(!s.seeded2) ['places','vendors','speeches','photos','songs','rooms','zones'].forEach(k=>{ if(!Array.isArray(s[k])||!s[k].length) need.push(k); });
     if(need.length){ const seed=makeSample(); [...new Set(need)].forEach(k=>{ s[k]=seed[k]; }); }
     s.seeded2=true; }
-  s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, final:+i.final||0, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'' }));
+  s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, final:+i.final||0, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'', minGuests:Math.max(0,+i.minGuests||0) }));
   s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', sex:['f','m'].includes(g.sex)?g.sex:'', note:g.note||'', u:+g.u||0 }));
   const gids = new Set(s.guests_list.map(g=>g.id));
   gids.add('A'); gids.add('B');
@@ -1030,13 +1030,20 @@ function normalize(s){
       if(!r.note||/Vi skal finde et sted/.test(r.note)) r.note=seedR.note; r.u=now; }
     const isHH=/havehuset/i.test((s.places.find(x=>x.role==='Reception')||{}).name||''); // har I selv valgt et andet sted, rører vi ikke resten
     if(isHH){
-    (s.program||[]).forEach(x=>{ if(x.title==='Reception'&&/sted i Hillerød mangler/.test(x.desc||'')){ x.desc=x.desc.replace('sted i Hillerød mangler','Café Havehuset i Slotshaven'); x.u=now; } });
+    (s.program||[]).forEach(x=>{ if(x.title==='Reception'&&/sted i Hillerød mangler/.test(x.desc||'')){ x.desc=x.desc.replace('sted i Hillerød mangler. Champagne og kransekage','Café Havehuset, på græsset ved Hesteskodammen. Bobler, sandwichs og bryllupskage'); x.u=now; } });
     (s.tasks||[]).forEach(t=>{ if(/^Find sted til receptionen/.test(t.title)&&!t.done){ t.done=true; t.u=now; } });
     s.items=s.items||[];
     // fast id: kører migreringen på begge enheder før første synk, flettes posten til én i stedet for to
-    if(!s.items.some(i=>i.id==='recep-havehuset'||/reception|havehuset/i.test(i.name||''))) s.items.push({id:'recep-havehuset', name:'Reception – Café Havehuset', planned:0, perGuest:250, final:0, paid:0, owner:'AB', supplier:'Café Havehuset', note:'Ca. 250 kr. pr. kuvert – tjek hvad der er med', u:now});
+    if(!s.items.some(i=>i.id==='recep-havehuset'||/reception|havehuset/i.test(i.name||''))) s.items.push({id:'recep-havehuset', name:'Reception – Café Havehuset', planned:0, perGuest:250, final:0, paid:0, owner:'AB', supplier:'Café Havehuset', note:'Bobler, øl, sodavand, kaffe og små sandwichs i 2,5 time (200 kr. uden sandwichs). Min. 60 personer. Bryllupskagen medbringer vi selv', minGuests:60, u:now});
     }
     s.recepV1=true; }
+  if(!s.recepV2){ // vilkår fra Havehuset: 250 kr./pers. inkl. sandwichs, 2,5 time, min. 60 pers., ved Hesteskodammen. Kun tekster I ikke selv har rettet
+    const r=(s.places||[]).find(x=>x.role==='Reception'&&/havehuset/i.test(x.name||''));
+    if(r&&r.note==='Café Havehuset i Frederiksborg Slotshave, ved nordindgangen til Barokhaven – gåafstand fra Slotskirken. Ca. 250 kr. pr. kuvert (selskabsmenuen på hjemmesiden) – tjek hvad der er med, og om champagne og kransekage er inkluderet. Reception 14:30–17:30.') r.note='Bryllupsreception på græsset ved Hesteskodammen, søen bag caféen i Frederiksborg Slotshave – gåafstand fra Slotskirken. 250 kr. pr. person i 2,5 time: bobler, øl, sodavand, kaffe og små sandwichs (200 kr. uden sandwichs). Bryllupskagen medbringer vi selv. Minimum 60 personer. OBS: pakken er 2,5 time, men programmet siger 14:30–17:30 (3 timer) – aftal sluttid. Spørg om plan B, hvis det regner.';
+    (s.program||[]).forEach(x=>{ if(x.title==='Reception'&&x.desc==='14:30–17:30 – Café Havehuset i Slotshaven. Champagne og kransekage') x.desc='14:30–17:30 – Café Havehuset, på græsset ved Hesteskodammen. Bobler, sandwichs og bryllupskage'; });
+    const it=(s.items||[]).find(i=>i.id==='recep-havehuset');
+    if(it){ if(it.note==='Ca. 250 kr. pr. kuvert – tjek hvad der er med') it.note='Bobler, øl, sodavand, kaffe og små sandwichs i 2,5 time (200 kr. uden sandwichs). Min. 60 personer. Bryllupskagen medbringer vi selv'; if(!(+it.minGuests>0)) it.minGuests=60; }
+    s.recepV2=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
@@ -1062,7 +1069,9 @@ function nKids(n){ return `${n} ${n===1?'barn':'børn'}`; }
 function isChildId(id){ const g=state.guests_list.find(x=>x.id===id); return !!(g&&g.child); }
 function outOfPlan(id){ return !kidsIn() && isChildId(id); }
 function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=0; state.guests_list.forEach(g=>{ if(inPlan(g)) n++; }); return n; } return +state.guests||0; }
-const estOf = i => i.perGuest!=null ? Math.round(i.perGuest*guestCount()) : (+i.planned||0);
+const billedGuests = i => Math.max(guestCount(), +i.minGuests||0); // pris pr. gæst med evt. minimum («min. 60 pax»)
+const estOf = i => i.perGuest!=null ? Math.round(i.perGuest*billedGuests(i)) : (+i.planned||0);
+const calcTxt = (i,p) => { const n=guestCount(), mn=+i.minGuests||0; return mn>n ? `× ${knum(n)} → min. ${knum(mn)} = ${knum(p)}` : `× ${knum(n)} = ${knum(p)}`; };
 const plannedOf = i => (+i.final>0) ? +i.final : estOf(i);
 const ownerName = o => o==='A'?state.nameA : o==='B'?state.nameB : o==='AB'?'Begge' : '';
 const sideName = o => o==='A'?`${state.nameA}s` : o==='B'?`${state.nameB}s` : 'Fælles';
@@ -1232,7 +1241,7 @@ function renderBudgetTable(t){
     <td class="c-sw"><span class="sw" style="background:${COLORS[i.id]||'var(--other)'}"></span></td>
     <td class="c-name" data-l="Post"><input data-f="name" value="${esc(i.name)}" placeholder="Navn på post" aria-label="Navn"><input class="sup" data-f="supplier" value="${esc(i.supplier)}" placeholder="Leverandør / sted" aria-label="Leverandør"></td>
     <td data-l="Hvem ordner">${ownerSel(i.owner)}</td>
-    <td class="r" data-l="${pg?'Pris pr. gæst':'Pris'}"><div class="pgcell"><div class="pg"><button class="pgbtn${pg?' on':''}" data-pg="1" title="${pg?'Slå pris pr. gæst fra':'Beregn ud fra pris pr. gæst'}" aria-pressed="${pg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.2c2.8-.3 4.4 1.6 4.7 4.8"/></svg></button><input class="money tab" data-f="${pg?'perGuest':'planned'}" inputmode="numeric" value="${knum(pg?i.perGuest:i.planned)}" aria-label="${pg?'Pris pr. gæst':'Pris'}"></div>${pg?`<span class="calc tab">× ${knum(guestCount())} = ${knum(p)}</span>`:''}</div></td>
+    <td class="r" data-l="${pg?'Pris pr. gæst':'Pris'}"><div class="pgcell"><div class="pg"><button class="pgbtn${pg?' on':''}" data-pg="1" title="${pg?'Slå pris pr. gæst fra':'Beregn ud fra pris pr. gæst'}" aria-pressed="${pg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.2c2.8-.3 4.4 1.6 4.7 4.8"/></svg></button><input class="money tab" data-f="${pg?'perGuest':'planned'}" inputmode="numeric" value="${knum(pg?i.perGuest:i.planned)}" aria-label="${pg?'Pris pr. gæst':'Pris'}"></div>${pg?`<span class="calc tab">${calcTxt(i,p)}</span>`:''}</div></td>
     <td class="r" data-l="Endelig pris"><input class="money tab${i.final>0?'':' dim'}" data-f="final" inputmode="numeric" value="${i.final>0?knum(i.final):''}" placeholder="som forventet" aria-label="Endelig pris" title="Udfyld når den endelige pris kendes – ellers regnes der med det forventede"></td>
     <td class="r" data-l="Betalt"><div class="pg"><button class="pgbtn ok${paid?' on':''}" data-paid="1" title="${paid?'Betalt – klik for at nulstille':'Markér som betalt'}" aria-pressed="${paid}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button><input class="money tab" data-f="paid" inputmode="numeric" value="${knum(i.paid)}" aria-label="Betalt beløb"></div></td>
     <td class="pct c-pct tab">${pct(p,t.planned)}</td>
@@ -1259,7 +1268,7 @@ function refreshBudgetLight(){
   $('tickMid').textContent=kr(max/2); $('tickMax').textContent=over?`${kr(t.planned)} (ramme ${kr(t.budget)})`:kr(t.budget);
   $('brows').querySelectorAll('tr[data-id]').forEach(tr=>{ const i=state.items.find(x=>x.id===tr.dataset.id); if(!i) return; const p=plannedOf(i);
     tr.querySelector('.pct').textContent=pct(p,t.planned); tr.querySelector('.sw').style.background=COLORS[i.id]||'var(--other)';
-    const calc=tr.querySelector('.calc'); if(calc) calc.textContent=`× ${knum(guestCount())} = ${knum(p)}`;
+    const calc=tr.querySelector('.calc'); if(calc) calc.textContent=calcTxt(i,p);
     const ok=tr.querySelector('[data-paid]'); const paid=p>0&&i.paid>=p; ok.classList.toggle('on',paid); ok.setAttribute('aria-pressed',paid); const fi=tr.querySelector('[data-f="final"]'); if(fi) fi.classList.toggle('dim',!(i.final>0)); });
   $('tPlanned').textContent=kr(t.planned); $('tPaid').textContent=kr(t.paid); $('tEst').textContent=kr(state.items.reduce((a,i)=>a+estOf(i),0));
 }
