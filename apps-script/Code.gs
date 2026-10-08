@@ -104,7 +104,8 @@ function writeState(state) {
 }
 
 function plannedOf(item, guests) {
-  return item.perGuest != null ? Math.round(item.perGuest * (guests || 0)) : (Number(item.planned) || 0);
+  // minGuests: fx «minimum 60 personer» – samme regel som i appen
+  return item.perGuest != null ? Math.round(item.perGuest * Math.max(guests || 0, Number(item.minGuests) || 0)) : (Number(item.planned) || 0);
 }
 function guestsOf(s) { return Number(s.guestsEffective != null ? s.guestsEffective : s.guests) || 0; }
 
