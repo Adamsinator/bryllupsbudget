@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-09-13 00:06">
+<meta name="build" content="2026-10-08 10:21">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -444,6 +444,7 @@ select.rsvp{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 20p
 .venue .ph,.ecard .ph{margin:-16px -18px 12px;height:170px;overflow:hidden;border-radius:var(--r) var(--r) 0 0}
 .ecard .ph{margin:-14px -16px 10px;height:150px}
 .venue .ph img,.ecard .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph img[src="havehuset.jpg"]{object-position:66% 30%} /* huset står i højre del af billedet – beskær mod det, ikke mod grusstien */
 .ecard .ph.two{display:grid;grid-template-columns:1fr 1fr;gap:2px}
 .venue .l{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
 .venue .n{font-family:Fraunces,Georgia,serif;font-size:22px;margin-top:4px;line-height:1.1}
@@ -886,13 +887,13 @@ function makeSample(){
   ];
   const s = (time,title,desc='') => ({id:uid(), time, title, desc});
   const program = [
-    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – sted i Hillerød mangler. Champagne og kransekage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
+    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – Café Havehuset i Slotshaven. Champagne og kransekage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
     s('18:00','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
     s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('03:00','Tak for i aften','Festen slutter'),
   ];
   const places = [
     {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13–14', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Sted mangler', role:'Reception', address:'Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'', photo:'', note:'Reception 14:30–17:30 – champagne og kransekage. Vi skal finde et sted tæt på Slotskirken.'},
+    {id:uid(), name:'Café Havehuset', role:'Reception', address:'Rendelæggerbakken 2, 3400 Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'https://cafehavehuset.dk/selskaber/', photo:'havehuset.jpg', note:'Café Havehuset i Frederiksborg Slotshave, ved nordindgangen til Barokhaven – gåafstand fra Slotskirken. Ca. 250 kr. pr. kuvert (selskabsmenuen på hjemmesiden) – tjek hvad der er med, og om champagne og kransekage er inkluderet. Reception 14:30–17:30.'},
     {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 18–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Best Western Hotel Hillerød', role:'Overnatning', address:'Milnersvej 41, 3400 Hillerød', time:'', contact:'', phone:'', url:'https://www.hotelhillerod.dk', note:'Lige over for Palæet – spørg om gruppepris og en blok af værelser til gæsterne.'},
   ];
@@ -1021,6 +1022,21 @@ function normalize(s){
   if(!s.hotelV2){ const h=(s.places||[]).find(x=>x.role==='Overnatning'); const seedH=makeSample().places.find(x=>x.role==='Overnatning');
     if(!h) s.places.push(seedH); else if(h.name==='Hotel Hillerød'){ h.name=seedH.name; h.address=seedH.address; h.url=h.url||seedH.url; if(/^Tæt på Palæet/.test(h.note||'')) h.note=seedH.note; }
     s.hotelV2=true; }
+  if(!s.recepV1){ // reception fundet: Café Havehuset i Slotshaven, ca. 250 kr. pr. kuvert. Rører kun pladsholderne, ikke jeres egne rettelser
+    const seedR=makeSample().places.find(x=>x.role==='Reception'); const now=Date.now(); s.places=s.places||[];
+    let r=s.places.find(x=>x.role==='Reception');
+    if(!r){ const fi=s.places.findIndex(x=>x.role==='Fest'); s.places.splice(fi<0?s.places.length:fi,0,{...seedR,id:'recep-place',u:now}); }
+    else if(!r.name||/mangler/i.test(r.name)){ r.name=seedR.name; if(!r.address||r.address==='Hillerød') r.address=seedR.address; r.url=r.url||seedR.url; r.photo=r.photo||seedR.photo;
+      if(!r.note||/Vi skal finde et sted/.test(r.note)) r.note=seedR.note; r.u=now; }
+    const isHH=/havehuset/i.test((s.places.find(x=>x.role==='Reception')||{}).name||''); // har I selv valgt et andet sted, rører vi ikke resten
+    if(isHH){
+    (s.program||[]).forEach(x=>{ if(x.title==='Reception'&&/sted i Hillerød mangler/.test(x.desc||'')){ x.desc=x.desc.replace('sted i Hillerød mangler','Café Havehuset i Slotshaven'); x.u=now; } });
+    (s.tasks||[]).forEach(t=>{ if(/^Find sted til receptionen/.test(t.title)&&!t.done){ t.done=true; t.u=now; } });
+    s.items=s.items||[];
+    // fast id: kører migreringen på begge enheder før første synk, flettes posten til én i stedet for to
+    if(!s.items.some(i=>i.id==='recep-havehuset'||/reception|havehuset/i.test(i.name||''))) s.items.push({id:'recep-havehuset', name:'Reception – Café Havehuset', planned:0, perGuest:250, final:0, paid:0, owner:'AB', supplier:'Café Havehuset', note:'Ca. 250 kr. pr. kuvert – tjek hvad der er med', u:now});
+    }
+    s.recepV1=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
@@ -1459,7 +1475,7 @@ function monthsBefore(k){ const [y,m]=k.split('-').map(Number); const [wy,wm]=st
 
 /* ---------- STEDER ---------- */
 const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
-const PHOTOS = { 'odd fellow': ['odd-fellow-palae.jpg',''], 'frederiksborg': ['frederiksborg-slot.jpg','frederiksborg-slotskirke.jpg'] };
+const PHOTOS = { 'havehuset': ['havehuset.jpg',''], 'odd fellow': ['odd-fellow-palae.jpg',''], 'frederiksborg': ['frederiksborg-slot.jpg','frederiksborg-slotskirke.jpg'] };
 const known = pl => (Object.entries(PHOTOS).find(([k])=>(pl.name||'').toLowerCase().includes(k))||[])[1] || ['',''];
 const photoOf = pl => pl.photo || known(pl)[0];
 const photo2Of = pl => pl.photo2 || known(pl)[1];
