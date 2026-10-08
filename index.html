@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-10-08 11:48">
+<meta name="build" content="2026-10-08 12:44">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -685,7 +685,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
     <div class="tblwrap"><table class="tbl" id="btbl">
       <thead><tr><th style="width:14px"></th><th class="sort" data-s="name">Post</th><th>Hvem ordner</th><th class="r sort on" data-s="planned">Forventet</th><th class="r" style="width:110px">Endelig pris</th><th class="r sort" data-s="paid">Betalt</th><th class="r" style="width:48px">Andel</th><th>Note</th><th style="width:30px"></th></tr></thead>
       <tbody id="brows"></tbody>
-      <tfoot>      <tr><td></td><td id="tCount">I alt</td><td></td><td class="r tab" id="tEst"></td><td class="r tab" id="tPlanned"></td><td class="r tab" id="tPaid"></td><td class="r pct">100 %</td><td></td><td></td></tr></tfoot>
+      <tfoot>      <tr><td></td><td id="tCount">I alt</td><td></td><td class="r tab" id="tEst"></td><td class="r tab" id="tPlanned"></td><td class="r tab" id="tPaid"></td><td class="r pct tab" id="tPct">100 %</td><td></td><td></td></tr></tfoot>
     </table></div>
     <div class="suggest" id="suggest"></div>
   </section>
@@ -1277,6 +1277,11 @@ function budgetItems(){
   const isNew=i=>plannedOf(i)===0&&!i.paid ? 1:0;
   return list.sort((a,b)=>(isNew(b)-isNew(a))||cmp(a,b)*ui.bDir);
 }
+/* summerne i bunden følger filteret – og andelen viser, hvor stor en del af det hele de viste poster er */
+function renderBudgetFoot(t, list){ list=list||budgetItems();
+  const est=list.reduce((a,i)=>a+estOf(i),0), planned=list.reduce((a,i)=>a+plannedOf(i),0), paid=list.reduce((a,i)=>a+(+i.paid||0),0);
+  $('tEst').textContent=kr(est); $('tPlanned').textContent=kr(planned); $('tPaid').textContent=kr(paid); $('tPct').textContent=pct(planned,t.planned);
+  $('tCount').textContent=ui.bFilter==='all'?`I alt · ${state.items.length} poster`:`I alt for de viste · ${list.length} af ${state.items.length} poster`; }
 function renderBudgetTable(t){
   const list=budgetItems();
   $('brows').innerHTML=list.map(i=>{ const p=plannedOf(i), pg=i.perGuest!=null, paid=p>0&&i.paid>=p;
@@ -1291,8 +1296,7 @@ function renderBudgetTable(t){
     <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(i.note)}" placeholder="Note" aria-label="Note"></td>
     <td class="c-del"><button class="del" data-del="1" aria-label="Slet ${esc(i.name)}">${svgX}</button></td></tr>`; }).join('')
     || `<tr><td colspan="9"><div class="empty">${state.items.length?'Ingen poster matcher filteret.':'Ingen poster endnu – tilføj den første herunder.'}</div></td></tr>`;
-  $('tPlanned').textContent=kr(t.planned); $('tPaid').textContent=kr(t.paid); $('tEst').textContent=kr(state.items.reduce((a,i)=>a+estOf(i),0));
-  $('tCount').textContent=ui.bFilter==='all'?`I alt · ${state.items.length} poster`:`I alt · ${list.length} af ${state.items.length} vist`;
+  renderBudgetFoot(t, list);
   document.querySelectorAll('#btbl th.sort').forEach(th=>th.classList.toggle('on',th.dataset.s===ui.bSort));
   const used=new Set(state.items.map(i=>i.name.toLowerCase()));
   $('suggest').innerHTML='<span>Forslag:</span>'+SUGGESTIONS.filter(s=>!used.has(s.toLowerCase())).map(s=>`<button class="chip" data-add-item="${esc(s)}">${esc(s)}</button>`).join('');
@@ -1313,7 +1317,7 @@ function refreshBudgetLight(){
     tr.querySelector('.pct').textContent=pct(p,t.planned); tr.querySelector('.sw').style.background=COLORS[i.id]||'var(--other)';
     const calc=tr.querySelector('.calc'); if(calc) calc.textContent=calcTxt(i,p);
     const ok=tr.querySelector('[data-paid]'); const paid=p>0&&i.paid>=p; ok.classList.toggle('on',paid); ok.setAttribute('aria-pressed',paid); const fi=tr.querySelector('[data-f="final"]'); if(fi) fi.classList.toggle('dim',!(i.final>0)); });
-  $('tPlanned').textContent=kr(t.planned); $('tPaid').textContent=kr(t.paid); $('tEst').textContent=kr(state.items.reduce((a,i)=>a+estOf(i),0));
+  renderBudgetFoot(t);
 }
 
 /* ---------- GÆSTER ---------- */
