@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-10-08 10:32">
+<meta name="build" content="2026-10-08 10:35">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -878,7 +878,7 @@ function makeSample(){
   const t = (title, due, owner='AB', done=false) => ({id:uid(), title, due, owner, done});
   const tasks = [
     t('Book lokale','2027-06-01','AB',true), t('Aftal dato med kirke/rådhus','2027-06-15','AB',true), t('Fastlæg budget og gæsteantal','2027-07-01','AB',true),
-    t('Find sted til receptionen (14:30–17:30, tæt på Slotskirken)','2027-08-15','AB'), t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
+    t('Find sted til receptionen (14:30–17:00, tæt på Slotskirken)','2027-08-15','AB'), t('Book fotograf','2027-09-01','A'), t('Book DJ / band','2027-09-15','B'), t('Send save-the-date','2027-10-01','A'),
     t('Vælg og bestil brudekjole','2027-11-01','A'), t('Prøvesmagning hos kokken','2028-01-15','B'), t('Vælg toastmaster','2028-01-31','AB'),
     t('Send invitationer','2028-03-01','A'), t('Bestil ringe','2028-03-15','AB'), t('Køb jakkesæt','2028-04-01','B'),
     t('Bestil blomster','2028-04-15','A'), t('Svarfrist for gæsterne','2028-05-01','AB'), t('Bestil bryllupskage','2028-05-01','A'),
@@ -887,14 +887,14 @@ function makeSample(){
   ];
   const s = (time,title,desc='') => ({id:uid(), time, title, desc});
   const program = [
-    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:30 – Café Havehuset, på græsset ved Hesteskodammen. Bobler, sandwichs og bryllupskage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'),
-    s('18:00','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
+    s('13:00','Vielse i Frederiksborg Slotskirke','13–14 – gæsterne møder 12:30'), s('14:00','Ris og lykønskninger ved kirken',''), s('14:30','Reception','14:30–17:00 – Café Havehuset, på græsset ved Hesteskodammen. Bobler, sandwichs og bryllupskage'), s('15:00','Fotografering','Brudeparret med fotografen under receptionen'), s('17:00','Transport til Odd Fellow Palæet','Ca. 30 min fra Havehuset – gæsterne ankommer 17:30'),
+    s('17:30','Velkomst på Odd Fellow Palæet','Gæsterne finder deres pladser – toastmaster byder velkommen'), s('18:30','Middagen starter','Taler undervejs – brudens far, gommen, toastmaster'),
     s('22:00','Kaffe og bryllupskage',''), s('23:30','Brudevals','Skal danses inden midnat!'), s('23:45','Klip i sokker og slips',''), s('00:30','Natmad','Pølsevogn'), s('03:00','Tak for i aften','Festen slutter'),
   ];
   const places = [
     {id:uid(), name:'Frederiksborg Slotskirke', role:'Vielse', address:'Frederiksborg Slot, 3400 Hillerød', time:'kl. 13–14', contact:'', phone:'', url:'', photo:'frederiksborg-slot.jpg', photo2:'frederiksborg-slotskirke.jpg', note:'Gæsterne møder 12:30. Aftal med kirketjeneren: blomster, ris/konfetti udenfor, fotografering under vielsen.'},
-    {id:uid(), name:'Café Havehuset', role:'Reception', address:'Rendelæggerbakken 2, 3400 Hillerød', time:'14:30–17:30', contact:'', phone:'', url:'https://cafehavehuset.dk/selskaber/', photo:'havehuset.jpg', note:'Bryllupsreception på græsset ved Hesteskodammen, søen bag caféen i Frederiksborg Slotshave – gåafstand fra Slotskirken. 250 kr. pr. person i 2,5 time: bobler, øl, sodavand, kaffe og små sandwichs (200 kr. uden sandwichs). Bryllupskagen medbringer vi selv. Minimum 60 personer. OBS: pakken er 2,5 time, men programmet siger 14:30–17:30 (3 timer) – aftal sluttid. Spørg om plan B, hvis det regner.'},
-    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 18–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
+    {id:uid(), name:'Café Havehuset', role:'Reception', address:'Rendelæggerbakken 2, 3400 Hillerød', time:'14:30–17:00', contact:'', phone:'', url:'https://cafehavehuset.dk/selskaber/', photo:'havehuset.jpg', note:'Bryllupsreception på græsset ved Hesteskodammen, søen bag caféen i Frederiksborg Slotshave – gåafstand fra Slotskirken. 250 kr. pr. person i 2,5 time: bobler, øl, sodavand, kaffe og små sandwichs (200 kr. uden sandwichs). Bryllupskagen medbringer vi selv. Minimum 60 personer. Reception 14:30–17:00, derefter ca. 30 min transport til Odd Fellow Palæet (ankomst 17:30). Spørg om plan B, hvis det regner.'},
+    {id:uid(), name:'Odd Fellow Palæet', role:'Fest', address:'Milnersvej, 3400 Hillerød', time:'kl. 17:30–03 – maden 18:30', contact:'', phone:'', url:'', photo:'odd-fellow-palae.jpg', note:'Middag og fest kl. 17:30–03. Gæsterne ankommer 17:30 (ca. 30 min fra receptionen), maden serveres 18:30. Aftal: hvornår har vi lokalet fra/til, må vi selv medbringe vin, og hvornår skal endeligt gæsteantal gives.'},
     {id:uid(), name:'Best Western Hotel Hillerød', role:'Overnatning', address:'Milnersvej 41, 3400 Hillerød', time:'', contact:'', phone:'', url:'https://www.hotelhillerod.dk', note:'Lige over for Palæet – spørg om gruppepris og en blok af værelser til gæsterne.'},
   ];
   const v = (name, cat, status, agreed='', missing='') => ({id:uid(), name, cat, status, contact:'', phone:'', email:'', agreed, missing, note:''});
@@ -1044,6 +1044,16 @@ function normalize(s){
     const it=(s.items||[]).find(i=>i.id==='recep-havehuset');
     if(it){ if(it.note==='Ca. 250 kr. pr. kuvert – tjek hvad der er med') it.note='Bobler, øl, sodavand, kaffe og små sandwichs i 2,5 time (200 kr. uden sandwichs). Min. 60 personer. Bryllupskagen medbringer vi selv'; if(!(+it.minGuests>0)) it.minGuests=60; }
     s.recepV2=true; }
+  if(!s.dayV4){ // reception slutter 17:00, ca. 30 min transport, Palæet fra 17:30 (maden stadig 18:30). Kun værdier, der stadig er de gamle standarder
+    const r=(s.places||[]).find(x=>x.role==='Reception'), f=(s.places||[]).find(x=>x.role==='Fest');
+    if(r){ if(r.time==='14:30–17:30') r.time='14:30–17:00'; if((r.note||'').includes(' OBS: pakken er 2,5 time, men programmet siger 14:30–17:30 (3 timer) – aftal sluttid.')) r.note=r.note.replace(' OBS: pakken er 2,5 time, men programmet siger 14:30–17:30 (3 timer) – aftal sluttid.',' Reception 14:30–17:00, derefter ca. 30 min transport til Odd Fellow Palæet (ankomst 17:30).'); }
+    if(f){ if(f.time==='kl. 18–03 – maden 18:30') f.time='kl. 17:30–03 – maden 18:30'; if((f.note||'').includes('Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30.')) f.note=f.note.replace('Middag og fest kl. 18–03. Gæsterne ankommer 18:00, maden serveres 18:30.','Middag og fest kl. 17:30–03. Gæsterne ankommer 17:30 (ca. 30 min fra receptionen), maden serveres 18:30.'); }
+    s.program=s.program||[];
+    s.program.forEach(x=>{ if(x.title==='Reception'&&/^14:30–17:30 – /.test(x.desc||'')) x.desc=x.desc.replace('14:30–17:30 – ','14:30–17:00 – ');
+      if(x.title==='Velkomst på Odd Fellow Palæet'&&x.time==='18:00') x.time='17:30'; });
+    if(!s.program.some(x=>/transport|afgang/i.test(x.title||''))) s.program.push({id:'prog-transport', time:'17:00', title:'Transport til Odd Fellow Palæet', desc:'Ca. 30 min fra Havehuset – gæsterne ankommer 17:30'}); // fast id: ingen dublet ved synk
+    (s.tasks||[]).forEach(t=>{ if(t.title==='Find sted til receptionen (14:30–17:30, tæt på Slotskirken)') t.title='Find sted til receptionen (14:30–17:00, tæt på Slotskirken)'; });
+    s.dayV4=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
   s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
   s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
