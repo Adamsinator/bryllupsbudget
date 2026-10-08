@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f5d5a">
-<meta name="build" content="2026-10-08 11:01">
+<meta name="build" content="2026-10-08 11:20">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bryllup">
@@ -652,7 +652,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 <!-- ============ BUDGET ============ -->
 <section class="page" id="page-budget" hidden>
   <section class="kpis" aria-label="Overblik">
-    <div class="kpi budget"><div class="l">Samlet ramme</div><div class="v"><input id="budget" class="inl tab" inputmode="numeric" aria-label="Samlet budget i kroner"><small>kr.</small></div><div class="sub"><input id="guests" class="inl tab" inputmode="numeric" aria-label="Antal gæster"> gæster · <span id="perGuest">–</span><br><label style="display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:4px;cursor:pointer"><input type="checkbox" id="guestsAuto" style="accent-color:var(--accent);margin:0"> Følg gæstelisten (ja + afventer)</label></div></div>
+    <div class="kpi budget"><div class="l">Samlet ramme</div><div class="v"><input id="budget" class="inl tab" inputmode="numeric" aria-label="Samlet budget i kroner"><small>kr.</small></div><div class="sub"><input id="guests" class="inl tab" inputmode="numeric" aria-label="Antal gæster"> gæster · <span id="perGuest">–</span><br><label style="display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:4px;cursor:pointer"><input type="checkbox" id="guestsAuto" style="accent-color:var(--accent);margin:0"> Følg gæstelisten (ja + afventer + jer to)</label></div></div>
     <div class="kpi"><div class="l">Det koster</div><div class="v" id="kPlanned">–</div><div class="sub" id="kPlannedSub">–</div></div>
     <div class="kpi"><div class="l">Betalt</div><div class="v" id="kPaid">–</div><div class="sub" id="kPaidSub">–</div></div>
     <div class="kpi buffer" id="kBufferWrap"><div class="l">Buffer <span class="pill" id="bufPill">–</span></div><div class="v" id="kBuffer">–</div><div class="sub" id="kBufferSub">–</div></div>
@@ -711,7 +711,7 @@ window.addEventListener('unhandledrejection',e=>{ window.__errs.push('promise: '
 <!-- ============ BORDPLAN ============ -->
 <section class="page wide" id="page-bordplan" hidden>
   <div class="card-head" style="align-items:center;margin-top:18px"><div><h2>Plantegning og bordplan</h2><p class="hint" id="seatHint"></p></div>
-    <div class="filters"><button class="ghost kidsbtn" data-kids="1"></button><button class="ghost" id="focusBtn" aria-pressed="false" title="Vis kun bordene og navnene – intet kan flyttes ved et uheld">◎ Fokuseret bordplan</button><button class="ghost" id="printPlan">Print plantegning</button><button class="ghost" id="printCards">Print bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
+    <div class="filters"><button class="ghost kidsbtn" data-kids="1"></button><button class="ghost" id="focusBtn" aria-pressed="false" title="Vis kun bordene og navnene – intet kan flyttes ved et uheld">◎ Fokuseret bordplan</button><button class="ghost" id="printPlan">Udskriv plantegning</button><button class="ghost" id="printCards">Udskriv bordkort</button><select class="ghost sel" id="cardSize" aria-label="Bordkortstørrelse"><option value="3">Bordkort: små (3 pr. række)</option><option value="2">Bordkort: store (2 pr. række)</option><option value="fold">Bordkort: foldekort</option></select><button class="ghost" id="dietBtn">Kost-liste</button></div></div>
   <div class="seatgrid">
     <section class="card pool">
       <div class="card-head"><div><h3>Ikke placeret</h3><p class="hint" id="poolHint"></p></div></div>
@@ -952,7 +952,7 @@ function renderSplit(){
   const n=guestCount(), fest=state.items.filter(i=>!isOut(i)), out=state.items.filter(isOut);
   const sf=fest.reduce((a,i)=>a+plannedOf(i),0), so=out.reduce((a,i)=>a+plannedOf(i),0);
   $('sKuvert').textContent = n>0 ? `${kr(sf/n)} pr. kuvert` : 'sæt antal gæster';
-  $('sKuvertSub').textContent = `${kr(sf)} ÷ ${knum(n)} gæster · ${fest.length} poster – tallet I kan sammenligne med andre steders kuvertpris`;
+  $('sKuvertSub').textContent = `${kr(sf)} ÷ ${knum(n)} kuverter inkl. jer to · ${fest.length} poster – tallet I kan sammenligne med andre steders kuvertpris`;
   $('sOut').textContent = kr(so);
   const names=out.filter(i=>i.name).map(i=>i.name);
   $('sOutSub').textContent = names.length ? `${names.slice(0,4).join(', ')}${names.length>4?` + ${names.length-4} mere`:''} – tæller ikke med i kuvertprisen` : 'Ingen poster endnu – tryk «Brylluppet» på en post for at flytte den hertil';
@@ -989,7 +989,7 @@ function normalize(s){
     if(!s.seeded2) ['places','vendors','speeches','photos','songs','rooms','zones'].forEach(k=>{ if(!Array.isArray(s[k])||!s[k].length) need.push(k); });
     if(need.length){ const seed=makeSample(); [...new Set(need)].forEach(k=>{ s[k]=seed[k]; }); }
     s.seeded2=true; }
-  s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, final:+i.final||0, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'', minGuests:Math.max(0,+i.minGuests||0), scope:i.scope==='udenom'||i.scope==='fest'?i.scope:guessScope(i.name) }));
+  s.items = (s.items||[]).map(i=>({ id:i.id||uid(), name:i.name||'', planned:+i.planned||0, perGuest:i.perGuest==null?null:+i.perGuest, final:+i.final||0, paid:+i.paid||0, owner:OWNERS.includes(i.owner)?i.owner:'', supplier:i.supplier||'', note:i.note||'', minGuests:Math.max(0,+i.minGuests||0), scope:i.scope==='udenom'||i.scope==='fest'?i.scope:guessScope(i.name), u:+i.u||0 }));
   s.guests_list = (s.guests_list||[]).map(g=>({ id:g.id||uid(), name:g.name||'', side:['A','B','AB'].includes(g.side)?g.side:'AB', rel:g.rel||'', rsvp:RSVP[g.rsvp]?g.rsvp:'maybe', child:!!g.child, stay:!!g.stay, diet:g.diet||'', sex:['f','m'].includes(g.sex)?g.sex:'', note:g.note||'', u:+g.u||0 }));
   const gids = new Set(s.guests_list.map(g=>g.id));
   gids.add('A'); gids.add('B');
@@ -1011,7 +1011,7 @@ function normalize(s){
     (s.zones||[]).forEach(z=>{ if(z.type==='dance'&&z.y===570) z.y=670; if(z.type==='dj'&&z.y===600) z.y=700; if(z.type==='cake'&&z.y===600) z.y=700; if(z.type==='entrance'&&z.y===780) z.y=880; });
   }
   s.tables16=true;
-  s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300) }));
+  s.rooms = (s.rooms||[]).map(r=>({ id:r.id||uid(), name:r.name||'Rum', x:+r.x||0, y:+r.y||0, w:Math.max(60,+r.w||300), h:Math.max(60,+r.h||300), u:+r.u||0 }));
   s.zones = (s.zones||[]).map(r=>({ id:r.id||uid(), type:ZONES[r.type]?r.type:'other', label:r.label||'', x:+r.x||0, y:+r.y||0, w:Math.max(30,+r.w||120), h:Math.max(30,+r.h||80), u:+r.u||0 }));
   s.planVersions = (s.planVersions||[]).filter(v=>v&&v.data).map(v=>({ id:v.id||uid(), name:v.name||'Uden navn', t:+v.t||Date.now(), who:v.who||'', data:{ tables:v.data.tables||[] }, u:+v.u||0 }));
   s.doors = (s.doors||[]).map(d=>({ id:d.id||uid(), type:d.type==='open'?'open':'door', x:+d.x||0, y:+d.y||0, len:Math.max(20,+d.len||50), dir:d.dir==='v'?'v':'h', flip:!!d.flip, u:+d.u||0 }));
@@ -1087,18 +1087,18 @@ function normalize(s){
       if(x.title==='Kaffe og bryllupskage'&&x.time==='22:00'&&!x.desc) x.title='Kaffe'; });
     s.dayV5=true; }
   const ROLES=['Vielse','Reception','Fest','Overnatning','Andet'];
-  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'' }));
-  s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'' }));
-  s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done }));
-  s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done }));
-  s.songs = (s.songs||[]).map(x=>({ id:x.id||uid(), title:x.title||'', artist:x.artist||'', kind:x.kind||'Must-play', note:x.note||'' }));
+  s.places = (s.places||[]).map(x=>({ id:x.id||uid(), name:x.name||'', role:ROLES.includes(x.role)?x.role:'Andet', address:x.address||'', time:x.time||'', contact:x.contact||'', phone:x.phone||'', url:x.url||'', photo:x.photo||'', photo2:x.photo2||'', note:x.note||'', u:+x.u||0 }));
+  s.vendors = (s.vendors||[]).map(x=>({ id:x.id||uid(), name:x.name||'', cat:x.cat||'', status:['idea','contacted','booked'].includes(x.status)?x.status:'idea', contact:x.contact||'', phone:x.phone||'', email:x.email||'', agreed:x.agreed||'', missing:x.missing||'', note:x.note||'', u:+x.u||0 }));
+  s.speeches = (s.speeches||[]).map(x=>({ id:x.id||uid(), who:x.who||'', what:x.what||'', when:x.when||'', minutes:+x.minutes||0, note:x.note||'', done:!!x.done, u:+x.u||0 }));
+  s.photos = (s.photos||[]).map(x=>({ id:x.id||uid(), text:x.text||'', done:!!x.done, u:+x.u||0 }));
+  s.songs = (s.songs||[]).map(x=>({ id:x.id||uid(), title:x.title||'', artist:x.artist||'', kind:x.kind==='Must-play'?'Skal spilles':(x.kind||'Skal spilles'), note:x.note||'', u:+x.u||0 }));
   s.gifts = (s.gifts||[]).map(x=>({ id:x.id||uid(), from:x.from||'', gift:x.gift||'', note:x.note||'', thanked:!!x.thanked, u:+x.u||0 }));
   s.wishes = (s.wishes||[]).map(x=>({ id:x.id||uid(), text:x.text||'', link:x.link||'', price:+x.price||0, by:x.by||'', note:x.note||'', u:+x.u||0 }));
   s.log = (s.log||[]).filter(x=>x&&x.t).slice(-60);
   const cut=Date.now()-60*86400000; s.tomb = Object.fromEntries(Object.entries(s.tomb||{}).filter(([k,t])=>+t>cut));
-  s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done }));
-  s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'' }));
-  s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now() }));
+  s.tasks = (s.tasks||[]).map(t=>({ id:t.id||uid(), title:t.title||'', due:t.due||'', owner:OWNERS.includes(t.owner)?t.owner:'', done:!!t.done, u:+t.u||0 }));
+  s.program = (s.program||[]).map(p=>({ id:p.id||uid(), time:p.time||'', title:p.title||'', desc:p.desc||'', u:+p.u||0 }));
+  s.notes = (s.notes||[]).map(n=>({ id:n.id||uid(), title:n.title||'', body:n.body||'', who:OWNERS.includes(n.who)?n.who:'', pin:!!n.pin, updated:+n.updated||Date.now(), u:+n.u||0 }));
   s.guests=+s.guests||0; s.guestsAuto = s.guestsAuto!==false; s.kidsIn = s.kidsIn!==false; /* børn med i planen? kan slås fra, mens I venter på svar */ s.budget=+s.budget||0; s.updatedAt=+s.updatedAt||0; s.nameA=s.nameA||'Mie'; s.nameB=s.nameB||'Adam';
   return s;
 }
@@ -1110,7 +1110,8 @@ function inPlan(g){ return g.rsvp!=='no' && (kidsIn() || !g.child); }
 function nKids(n){ return `${n} ${n===1?'barn':'børn'}`; }
 function isChildId(id){ const g=state.guests_list.find(x=>x.id===id); return !!(g&&g.child); }
 function outOfPlan(id){ return !kidsIn() && isChildId(id); }
-function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=0; state.guests_list.forEach(g=>{ if(inPlan(g)) n++; }); return n; } return +state.guests||0; }
+const COUPLE = 2; // brudeparret har også en kuvert – stedet tager betaling for jer to
+function guestCount(){ if(state.guestsAuto && state.guests_list.length){ let n=COUPLE; state.guests_list.forEach(g=>{ if(inPlan(g)) n++; }); return n; } return +state.guests||0; } // manuelt tal = alle kuverter inkl. jer to
 const billedGuests = i => Math.max(guestCount(), +i.minGuests||0); // pris pr. gæst med evt. minimum («min. 60 pax»)
 const estOf = i => i.perGuest!=null ? Math.round(i.perGuest*billedGuests(i)) : (+i.planned||0);
 const calcTxt = (i,p) => { const n=guestCount(), mn=+i.minGuests||0; return mn>n ? `× ${knum(n)} → min. ${knum(mn)} = ${knum(p)}` : `× ${knum(n)} = ${knum(p)}`; };
@@ -1130,8 +1131,8 @@ const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-$
 const todayStr = () => ymd(new Date());
 const fmtDate = s => { if(!s) return ''; const [y,m,d]=s.split('-'); return `${+d}. ${MONTHS[+m-1]} ${y.slice(2)}`; };
 const fmtLong = s => { if(!s) return ''; const [y,m,d]=s.split('-'); return `${+d}. ${MONTHS_LONG[+m-1].toLowerCase()} ${y}`; };
-const daysUntil = s => Math.ceil((new Date(s+'T00:00:00') - new Date(new Date().setHours(0,0,0,0)))/86400000);
-const rel = d => d<0?`${-d} dage siden`:d===0?'i dag':d===1?'i morgen':`om ${d} dage`;
+const daysUntil = s => Math.round((new Date(s+'T00:00:00') - new Date(new Date().setHours(0,0,0,0)))/86400000); // round, ikke ceil: over sommertid/vintertid er afstanden n døgn ± 1 time
+const rel = d => d===-1?'i går':d<0?`${-d} dage siden`:d===0?'i dag':d===1?'i morgen':`om ${d} dage`;
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $ = id => document.getElementById(id);
 const opts = (list, val, labels) => list.map(o=>`<option value="${o}"${val===o?' selected':''}>${esc(labels(o))}</option>`).join('');
@@ -1161,7 +1162,7 @@ function taskStats(){ const total=state.tasks.length, done=state.tasks.filter(t=
 function renderHeader(){
   $('nameA').textContent=state.nameA; $('nameB').textContent=state.nameB;
   $('date').value=state.date||'';
-  let d='–'; if(state.date){ const diff=daysUntil(state.date); d=diff>0?`${knum(diff)} dage`:diff===0?'I dag!':`${knum(-diff)} dage siden`; }
+  let d='–'; if(state.date){ const diff=daysUntil(state.date); d=diff===1?'1 dag':diff>0?`${knum(diff)} dage`:diff===0?'I dag!':diff===-1?'I går':`${knum(-diff)} dage siden`; }
   $('days').textContent=d;
   const t=totals(), gs=guestStats(), ts=taskStats(), st=seated();
   $('nBudget').textContent = t.budget>0?pct(t.planned,t.budget):'';
@@ -1237,12 +1238,12 @@ function renderBudget(){
 }
 function syncGuestField(t){
   const auto=state.guestsAuto&&state.guests_list.length>0, n=guestCount(); const inp=$('guests');
-  $('guestsAuto').checked=!!state.guestsAuto; inp.readOnly=auto; inp.style.borderBottomStyle=auto?'solid':'dashed'; inp.title=auto?'Følger gæstelisten – slå fra for at skrive et tal selv':'';
+  $('guestsAuto').checked=!!state.guestsAuto; inp.readOnly=auto; inp.style.borderBottomStyle=auto?'solid':'dashed'; inp.title=auto?'Følger gæstelisten (ja + afventer + jer to) – slå fra for at skrive et tal selv':'Samlet antal kuverter – inkl. jer to';
   if(auto||document.activeElement!==inp) inp.value=n?knum(n):'';
   const gs=guestStats();
   $('perGuest').textContent = n>0?`${kr(t.planned/n)} pr. gæst`:'sæt antal';
   if(state.guestsAuto&&!state.guests_list.length) $('perGuest').textContent += ' · gæstelisten er tom, så tallet bruges';
-  else if(auto) $('perGuest').textContent += ` · ${gs.yes} ja + ${gs.maybe} afventer${kidsIn()?'':` (uden ${gs.child} børn)`}`;
+  else if(auto) $('perGuest').textContent += ` · ${gs.yes} ja + ${gs.maybe} afventer + jer to${kidsIn()?'':` (uden ${nKids(gs.child)})`}`;
 }
 function donutData(){
   const sorted=state.items.map(i=>({...i,p:plannedOf(i)})).filter(i=>i.p>0).sort((a,b)=>b.p-a.p);
@@ -1572,7 +1573,7 @@ function renderIndslag(){
     <td class="c-note" data-l="Note"><input class="note" data-f="note" value="${esc(x.note)}" placeholder="Note"></td><td class="c" data-l="Aftalt"><input type="checkbox" data-f="done" data-t="bool" ${x.done?'checked':''}></td>
     <td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')||'<tr><td colspan="7"><div class="empty">Ingen indslag endnu.</div></td></tr>';
   $('photos').innerHTML=state.photos.map(x=>`<div class="task${x.done?' done':''}" data-id="${x.id}" style="grid-template-columns:22px 1fr 28px"><input type="checkbox" data-f="done" data-t="bool" ${x.done?'checked':''}><input class="t" data-f="text" value="${esc(x.text)}" placeholder="Hvem skal med på billedet?"><button class="iconbtn" data-del="1" aria-label="Slet">${svgX}</button></div>`).join('')||'<p class="empty">Ingen billeder på listen.</p>';
-  const KINDS=['Første dans','Ind i kirken','Ud af kirken','Must-play','Brudevals','Sidste sang','Spil IKKE'];
+  const KINDS=['Første dans','Ind i kirken','Ud af kirken','Skal spilles','Brudevals','Sidste sang','Spil IKKE'];
   $('songs').innerHTML=state.songs.map(x=>`<tr data-id="${x.id}"><td class="c-name" data-l="Sang"><input data-f="title" value="${esc(x.title)}" placeholder="Titel"></td><td data-l="Kunstner"><input data-f="artist" value="${esc(x.artist)}" placeholder="Kunstner"></td><td data-l="Type"><select class="sel" data-f="kind">${opts(KINDS.includes(x.kind)?KINDS:[x.kind,...KINDS],x.kind,k=>k)}</select></td><td class="c-del"><button class="del" data-del="1" aria-label="Slet">${svgX}</button></td></tr>`).join('')||'<tr><td colspan="4"><div class="empty">Ingen sange endnu.</div></td></tr>';
 }
 
@@ -1843,7 +1844,7 @@ $('photos').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'
 $('photoAdd').addEventListener('click',()=>{ const x={id:uid(),text:'',done:false}; state.photos.push(x); commit('full','nyt billede på listen'); $('photos').querySelector(`[data-id="${x.id}"] .t`).focus(); });
 bindEdits($('songs'), ()=>state.songs, ()=>'none');
 $('songs').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.songs.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.songs,x.id,x.title||'Sang'); } });
-$('songAdd').addEventListener('click',()=>{ const x={id:uid(),title:'',artist:'',kind:'Must-play',note:''}; state.songs.push(x); commit('full','ny sang'); $('songs').querySelector(`[data-id="${x.id}"] input`).focus(); });
+$('songAdd').addEventListener('click',()=>{ const x={id:uid(),title:'',artist:'',kind:'Skal spilles',note:''}; state.songs.push(x); commit('full','ny sang'); $('songs').querySelector(`[data-id="${x.id}"] input`).focus(); });
 
 bindEdits($('gifts'), ()=>state.gifts, (g,f)=>{ if(f==='thanked'){ const open=state.gifts.filter(x=>!x.thanked).length; $('giftChips').innerHTML=`<span class="stpill"><b>${state.gifts.length}</b> gaver</span><span class="stpill st-yes"><b>${state.gifts.length-open}</b> takkekort sendt</span><span class="stpill ${open?'st-maybe':''}"><b>${open}</b> mangler</span>`; } return 'none'; });
 $('gifts').addEventListener('click',e=>{ const row=e.target.closest('[data-id]'); if(row&&e.target.closest('[data-del]')){ const x=state.gifts.find(y=>y.id===row.dataset.id); delWithUndo(()=>state.gifts,x.id,x.from||x.gift||'Gave'); } });
@@ -1938,7 +1939,7 @@ const COLLS=['items','guests_list','tables','rooms','zones','doors','wishes','pl
 function mergeStates(local, remote){
   const out=structuredClone(remote); const tomb={...(remote.tomb||{}),...(local.tomb||{})}; out.tomb=tomb;
   const newerRemote=(+remote.updatedAt||0)>=(+local.updatedAt||0);
-  ['nameA','nameB','date','guests','budget','kidsIn'].forEach(k=>{ out[k]=newerRemote?remote[k]:local[k]; });
+  ['nameA','nameB','date','guests','guestsAuto','budget','kidsIn'].forEach(k=>{ out[k]=newerRemote?remote[k]:local[k]; });
   COLLS.forEach(k=>{ const L=local[k]||[], R=remote[k]||[]; const Lm=new Map(L.map(x=>[x.id,x])), Rm=new Map(R.map(x=>[x.id,x])); const res=[];
     R.forEach(r=>{ const l=Lm.get(r.id); if(l){ res.push((+l.u||0)>(+r.u||0)?l:r); } else { const t=tomb[r.id]; if(!(t&&t>(+r.u||0))) res.push(r); } });
     L.forEach(l=>{ if(!Rm.has(l.id)){ const t=tomb[l.id]; if(!(t&&t>(+l.u||0))) res.push(l); } });
@@ -2007,9 +2008,11 @@ window.addEventListener('error',()=>{ /* hvis noget går galt bag låseskærmen,
 try{ route(); }catch(e){ console.error(e); }
 Sync.init();
 /* Ny version? Pages cacher siden i 10 min – tjek et lille ucachet versionsfil og hent den nye side via en ny adresse */
-(async()=>{ try{ const mine=document.querySelector('meta[name=build]')?.content||''; const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); const j=await r.json();
-  if(j.build && mine && j.build!==mine){ const b=document.createElement('button'); b.textContent='Ny version klar – tryk for at opdatere'; b.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9998;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:9px 16px;font:600 13.5px Karla,sans-serif;box-shadow:var(--shadow);cursor:pointer';
-    b.onclick=()=>{ location.href=location.pathname+'?v='+encodeURIComponent(j.build)+location.hash; }; document.body.appendChild(b); } }catch(e){} })();
+async function checkVersion(){ try{ if(document.getElementById('newVersion')) return; const mine=document.querySelector('meta[name=build]')?.content||''; const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); const j=await r.json();
+  if(j.build && mine && j.build!==mine && !document.getElementById('newVersion')){ const b=document.createElement('button'); b.id='newVersion'; b.textContent='Ny version klar – tryk for at opdatere'; b.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9998;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:9px 16px;font:600 13.5px Karla,sans-serif;box-shadow:var(--shadow);cursor:pointer';
+    b.onclick=()=>{ location.href=location.pathname+'?v='+encodeURIComponent(j.build)+location.hash; }; document.body.appendChild(b); } }catch(e){} }
+checkVersion(); // ved start – og igen, hver gang appen kommer frem (højst hvert 5. minut)
+let lastVersionCheck=Date.now(); document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&Date.now()-lastVersionCheck>5*60000){ lastVersionCheck=Date.now(); checkVersion(); } });
 })();
 </script>
 </body>
